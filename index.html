@@ -2021,44 +2021,76 @@ dl.specs{margin:0}
 
   var Cloud = {
     ready: function () { return !!(S.sbUrl && S.sbKey); },
+    /* Yeni sb_publishable_ anahtarları JWT değil. Authorization başlığına konursa
+       ağ geçidi onu oturum jetonu sanıp 401 döndürüyor. Sadece eski eyJ... ile
+       başlayan anon anahtarları Bearer olarak da gönderilebilir. */
     head: function (extra) {
-      var h = { apikey: S.sbKey, Authorization: 'Bearer ' + S.sbKey, 'Content-Type': 'application/json' };
+      var h = { apikey: S.sbKey, 'Content-Type': 'application/json' };
+      if (/^eyJ/.test(S.sbKey)) h.Authorization = 'Bearer ' + S.sbKey;
       if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
       return h;
     },
-    base: function () { return S.sbUrl.replace(/\/+$/, '') + '/rest/v1'; },
+    base: function () {
+      var u = String(S.sbUrl).trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+      return u + '/rest/v1';
+    },
+    /* Sunucunun döndürdüğü kodu insanın anlayacağı bir yönergeye çevir */
+    explain: function (status, msg) {
+      var tr = S.ui === 'tr';
+      if (status === 401 || status === 403) {
+        return tr
+          ? '401 — anahtar reddedildi. Ayarlar › API Keys\'ten Publishable (ya da Legacy anon) anahtarını kopyala. Secret / service_role anahtarı burada çalışmaz.'
+          : '401 — key rejected. Copy the Publishable (or legacy anon) key from Settings › API Keys. Secret / service_role keys will not work here.';
+      }
+      if (status === 404) {
+        return tr
+          ? '404 — lensa_finds tablosu yok. Kurulum SQL\'ini kopyalayıp SQL Editor\'de çalıştır.'
+          : '404 — table lensa_finds is missing. Copy the setup SQL and run it in the SQL Editor.';
+      }
+      if (status === 400 && /relation|does not exist/i.test(msg || '')) {
+        return tr ? 'Tablo bulunamadı. Kurulum SQL\'ini çalıştır.' : 'Table not found. Run the setup SQL.';
+      }
+      return (status ? status + ' — ' : '') + (msg || (S.ui === 'tr' ? 'bilinmeyen hata' : 'unknown error'));
+    },
+    check: function (r) {
+      if (r.ok) return r;
+      var self = this;
+      return r.text().then(function (txt) {
+        var msg = '';
+        try { var j = JSON.parse(txt); msg = j.message || j.hint || j.error_description || j.error || ''; }
+        catch (e) { msg = String(txt).slice(0, 140); }
+        throw new Error(self.explain(r.status, msg));
+      });
+    },
     list: function () {
+      var self = this;
       var cols = 'id,created_at,title,category,summary,narration,query,specs,price,lang,mode,thumb,author,likes';
-      return withTimeout(fetch(this.base() + '/lensa_finds?select=' + cols + '&order=created_at.desc&limit=48',
-        { headers: this.head() }).then(function (r) {
-          if (!r.ok) throw new Error('list ' + r.status);
-          return r.json();
-        }), 15000, null);
+      return withTimeout(fetch(self.base() + '/lensa_finds?select=' + cols + '&order=created_at.desc&limit=48',
+        { headers: self.head() }).then(function (r) { return self.check(r); }).then(function (r) { return r.json(); }), 15000, null);
     },
     publish: function (rec) {
-      var d = rec.data;
+      var self = this, d = rec.data;
       return shrink(rec.thumb, 420, 0.6).then(function (thumb) {
-        return withTimeout(fetch(this.base() + '/lensa_finds', {
-          method: 'POST', headers: this.head({ Prefer: 'return=minimal' }),
+        return withTimeout(fetch(self.base() + '/lensa_finds', {
+          method: 'POST', headers: self.head({ Prefer: 'return=minimal' }),
           body: JSON.stringify({
             title: d.title, category: d.category, summary: d.summary, narration: d.narration,
             query: d.search.local, specs: d.specs.slice(0, 6), price: d.price.min != null ? d.price : null,
             lang: rec.lang, mode: rec.mode, thumb: thumb, author: S.nick
           })
-        }).then(function (r) {
-          if (!r.ok) throw new Error('publish ' + r.status);
-          return true;
-        }), 20000, null);
-      }.bind(this));
+        }).then(function (r) { return self.check(r); }).then(function () { return true; }), 20000, null);
+      });
     },
     rpc: function (fn, id) {
-      return fetch(S.sbUrl.replace(/\/+$/, '') + '/rest/v1/rpc/' + fn, {
-        method: 'POST', headers: this.head(), body: JSON.stringify({ find_id: id })
-      }).then(function (r) { if (!r.ok) throw new Error('rpc'); return true; });
+      var self = this;
+      return fetch(self.base() + '/rpc/' + fn, {
+        method: 'POST', headers: self.head(), body: JSON.stringify({ find_id: id })
+      }).then(function (r) { return self.check(r); });
     },
     test: function () {
-      return withTimeout(fetch(this.base() + '/lensa_finds?select=id&limit=1', { headers: this.head() })
-        .then(function (r) { if (!r.ok) throw new Error('test ' + r.status); return true; }), 12000, null);
+      var self = this;
+      return withTimeout(fetch(self.base() + '/lensa_finds?select=id&limit=1', { headers: self.head() })
+        .then(function (r) { return self.check(r); }).then(function () { return true; }), 12000, null);
     }
   };
 
@@ -2229,7 +2261,7 @@ dl.specs{margin:0}
 
       '<h2 class="set-h">' + (tr ? 'Ortak akış' : 'Shared feed') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Supabase bağlantısı' : 'Supabase connection') + '</label>' +
-      '<p>' + (tr ? 'Boşsa akış yalnızca bu cihazda kalır. Doldurursan paylaştığın keşifler herkesin akışına düşer. Ücretsiz bir Supabase projesi açıp Proje URL\'si ile anon anahtarını yapıştır, sonra kurulum SQL\'ini bir kez çalıştır.' : 'Leave empty to keep the feed local. Fill it in and your shared finds go to everyone\u2019s feed. Create a free Supabase project, paste the URL and anon key, then run the setup SQL once.') + '</p>' +
+      '<p>' + (tr ? 'Boşsa akış yalnızca bu cihazda kalır. Doldurursan paylaştığın keşifler herkesin akışına düşer. Supabase panelinde Settings › API Keys altındaki Publishable anahtarı (veya Legacy API Keys sekmesindeki anon anahtarı) kullan. Secret / service_role anahtarını buraya yazma.' : 'Leave empty to keep the feed local. Fill it in and your shared finds go to everyone\u2019s feed. Use the Publishable key under Settings › API Keys, or the anon key on the Legacy API Keys tab. Never paste a secret / service_role key here.') + '</p>' +
       '<input id="setSbUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" value="' + esc(S.sbUrl) + '">' +
       '<input id="setSbKey" type="password" placeholder="anon public key" autocomplete="off" value="' + esc(S.sbKey) + '">' +
       '<div class="btn-row"><button class="ghost-btn sm" id="copySql">' + esc(t('copySql')) + '</button>' +
@@ -2285,11 +2317,16 @@ dl.specs{margin:0}
     $('testSb').onclick = function () {
       S.sbUrl = $('setSbUrl').value.trim(); S.sbKey = $('setSbKey').value.trim(); savePrefs();
       var out = $('testSbOut');
-      if (!Cloud.ready()) { out.textContent = t('testFail'); out.className = 'test-out bad'; return; }
-      out.textContent = t('testing'); out.className = 'test-out';
+      var say = function (cls, txt) { out.className = 'test-out ' + cls; out.textContent = txt; };
+      if (!S.sbUrl || !S.sbKey) return say('bad', tr ? 'Önce Project URL ve anahtarı doldur.' : 'Fill in the Project URL and key first.');
+      if (!/^https:\/\/[^\s/]+\.supabase\.(co|in)/i.test(S.sbUrl))
+        return say('bad', tr ? 'URL https://xxxx.supabase.co biçiminde olmalı.' : 'The URL should look like https://xxxx.supabase.co');
+      if (/^sb_secret_/.test(S.sbKey) || /service_role/.test(S.sbKey))
+        return say('bad', tr ? 'Bu gizli anahtar; tarayıcıda çalışmaz ve güvenli değil. Publishable ya da anon anahtarını kullan.' : 'That is a secret key; it will not work in a browser. Use the publishable or anon key.');
+      say('', t('testing'));
       Cloud.test()
-        .then(function () { out.textContent = t('testOk'); out.className = 'test-out ok'; })
-        .catch(function (e) { out.textContent = t('testFail') + ' · ' + String(e.message || e); out.className = 'test-out bad'; });
+        .then(function () { say('ok', t('testOk')); })
+        .catch(function (e) { say('bad', String(e.message || e)); });
     };
     $('exportBtn').onclick = function () {
       var dump = JSON.stringify({ recs: allRecords(), feed: localFeed(), at: new Date().toISOString() });
