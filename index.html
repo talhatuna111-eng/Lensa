@@ -52,12 +52,16 @@ a{color:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── kabuk ───────────────────────────────── */
-#app{max-width:520px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+#app{max-width:520px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden;z-index:1}
+#bgart{position:fixed;inset:-14%;z-index:0;background-size:cover;background-position:center;
+  filter:blur(48px) saturate(1.8) brightness(.4);opacity:0;transition:opacity .9s var(--ease);pointer-events:none}
+#bgart.on{opacity:.9}
 .topbar{
   position:sticky;top:0;z-index:40;
   padding:calc(var(--safe-t) + 12px) var(--pad) 12px;
   display:flex;align-items:center;gap:10px;
-  background:linear-gradient(180deg,var(--void) 62%,rgba(14,17,19,0));
+  background:linear-gradient(180deg,rgba(14,17,19,.92) 58%,rgba(14,17,19,0));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .wordmark{font-family:var(--disp);font-size:21px;letter-spacing:.26em;font-weight:500;margin-right:auto;padding-left:.26em}
 .wordmark b{color:var(--brass-hi);font-weight:500}
@@ -142,8 +146,11 @@ main{flex:1;display:flex;flex-direction:column;min-height:0;padding-bottom:var(-
 .plate.scanning img{filter:grayscale(.72) contrast(1.06) brightness(.66)}
 .plate.scanning .kat{color:var(--chrome);letter-spacing:.2em}
 
-.card{background:var(--label);color:var(--ink);border-radius:var(--r-l);padding:22px 20px 26px;position:relative;
-  box-shadow:0 -18px 44px rgba(0,0,0,.5);animation:rise .5s var(--ease) both}
+.card{background:rgba(237,231,218,.9);backdrop-filter:blur(26px) saturate(1.5);
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);
+  color:var(--ink);border-radius:var(--r-l);padding:22px 20px 26px;position:relative;
+  box-shadow:0 -18px 54px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.5);
+  animation:rise .5s var(--ease) both}
 @keyframes rise{from{transform:translateY(26px);opacity:0}to{transform:none;opacity:1}}
 .card::before{content:"";position:absolute;left:20px;right:20px;top:11px;height:2px;
   background:linear-gradient(90deg,transparent,var(--brass) 12%,var(--brass) 88%,transparent);opacity:.55}
@@ -226,7 +233,8 @@ dl.specs{margin:0}
 .provenance{margin-top:18px;font-size:10.5px;letter-spacing:.06em;color:#96918A;text-align:center}
 .card .provenance{color:#96918A}
 
-.skeleton{padding:26px 20px;background:var(--label);border-radius:var(--r-l);color:var(--ink)}
+.skeleton{padding:26px 20px;background:rgba(237,231,218,.88);backdrop-filter:blur(26px) saturate(1.5);
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);border-radius:var(--r-l);color:var(--ink)}
 .sk-line{height:13px;border-radius:6px;background:rgba(21,24,26,.1);margin-bottom:11px;animation:pulse 1.3s ease-in-out infinite}
 .sk-line.tall{height:34px;width:68%;margin-bottom:18px}
 .sk-line.w7{width:72%}.sk-line.w5{width:52%}
@@ -321,12 +329,94 @@ dl.specs{margin:0}
   opacity:0;pointer-events:none;transition:.28s var(--ease);max-width:88vw;text-align:center;box-shadow:0 10px 34px rgba(0,0,0,.45)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
+/* ── optik katman ─────────────────────────────
+   Glitch burada süs değil, merceğin henüz odaklanmadığı an.
+   Kanal ayrışması bir kez olur ve yerine oturur. */
+@keyframes chroma{
+  0%  {opacity:0;transform:translateX(-8px);text-shadow:-6px 0 rgba(255,42,90,.95),6px 0 rgba(0,229,255,.95)}
+  14% {opacity:1;transform:translateX(7px); text-shadow:7px 0 rgba(255,42,90,.8),-7px 0 rgba(0,229,255,.8)}
+  28% {transform:translateX(-4px);text-shadow:-4px 0 rgba(255,42,90,.62),4px 0 rgba(0,229,255,.62)}
+  44% {transform:translateX(3px); text-shadow:3px 0 rgba(255,42,90,.44),-3px 0 rgba(0,229,255,.44)}
+  64% {transform:translateX(-1px);text-shadow:-1px 0 rgba(255,42,90,.26),1px 0 rgba(0,229,255,.26)}
+  100%{transform:none;text-shadow:none;opacity:1}
+}
+.card h1{animation:chroma .6s steps(2,end) both}
+.wordmark{animation:chroma .78s steps(2,end) both}
+.card .kicker{animation:rise .5s .16s var(--ease) both}
+.hallmark{animation:rise .5s .24s var(--ease) both}
+
+/* tarama çizgileri: cam altındaki bir optik alet gibi */
+.scan-lines::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.19) 0 1px,transparent 1px 3px);
+  mix-blend-mode:overlay;opacity:.55;
+}
+.finder::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  box-shadow:inset 0 0 90px 18px rgba(6,7,8,.62);
+}
+
+/* inceleme anında kanal kayması */
+@keyframes jitter{
+  0%,44%,54%,100%{transform:none;filter:grayscale(.72) contrast(1.06) brightness(.62)}
+  46%{transform:translateX(-3px);filter:grayscale(.15) contrast(1.6) brightness(.86) hue-rotate(-12deg)}
+  48%{transform:translateX(4px) skewX(.4deg);filter:grayscale(.1) contrast(1.7) brightness(.9) hue-rotate(14deg)}
+  50%{transform:translateX(-2px);filter:grayscale(.5) contrast(1.2) brightness(.7)}
+}
+.plate.scanning img{animation:jitter 3.2s ease-in-out infinite}
+.plate.scanning .kat{animation:blinkcap 1.4s steps(2,end) infinite}
+@keyframes blinkcap{50%{opacity:.35}}
+
+/* ── arşiv: tarihi yapılar için ─────────────── */
+.archive{
+  margin-top:24px;padding:20px 18px 22px;border-radius:16px;position:relative;overflow:hidden;
+  background:rgba(21,24,26,.055);border:1px solid rgba(184,133,63,.3);
+}
+.archive::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--brass),rgba(184,133,63,0));
+}
+.archive::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(21,24,26,.035) 0 1px,transparent 1px 4px);
+}
+.archive-top{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.arch-eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--brass)}
+.arch-badge{
+  margin-left:auto;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+  padding:5px 10px;border-radius:12px;border:1px solid rgba(184,133,63,.5);color:#7A5623;
+  background:rgba(184,133,63,.08);
+}
+.arch-specs{margin:14px 0 0;position:relative;z-index:1}
+.arch-specs .spec{padding:5px 0;font-size:13.5px}
+.arch-story{font-size:14.5px;line-height:1.7;margin:16px 0 0;color:#2B2E30;position:relative;z-index:1}
+.arch-listen{
+  display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 16px;border-radius:20px;
+  background:var(--ink);color:var(--label);font-size:12.5px;font-weight:600;position:relative;z-index:1;
+  transition:transform .15s var(--ease);
+}
+.arch-listen:active{transform:scale(.95)}
+.timeline{list-style:none;margin:20px 0 0 4px;padding:0 0 0 15px;border-left:1px solid rgba(184,133,63,.42);position:relative;z-index:1}
+.timeline li{position:relative;padding:0 0 15px 10px}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{
+  content:"";position:absolute;left:-20px;top:8px;width:7px;height:7px;border-radius:50%;
+  background:var(--brass);box-shadow:0 0 0 3px rgba(237,231,218,.9);
+}
+.timeline b{display:block;font-family:var(--disp);font-size:18px;font-weight:500;line-height:1.15;letter-spacing:.01em}
+.timeline span{display:block;font-size:13px;color:var(--ink-soft);line-height:1.55;margin-top:2px}
+.arch-visit{
+  margin:16px 0 0;padding-top:13px;border-top:1px solid var(--line-ink);
+  font-size:12.5px;line-height:1.6;color:var(--ink-soft);position:relative;z-index:1;
+}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
 </head>
 <body>
+<div id="bgart" aria-hidden="true"></div>
 <div id="netbar" role="status"></div>
 <div id="app">
 
@@ -342,7 +432,7 @@ dl.specs{margin:0}
     <section class="view active" id="v-scan">
       <div class="modes" id="modeRow" role="group" aria-label="Tarama modu"></div>
       <div class="finder-wrap">
-        <div class="finder" id="finder">
+        <div class="finder scan-lines" id="finder">
           <video id="video" playsinline muted autoplay class="hide"></video>
           <img id="shot" class="shot hide" alt="">
           <div class="ticks" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -539,6 +629,8 @@ dl.specs{margin:0}
       pasteLink: 'LENSA bağlantısını yapıştır', badLink: 'Bağlantı okunamadı.',
       sureH: 'Kesin teşhis', likelyH: 'Büyük olasılıkla', maybeH: 'Muhtemelen', lowH: 'Şüpheli — doğrula',
       others: 'Fotoğraftaki diğer şeyler', inspect: 'Bunu incele',
+      heritage: 'Tarihçe', hEra: 'Dönem', hBuilt: 'Yapımı', hPatron: 'Yaptıran',
+      hArchitect: 'Mimar', hStyle: 'Üslup', hListen: 'Tarihçeyi dinle', hVisit: 'Ziyaret',
       provider: 'Kaynak', mark: 'Nesneyi işaretle', markHint: 'Parmağınla anlatmamı istediğin şeyin etrafına bir kutu çiz.',
       markUse: 'Bu bölgeyi incele', cancel: 'Vazgeç', wrongThing: 'Yanlış şeyi mi anlattım?',
       offline: 'Çevrimdışısın', online: 'Bağlantı geri geldi',
@@ -580,6 +672,8 @@ dl.specs{margin:0}
       pasteLink: 'Paste the LENSA link', badLink: 'Could not read that link.',
       sureH: 'Confirmed', likelyH: 'Very likely', maybeH: 'Probably', lowH: 'Uncertain \u2014 verify',
       others: 'Also in the frame', inspect: 'Look at this',
+      heritage: 'History', hEra: 'Period', hBuilt: 'Built', hPatron: 'Commissioned by',
+      hArchitect: 'Architect', hStyle: 'Style', hListen: 'Hear the history', hVisit: 'Visiting',
       provider: 'Source', mark: 'Mark the object', markHint: 'Draw a box around the thing you want me to describe.',
       markUse: 'Read this area', cancel: 'Cancel', wrongThing: 'Did I describe the wrong thing?',
       offline: 'You are offline', online: 'Back online',
@@ -915,7 +1009,8 @@ dl.specs{margin:0}
     '"evidence":[""],"specs":[{"k":"","v":""}],"warning":null,"others":[""],' +
     '"price":{"min":null,"max":null,"cur":"TRY","note":""},' +
     '"search":{"local":"","global":""},"where":[{"name":"","why":""}],' +
-    '"alts":[{"name":"","why":""}],"fact":"","questions":["","",""]}';
+    '"alts":[{"name":"","why":""}],"fact":"","questions":["","",""],' +
+    '"heritage":null}';
 
   function systemPrompt() {
     var L = langInfo(S.lang);
@@ -943,6 +1038,11 @@ dl.specs{margin:0}
       '10. Insan fotograflarinda kimlik tahmini yapma, isim soyleme, yas veya etnik koken cikarimi yapma. Sadece nesneleri, kiyafeti ve sahneyi anlat.',
       '11. questions kullanicinin sormak isteyecegi 3 kisa takip sorusu olsun.',
       '12. Iki gorsel gelirse: birincisi incelenecek nesne, ikincisi genel baglam karesidir. Teshisi birinciye gore yap.',
+      '13. TARIHCE: Gordugun sey tarihi, kulturel, dini veya mimari deger tasiyorsa heritage alanini doldur. Ornek: cami, kilise, sinagog, saray, kale, sur, kopru, cesme, han, hamam, medrese, anit, heykel, muze binasi, arkeolojik kalinti, tarihi kent dokusu, muzelik obje, sikke, yazma eser, geleneksel el sanati, antika mobilya. Siradan gunluk bir nesne, urun veya gida ise heritage degerini null birak. Kararı fotografa gore sen ver, kullanici istemek zorunda degil.',
+      '13a. heritage semasi: {"era":"donem","built":"yapim tarihi","patron":"yaptiran kisi veya kurum","architect":"mimar","style":"mimari uslup","status":"koruma statusu, UNESCO gibi","story":"anlati","timeline":[{"y":"yil veya yuzyil","e":"o yil ne oldu"}],"visit":"ziyaret bilgisi"}',
+      '13b. heritage.story 4 ile 6 cumle olsun, yuksek sesle okunacak sekilde akici yazilsin: kim, ne zaman, neden yapti, basindan neler gecti, bugun neden onemli. Rakam ve tarihleri kelimeyle degil rakamla yaz ama yuzyillari yazi ile belirt.',
+      '13c. heritage.timeline en fazla 5 satir olsun ve gercekten bilinen kilometre taslarini icersin. Emin olmadigin bir tarihi YAZMA, o satiri hic ekleme. Bilmedigin alanlari bos string birak, uydurma.',
+      '13d. Yapinin tam kimligini cikaramiyorsan ama uslubu ve donemi okuyabiliyorsan heritage alanini yine doldur, title icinde jenerik ad kullan ve confidence degerini dusuk tut.',
       '',
       'DIL: Tum metin degerlerini SADECE ' + L.n + ' dilinde yaz. Anahtar adlari ingilizce kalsin.',
       '',
@@ -1074,6 +1174,21 @@ dl.specs{margin:0}
         return { name: str(w.name), why: str(w.why) };
       }).filter(function (w) { return w && w.name; }).slice(0, 5);
     };
+    var hv = d.heritage;
+    o.heritage = null;
+    if (hv && typeof hv === 'object' && (str(hv.story) || str(hv.built) || str(hv.era))) {
+      var line = function (v) { return str(v).replace(/[*_#`>]/g, '').replace(/\s+/g, ' '); };
+      o.heritage = {
+        era: str(hv.era), built: str(hv.built), patron: str(hv.patron),
+        architect: str(hv.architect), style: str(hv.style), status: str(hv.status),
+        story: line(hv.story), visit: line(hv.visit),
+        timeline: Array.isArray(hv.timeline) ? hv.timeline.map(function (x) {
+          if (!x) return null;
+          if (typeof x === 'string') return null;
+          return { y: str(x.y || x.year), e: line(x.e || x.event) };
+        }).filter(function (x) { return x && x.y && x.e; }).slice(0, 5) : []
+      };
+    }
     o.where = pair(d.where);
     o.alts = pair(d.alts);
     return o;
@@ -1537,12 +1652,25 @@ dl.specs{margin:0}
     return rec && rec.no ? 'KAT. ' + String(rec.no).padStart(4, '0') : 'KAT. ——';
   }
 
+  /* Zemin: incelenen fotoğrafın rengi sayfaya sızsın.
+     Küçük bir kopya kullanıyoruz, büyük görsele blur uygulamak pahalı. */
+  function setBackdrop(src) {
+    var b = $('bgart');
+    if (!b) return;
+    if (!src) { b.classList.remove('on'); b.style.backgroundImage = ''; return; }
+    b.style.backgroundImage = 'url(' + src + ')';
+    b.classList.add('on');
+    shrink(src, 220, 0.5).then(function (small) {
+      if (small && small !== src) b.style.backgroundImage = 'url(' + small + ')';
+    });
+  }
+
   /* ── 15. İskelet ekranı ────────────────────────────────── */
   function mountSkeleton(stage) {
     var box = $('resultScroll');
     box.innerHTML =
       '<div style="height:14px"></div>' +
-      '<div class="plate scanning">' + (S.image ? '<img src="' + S.image.dataUrl + '" alt="">' : '') +
+      '<div class="plate scanning scan-lines">' + (S.image ? '<img src="' + S.image.dataUrl + '" alt="">' : '') +
         '<div class="sweep on"></div><span class="kat" id="skKat"></span></div>' +
       '<div class="skeleton">' +
         '<div class="sk-line w5" style="height:10px"></div>' +
@@ -1551,6 +1679,7 @@ dl.specs{margin:0}
         '<div class="stage" id="stageText"></div>' +
       '</div>';
     $('skKat').textContent = S.ui === 'tr' ? 'İNCELENİYOR' : 'READING';
+    if (S.image) setBackdrop(S.image.dataUrl);
     setStage(stage);
     box.scrollTop = 0;
   }
@@ -1577,7 +1706,7 @@ dl.specs{margin:0}
     h.push('</div>');
 
     if (rec.thumb) {
-      h.push('<div class="plate"><img src="' + rec.thumb + '" alt="' + esc(d.title) + '">' +
+      h.push('<div class="plate scan-lines"><img src="' + rec.thumb + '" alt="' + esc(d.title) + '">' +
         '<span class="kat">' + esc(catNo(rec)) + '</span></div>');
     } else {
       h.push('<div style="height:8px"></div>');
@@ -1640,6 +1769,38 @@ dl.specs{margin:0}
       h.push('</dl>');
     }
 
+    if (d.heritage) {
+      var H = d.heritage;
+      h.push('<section class="archive">');
+      h.push('<div class="archive-top"><span class="arch-eyebrow">' + esc(t('heritage')) + '</span>');
+      if (H.status) h.push('<span class="arch-badge">' + esc(H.status) + '</span>');
+      h.push('</div>');
+
+      var facts = [[t('hEra'), H.era], [t('hBuilt'), H.built], [t('hPatron'), H.patron],
+        [t('hArchitect'), H.architect], [t('hStyle'), H.style]];
+      var shown = facts.filter(function (f) { return f[1]; });
+      if (shown.length) {
+        h.push('<dl class="specs arch-specs">');
+        shown.forEach(function (f) {
+          h.push('<div class="spec"><dt>' + esc(f[0]) + '</dt><span class="lead"></span><dd>' + esc(f[1]) + '</dd></div>');
+        });
+        h.push('</dl>');
+      }
+      if (H.story) {
+        h.push('<p class="arch-story">' + esc(H.story) + '</p>');
+        h.push('<button class="arch-listen" id="histPlay">' + ICON.play + '<span>' + esc(t('hListen')) + '</span></button>');
+      }
+      if (H.timeline.length) {
+        h.push('<ol class="timeline">');
+        H.timeline.forEach(function (x) {
+          h.push('<li><b>' + esc(x.y) + '</b><span>' + esc(x.e) + '</span></li>');
+        });
+        h.push('</ol>');
+      }
+      if (H.visit) h.push('<p class="arch-visit">' + esc(H.visit) + '</p>');
+      h.push('</section>');
+    }
+
     if (d.evidence.length) {
       h.push('<div class="rule"></div><h3 class="sec-title">' + esc(t('evidence')) + '</h3><div class="chips">');
       d.evidence.forEach(function (e) { h.push('<span class="chip flat">' + esc(e) + '</span>'); });
@@ -1677,6 +1838,7 @@ dl.specs{margin:0}
 
     box.innerHTML = h.join('');
     box.scrollTop = 0;
+    setBackdrop(rec.thumb);
     wireResult(rec);
     renderQA(rec);
     var live = $('live');
@@ -1715,6 +1877,12 @@ dl.specs{margin:0}
       var k = document.querySelector('.plate .kat');
       if (k) k.textContent = catNo(rec);
       buzz(14); toast(t('saved'));
+    };
+    var hp = $('histPlay');
+    if (hp) hp.onclick = function () {
+      TTS.unlock();
+      TTS.toggle(d.heritage.story);
+      buzz(8);
     };
     $('shareBtn').onclick = function () { shareRecord(rec); };
     $('cardBtn').onclick = function () { makeCard(rec); };
@@ -2637,7 +2805,7 @@ dl.specs{margin:0}
     if (v === 'collection') renderCollection();
     if (v === 'feed') renderFeed();
     if (v === 'settings') renderSettings();
-    if (v !== 'result') TTS.stop();
+    if (v !== 'result') { TTS.stop(); if (v !== 'scan') setBackdrop(''); }
     if (v === 'scan') { if (!S.image && !S.stream) startCam(); }
     else stopCam();
   }
@@ -2645,6 +2813,7 @@ dl.specs{margin:0}
   function resetScan() {
     if (S.abort) { try { S.abort.abort(); } catch (e) {} S.abort = null; }
     S.image = null; S.fullImage = null; S.current = null; S.focusNote = '';
+    setBackdrop('');
     $('shot').classList.add('hide');
     $('finderIdle').classList.remove('hide');
     startCam();
