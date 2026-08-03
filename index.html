@@ -281,6 +281,9 @@ dl.specs{margin:0}
 .test-out{display:block;margin-top:9px;font-size:12px;color:var(--chrome-2)}
 .test-out.ok{color:var(--patina)}
 .test-out.bad{color:#D07A63}
+.diag{margin:10px 0;padding:13px 14px;border-radius:12px;background:#0A0C0D;border:1px solid var(--line);
+  color:var(--chrome);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.65;
+  white-space:pre-wrap;word-break:break-all;overflow-x:auto}
 .switch{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}
 .switch .txt strong{display:block;font-size:14px;font-weight:600}
 .switch .txt span{font-size:12px;color:var(--chrome-2);line-height:1.5}
@@ -2019,6 +2022,27 @@ dl.specs{margin:0}
     'grant execute on function lensa_flag(uuid) to anon;'
   ].join('\n');
 
+  /* Yapıştırma kazaları: baştaki "apikey:", "Bearer ", tırnaklar, satır sonları */
+  function cleanKey(v) {
+    return String(v || '')
+      .replace(/^\s*(apikey|authorization)\s*[:=]\s*/i, '')
+      .replace(/^\s*Bearer\s+/i, '')
+      .replace(/["'`]/g, '')
+      .replace(/\s+/g, '');
+  }
+  function cleanUrl(v) {
+    var u = String(v || '').trim().replace(/["'`]/g, '').replace(/\s+/g, '');
+    if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+    return u.replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+  }
+  function keyShape(k) {
+    if (!k) return { kind: '-', len: 0 };
+    if (/^eyJ/.test(k)) return { kind: 'legacy anon (JWT)', len: k.length, short: k.length < 100 };
+    if (/^sb_publishable_/.test(k)) return { kind: 'publishable', len: k.length, short: k.length < 30 };
+    if (/^sb_secret_/.test(k)) return { kind: 'SECRET', len: k.length, secret: true };
+    return { kind: 'tanınmadı', len: k.length, unknown: true };
+  }
+
   var Cloud = {
     ready: function () { return !!(S.sbUrl && S.sbKey); },
     /* Yeni sb_publishable_ anahtarları JWT değil. Authorization başlığına konursa
@@ -2030,27 +2054,35 @@ dl.specs{margin:0}
       if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
       return h;
     },
-    base: function () {
-      var u = String(S.sbUrl).trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
-      return u + '/rest/v1';
-    },
-    /* Sunucunun döndürdüğü kodu insanın anlayacağı bir yönergeye çevir */
+    base: function () { return cleanUrl(S.sbUrl) + '/rest/v1'; },
+
     explain: function (status, msg) {
-      var tr = S.ui === 'tr';
-      if (status === 401 || status === 403) {
+      var tr = S.ui === 'tr', m = String(msg || '');
+      if (status >= 200 && status < 300) {
+        return tr ? 'Her şey yolunda. Ortak akış çalışıyor.' : 'All good. The shared feed is working.';
+      }
+      if (/no api key found/i.test(m)) {
+        return tr ? 'Sunucu anahtarı hiç görmedi. Anahtar alanı boş kalmış olabilir.'
+                  : 'The server saw no key at all. The key field may be empty.';
+      }
+      if (/invalid api key/i.test(m) || status === 401) {
         return tr
-          ? '401 — anahtar reddedildi. Ayarlar › API Keys\'ten Publishable (ya da Legacy anon) anahtarını kopyala. Secret / service_role anahtarı burada çalışmaz.'
-          : '401 — key rejected. Copy the Publishable (or legacy anon) key from Settings › API Keys. Secret / service_role keys will not work here.';
+          ? '401 — anahtar bu projeye ait değil ya da eksik kopyalanmış. Proje URL\'sindeki kod ile anahtarı aynı projeden aldığından emin ol.'
+          : '401 — the key does not belong to this project, or was copied incompletely. Make sure the URL and the key come from the same project.';
       }
-      if (status === 404) {
-        return tr
-          ? '404 — lensa_finds tablosu yok. Kurulum SQL\'ini kopyalayıp SQL Editor\'de çalıştır.'
-          : '404 — table lensa_finds is missing. Copy the setup SQL and run it in the SQL Editor.';
+      if (status === 404 || /relation|does not exist/i.test(m)) {
+        return tr ? '404 — lensa_finds tablosu yok. Kurulum SQL\'ini SQL Editor\'de çalıştır.'
+                  : '404 — table lensa_finds is missing. Run the setup SQL in the SQL Editor.';
       }
-      if (status === 400 && /relation|does not exist/i.test(msg || '')) {
-        return tr ? 'Tablo bulunamadı. Kurulum SQL\'ini çalıştır.' : 'Table not found. Run the setup SQL.';
+      if (status === 403) {
+        return tr ? '403 — erişim engellendi. Kurulum SQL\'indeki okuma politikası eksik olabilir.'
+                  : '403 — access denied. The read policy from the setup SQL may be missing.';
       }
-      return (status ? status + ' — ' : '') + (msg || (S.ui === 'tr' ? 'bilinmeyen hata' : 'unknown error'));
+      if (status === 0) {
+        return tr ? 'Sunucuya ulaşılamadı. URL yanlış olabilir ya da proje duraklatılmış.'
+                  : 'Could not reach the server. Wrong URL, or the project is paused.';
+      }
+      return (status ? status + ' — ' : '') + (m || (tr ? 'bilinmeyen hata' : 'unknown error'));
     },
     check: function (r) {
       if (r.ok) return r;
@@ -2060,6 +2092,17 @@ dl.specs{margin:0}
         try { var j = JSON.parse(txt); msg = j.message || j.hint || j.error_description || j.error || ''; }
         catch (e) { msg = String(txt).slice(0, 140); }
         throw new Error(self.explain(r.status, msg));
+      });
+    },
+    /* Ham gerçeği gösterir: ne gönderdik, sunucu ne dedi */
+    diagnose: function () {
+      var self = this, url = self.base() + '/lensa_finds?select=id&limit=1', t0 = Date.now();
+      return fetch(url, { headers: self.head() }).then(function (r) {
+        return r.text().then(function (txt) {
+          return { status: r.status, body: txt.slice(0, 260), ms: Date.now() - t0, url: url };
+        });
+      }).catch(function (e) {
+        return { status: 0, body: String(e.message || e), ms: Date.now() - t0, url: url };
       });
     },
     list: function () {
@@ -2265,8 +2308,11 @@ dl.specs{margin:0}
       '<input id="setSbUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" value="' + esc(S.sbUrl) + '">' +
       '<input id="setSbKey" type="password" placeholder="anon public key" autocomplete="off" value="' + esc(S.sbKey) + '">' +
       '<div class="btn-row"><button class="ghost-btn sm" id="copySql">' + esc(t('copySql')) + '</button>' +
-      '<button class="ghost-btn sm" id="testSb">' + (tr ? 'Test et' : 'Test') + '</button></div>' +
-      '<span class="test-out" id="testSbOut"></span></div>' +
+      '<button class="ghost-btn sm" id="testSb">' + (tr ? 'Test et' : 'Test') + '</button>' +
+      '<button class="ghost-btn sm" id="diagSb">' + (tr ? 'Tanılama' : 'Diagnose') + '</button></div>' +
+      '<span class="test-out" id="testSbOut"></span>' +
+      '<pre class="diag hide" id="diagOut"></pre>' +
+      '<button class="ghost-btn sm hide" id="diagCopy">' + (tr ? 'Raporu kopyala' : 'Copy report') + '</button></div>' +
 
       '<div class="field"><label for="setNick">' + (tr ? 'Görünen adın' : 'Display name') + '</label>' +
       '<p>' + (tr ? 'Ortak akışta paylaştığın keşiflerin yanında görünür.' : 'Shown next to the finds you share.') + '</p>' +
@@ -2300,11 +2346,19 @@ dl.specs{margin:0}
       };
     });
     bind('setKey', 'apiKey'); bind('setBase', 'customBase'); bind('setModel', 'customModel');
-    bind('setCKey', 'customKey'); bind('setSbUrl', 'sbUrl'); bind('setSbKey', 'sbKey'); bind('setNick', 'nick');
+    bind('setCKey', 'customKey'); bind('setNick', 'nick');
     function bind(id, key) {
       var n = $(id);
       n.onchange = n.onblur = function () { S[key] = n.value.trim(); savePrefs(); };
     }
+    /* Supabase alanları yapıştırma kazalarına karşı temizlenir */
+    ['setSbUrl', 'setSbKey'].forEach(function (id) {
+      var n = $(id), key = id === 'setSbUrl' ? 'sbUrl' : 'sbKey';
+      n.onchange = n.onblur = function () {
+        n.value = (key === 'sbUrl' ? cleanUrl(n.value) : cleanKey(n.value));
+        S[key] = n.value; savePrefs();
+      };
+    });
 
     $('testAI').onclick = function () {
       var out = $('testAIOut');
@@ -2314,19 +2368,52 @@ dl.specs{margin:0}
         .catch(function (e) { out.textContent = t('testFail') + ' · ' + String(e.message || e); out.className = 'test-out bad'; });
     };
     $('copySql').onclick = function () { copy(SETUP_SQL).then(function () { toast(t('sqlCopied'), 4200); }); };
+    function readSb() {
+      S.sbUrl = cleanUrl($('setSbUrl').value); $('setSbUrl').value = S.sbUrl;
+      S.sbKey = cleanKey($('setSbKey').value); $('setSbKey').value = S.sbKey;
+      savePrefs();
+    }
     $('testSb').onclick = function () {
-      S.sbUrl = $('setSbUrl').value.trim(); S.sbKey = $('setSbKey').value.trim(); savePrefs();
+      readSb();
       var out = $('testSbOut');
       var say = function (cls, txt) { out.className = 'test-out ' + cls; out.textContent = txt; };
+      var shape = keyShape(S.sbKey);
       if (!S.sbUrl || !S.sbKey) return say('bad', tr ? 'Önce Project URL ve anahtarı doldur.' : 'Fill in the Project URL and key first.');
-      if (!/^https:\/\/[^\s/]+\.supabase\.(co|in)/i.test(S.sbUrl))
+      if (!/^https:\/\/[^\s/]+\.supabase\.(co|in)$/i.test(S.sbUrl))
         return say('bad', tr ? 'URL https://xxxx.supabase.co biçiminde olmalı.' : 'The URL should look like https://xxxx.supabase.co');
-      if (/^sb_secret_/.test(S.sbKey) || /service_role/.test(S.sbKey))
-        return say('bad', tr ? 'Bu gizli anahtar; tarayıcıda çalışmaz ve güvenli değil. Publishable ya da anon anahtarını kullan.' : 'That is a secret key; it will not work in a browser. Use the publishable or anon key.');
+      if (shape.secret)
+        return say('bad', tr ? 'Bu gizli anahtar; tarayıcıda çalışmaz. Publishable ya da anon anahtarını kullan.' : 'That is a secret key; it will not work in a browser.');
+      if (shape.unknown)
+        return say('bad', tr ? 'Anahtar sb_publishable_ ya da eyJ ile başlamalı. Yanlış alanı kopyalamış olabilirsin.' : 'The key should start with sb_publishable_ or eyJ.');
+      if (shape.short)
+        return say('bad', (tr ? 'Anahtar çok kısa görünüyor (' : 'The key looks truncated (') + shape.len + (tr ? ' karakter). Eksik kopyalanmış olabilir.' : ' chars).'));
       say('', t('testing'));
       Cloud.test()
         .then(function () { say('ok', t('testOk')); })
         .catch(function (e) { say('bad', String(e.message || e)); });
+    };
+    $('diagSb').onclick = function () {
+      readSb();
+      var pre = $('diagOut'), cp = $('diagCopy');
+      pre.classList.remove('hide');
+      pre.textContent = t('testing');
+      var shape = keyShape(S.sbKey);
+      var ref = (S.sbUrl.match(/https:\/\/([^.]+)\./) || [, '?'])[1];
+      Cloud.diagnose().then(function (r) {
+        var report = [
+          'LENSA · Supabase tanılama',
+          'Proje kodu : ' + ref,
+          'Anahtar    : ' + shape.kind + ' · ' + shape.len + ' karakter · ' + S.sbKey.slice(0, 12) + '…',
+          'İstek      : ' + r.url.replace(S.sbUrl, ''),
+          'Yanıt      : ' + (r.status || 'ulaşılamadı') + ' · ' + r.ms + ' ms',
+          'Sunucu     : ' + (r.body || '(boş)'),
+          '',
+          '→ ' + Cloud.explain(r.status, r.body)
+        ].join('\n');
+        pre.textContent = report;
+        cp.classList.remove('hide');
+        cp.onclick = function () { copy(report).then(function () { toast(t('copied')); }); };
+      });
     };
     $('exportBtn').onclick = function () {
       var dump = JSON.stringify({ recs: allRecords(), feed: localFeed(), at: new Date().toISOString() });
