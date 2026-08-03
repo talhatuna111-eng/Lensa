@@ -28,6 +28,7 @@
   --line:rgba(255,255,255,.10); --line-ink:rgba(21,24,26,.14);
   --r-s:10px; --r-m:16px; --r-l:24px; --pad:18px;
   --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  --tabbar:calc(67px + var(--safe-b));
   --disp:"Bodoni Moda",'Times New Roman',Georgia,serif;
   --ui:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --ease:cubic-bezier(.22,.61,.36,1);
@@ -51,7 +52,7 @@ a{color:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── kabuk ───────────────────────────────── */
-#app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+#app{max-width:520px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden}
 .topbar{
   position:sticky;top:0;z-index:40;
   padding:calc(var(--safe-t) + 12px) var(--pad) 12px;
@@ -63,10 +64,10 @@ a{color:inherit}
 .icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--chrome);transition:.2s var(--ease)}
 .icon-btn:active{transform:scale(.92);background:var(--void-2)}
 .lang-btn{width:auto;padding:0 12px;font-size:11px;font-weight:600;letter-spacing:.1em;border-radius:19px}
-main{flex:1;display:flex;flex-direction:column;min-height:0}
+main{flex:1;display:flex;flex-direction:column;min-height:0;padding-bottom:var(--tabbar)}
 .view{display:none;flex:1;flex-direction:column;min-height:0}
 .view.active{display:flex}
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) calc(var(--safe-b) + 108px)}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) 30px}
 
 #netbar{
   position:fixed;top:0;left:0;right:0;z-index:80;text-align:center;
@@ -90,7 +91,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
 /* ── vizör ───────────────────────────────── */
 .finder-wrap{padding:0 var(--pad);flex:1;display:flex;flex-direction:column;min-height:0}
 .finder{
-  position:relative;flex:1;min-height:290px;border-radius:var(--r-l);overflow:hidden;
+  position:relative;flex:1 1 auto;min-height:170px;border-radius:var(--r-l);overflow:hidden;
   background:#08090A;border:1px solid var(--line);display:grid;place-items:center;
 }
 .finder video,.finder img.shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -118,7 +119,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
 @keyframes sweep{0%{top:-120px}100%{top:100%}}
 
 /* ── deklanşör satırı ────────────────────── */
-.shutter-row{display:flex;align-items:center;justify-content:center;gap:34px;padding:20px 0 calc(var(--safe-b) + 14px)}
+.shutter-row{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:34px;padding:16px 0 10px}
 .shutter{width:76px;height:76px;border-radius:50%;position:relative;display:grid;place-items:center;
   border:1.5px solid var(--brass);transition:transform .16s var(--ease)}
 .shutter::before{content:"";position:absolute;inset:6px;border-radius:50%;
@@ -315,7 +316,7 @@ dl.specs{margin:0}
 .tab[aria-selected="true"]{color:var(--brass-hi)}
 .tab svg{width:21px;height:21px}
 
-#toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 88px);transform:translate(-50%,14px);z-index:90;
+#toast{position:fixed;left:50%;bottom:calc(var(--tabbar) + 18px);transform:translate(-50%,14px);z-index:90;
   padding:12px 18px;border-radius:24px;background:var(--label);color:var(--ink);font-size:13.5px;font-weight:600;
   opacity:0;pointer-events:none;transition:.28s var(--ease);max-width:88vw;text-align:center;box-shadow:0 10px 34px rgba(0,0,0,.45)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
@@ -629,6 +630,7 @@ dl.specs{margin:0}
   var S = {
     view: 'scan', ui: 'tr', lang: 'tr', mode: 'genel',
     autoSpeak: true, autoSave: true, doubleCheck: true,
+    voiceEngine: 'auto', voiceURI: '',
     rate: 1, facing: 'environment', torch: false,
     stream: null, track: null,
     image: null,        /* { dataUrl, b64, mime }  gönderilen (kırpılmış olabilir) */
@@ -641,7 +643,7 @@ dl.specs{margin:0}
     colFilter: '', colQuery: ''
   };
 
-  var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate',
+  var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate', 'voiceEngine', 'voiceURI',
     'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick'];
 
   function loadPrefs() {
@@ -931,7 +933,8 @@ dl.specs{margin:0}
       '1. Once cerceve icindeki en belirgin veya merkezdeki nesneyi sec. Baska onemli nesneler varsa onlari others dizisine yaz.',
       '2. Teshisi somut delile dayandir: logo, uzerindeki yazi, bicim, doku, olcek, baglam. Bu delilleri evidence icinde kisa maddeler halinde yaz.',
       '3. Emin degilsen UYDURMA. confidence puanini durust ver ve neyin belirsiz oldugunu summary icinde soyle. Marka veya model okunmuyorsa marka uydurma; jenerik ad kullan.',
-      '4. narration alani sesli okunacak. Akici, dogal, duz cumleler kur. Madde isareti, emoji, kisaltma, parantez, markdown KULLANMA. Noktalama duzgun olsun. 70 ile 120 kelime.',
+      '4. narration alani yuksek sesle okunacak. Birine anlatir gibi yaz: ilk cumlede dogrudan ne oldugunu soyle, sonra kisa ve orta uzunlukta cumlelerle devam et. Kullaniciya dogrudan hitap et. Gunluk kelimeler sec, teknik terim kullanacaksan hemen yanina sade karsiligini koy.',
+      '4b. narration icinde madde isareti, emoji, markdown, parantez, kisaltma ve sembol KULLANMA. Para birimini, olcu birimini ve yuzdeyi kelimeyle yaz: 650 lira, 12 santimetre, yuzde 40. Noktalama tam olsun. 70 ile 120 kelime.',
       '5. specs en az 4, en fazla 8 satir olsun; her satir gercekten bilgi tasisin. Bilmedigin alani hic yazma, bilinmiyor yazma.',
       '6. price tahmini bir araliktir. Para birimi ' + L.cur + '. Fiyati olmayan seyler icin min ve max null birak.',
       '7. search.local kullanicinin dilinde satin alma icin en dogru arama terimi; search.global Ingilizce karsiligi. Kisa ve spesifik olsun.',
@@ -1259,8 +1262,69 @@ dl.specs{margin:0}
   }
 
   /* ── 12. Sesli anlatım ─────────────────────────────────── */
+
+  /* Ekranda doğru duran şeyler kulakta yanlış duruluyor.
+     Sembolleri, kısaltmaları ve aralıkları söylenebilir hale getir. */
+  function speakable(text) {
+    var s = ' ' + String(text || '') + ' ';
+    var tr = S.lang === 'tr';
+    var W = tr
+      ? { pct: ' yüzde ', range: '$1 ile $2', cm: ' santimetre', mm: ' milimetre', m: ' metre',
+          kg: ' kilogram', g: ' gram', l: ' litre', ml: ' mililitre', w: ' vat', v: ' volt',
+          vb: 've benzeri', orn: 'örneğin', yak: 'yaklaşık', deg: ' derece', x: ' çarpı ' }
+      : { pct: ' percent ', range: '$1 to $2', cm: ' centimetres', mm: ' millimetres', m: ' metres',
+          kg: ' kilograms', g: ' grams', l: ' litres', ml: ' millilitres', w: ' watts', v: ' volts',
+          vb: 'and so on', orn: 'for example', yak: 'about', deg: ' degrees', x: ' by ' };
+    var CUR = tr
+      ? { '₺': 'lira', '$': 'dolar', '€': 'avro', '£': 'sterlin' }
+      : { '₺': 'lira', '$': 'dollars', '€': 'euros', '£': 'pounds' };
+
+    /* 1 — biçim işaretlerini at */
+    s = s.replace(/[*_#`>|~]/g, '');
+
+    /* 2 — binlik ayracı sayının içinden çıkar; yoksa "bir nokta iki yüz" diye okunur */
+    s = s.replace(/(\d)\.(\d{3})(?!\d)/g, '$1$2').replace(/(\d),(\d{3})(?!\d)/g, '$1$2');
+
+    /* 3 — para birimi her zaman sayıdan sonra söylenir */
+    Object.keys(CUR).forEach(function (sym) {
+      var esc = sym.replace(/[$]/g, '\\$');
+      s = s.replace(new RegExp(esc + '\\s*(\\d[\\d.,]*)', 'g'), '$1 ' + CUR[sym]);
+      s = s.replace(new RegExp('(\\d[\\d.,]*)\\s*' + esc, 'g'), '$1 ' + CUR[sym]);
+    });
+    s = s.replace(/(\d)\s*(TL|TRY)\b/gi, '$1 ' + CUR['₺'])
+         .replace(/(\d)\s*USD\b/gi, '$1 ' + CUR.$)
+         .replace(/(\d)\s*EUR\b/gi, '$1 ' + CUR['€']);
+
+    /* 4 — yüzde, aralık, çarpı, derece */
+    s = s.replace(/%\s*(\d)/g, W.pct + '$1').replace(/(\d)\s*%/g, '$1' + W.pct);
+    s = s.replace(/(\d+)\s*[–—-]\s*(\d+)/g, W.range);
+    s = s.replace(/(\d)\s*[x×]\s*(\d)/gi, '$1' + W.x + '$2');
+    s = s.replace(/(\d)\s*°\s*C?\b/g, '$1' + W.deg);
+
+    /* 5 — ölçü birimleri, uzundan kısaya */
+    s = s.replace(/(\d)\s*mm\b/g, '$1' + W.mm).replace(/(\d)\s*cm\b/g, '$1' + W.cm)
+         .replace(/(\d)\s*kg\b/g, '$1' + W.kg).replace(/(\d)\s*ml\b/g, '$1' + W.ml)
+         .replace(/(\d)\s*lt\b/gi, '$1' + W.l)
+         .replace(/(\d)\s*m\b/g, '$1' + W.m).replace(/(\d)\s*gr?\b/g, '$1' + W.g)
+         .replace(/(\d)\s*l\b/g, '$1' + W.l)
+         .replace(/(\d)\s*W\b/g, '$1' + W.w).replace(/(\d)\s*V\b/g, '$1' + W.v);
+
+    /* 6 — kısaltmalar ve parantezler */
+    s = s.replace(/\bvb\.?/gi, W.vb).replace(/\bör\.?/gi, W.orn)
+         .replace(/\be\.g\./gi, W.orn).replace(/\betc\.?/gi, W.vb)
+         .replace(/\byak\.(?=\s)/gi, W.yak).replace(/\bapprox\.?/gi, W.yak);
+    s = s.replace(/\(([^)]{1,40})\)/g, ', $1,');
+
+    return s.replace(/\s+([.,!?])/g, '$1').replace(/\s{2,}/g, ' ').trim();
+  }
+
+  var VOICE_HINT = { tr: 'Filiz', en: 'Joanna', de: 'Vicki', fr: 'Lea', es: 'Lucia',
+    it: 'Bianca', pt: 'Camila', nl: 'Lotte', ru: 'Tatyana', ar: 'Zeina', pl: 'Ewa',
+    ja: 'Mizuki', ko: 'Seoyeon', zh: 'Zhiyu', hi: 'Aditi' };
+
   var TTS = {
-    queue: [], idx: 0, on: false, unlocked: false,
+    queue: [], idx: 0, on: false, unlocked: false, audio: null, token: 0,
+
     unlock: function () {
       if (this.unlocked || !window.speechSynthesis) return;
       try {
@@ -1270,51 +1334,125 @@ dl.specs{margin:0}
         this.unlocked = true;
       } catch (e) {}
     },
-    voice: function () {
-      if (!window.speechSynthesis) return null;
-      var vs = speechSynthesis.getVoices() || [];
-      var want = langInfo(S.lang).v.toLowerCase(), base = S.lang.toLowerCase();
-      var norm = function (v) { return v.lang.toLowerCase().replace('_', '-'); };
-      var exact = vs.filter(function (v) { return norm(v) === want; });
-      var loose = vs.filter(function (v) { return norm(v).indexOf(base) === 0; });
-      var pool = exact.length ? exact : loose;
-      var nice = pool.filter(function (v) { return /google|natural|enhanced|premium|siri|neural/i.test(v.name); });
-      return nice[0] || pool[0] || null;
+
+    voices: function () {
+      if (!window.speechSynthesis) return [];
+      var all = speechSynthesis.getVoices() || [], base = S.lang.toLowerCase();
+      return all.filter(function (v) { return v.lang.toLowerCase().replace('_', '-').indexOf(base) === 0; });
     },
+    voice: function () {
+      var pool = this.voices();
+      if (!pool.length) return null;
+      if (S.voiceURI) {
+        for (var i = 0; i < pool.length; i++) if (pool[i].voiceURI === S.voiceURI) return pool[i];
+      }
+      var want = langInfo(S.lang).v.toLowerCase();
+      var exact = pool.filter(function (v) { return v.lang.toLowerCase().replace('_', '-') === want; });
+      var p = exact.length ? exact : pool;
+      /* iOS'ta indirilmiş gelişmiş sesler adlarında bunları taşır */
+      var nice = p.filter(function (v) { return /premium|enhanced|neural|natural|siri|google/i.test(v.name); });
+      return nice[0] || p[0];
+    },
+
+    /* Cümleleri kulağa rahat gelen uzunlukta grupla */
     chunk: function (text) {
-      var parts = String(text).replace(/\s+/g, ' ').match(/[^.!?…]+[.!?…]*/g) || [String(text)];
+      var parts = String(text).match(/[^.!?…]+[.!?…]*/g) || [String(text)];
       var out = [], cur = '';
       parts.forEach(function (p) {
-        if ((cur + p).length > 170 && cur) { out.push(cur.trim()); cur = p; }
+        if ((cur + p).length > 150 && cur) { out.push(cur.trim()); cur = p; }
         else cur += p;
       });
       if (cur.trim()) out.push(cur.trim());
       return out.filter(Boolean);
     },
+
     speak: function (text) {
-      if (!window.speechSynthesis) { toast(S.ui === 'tr' ? 'Bu cihazda sesli okuma yok.' : 'Speech is unavailable here.'); return; }
       if (!text) return;
       this.stop();
-      this.queue = this.chunk(text);
-      this.idx = 0; this.on = true;
+      var clean = speakable(text);
+      this.on = true;
+      this.token++;
       paintTransport();
-      this.step();
+      var self = this, my = this.token;
+
+      if (S.voiceEngine === 'natural' || S.voiceEngine === 'auto') {
+        this.natural(clean).then(function (ok) {
+          if (my !== self.token) return;
+          if (!ok) self.device(clean, my);
+        });
+        return;
+      }
+      this.device(clean, my);
     },
-    step: function () {
+
+    /* Doğal ses: bulut TTS. Başarısız olursa sessizce cihaz sesine düşer. */
+    natural: function (text) {
+      var self = this, my = this.token;
+      return loadScript('https://js.puter.com/v2/').then(function () {
+        if (!window.puter || !window.puter.ai || !window.puter.ai.txt2speech) throw new Error('yok');
+        var opt = { language: langInfo(S.lang).v };
+        if (VOICE_HINT[S.lang]) opt.voice = VOICE_HINT[S.lang];
+        return withTimeout(window.puter.ai.txt2speech(text.slice(0, 2800), opt), 20000, null);
+      }).then(function (a) {
+        if (my !== self.token) return true;
+        var audio = (a && a.play) ? a : (a && a.audio ? a.audio : null);
+        if (!audio || !audio.play) throw new Error('ses yok');
+        self.audio = audio;
+        audio.playbackRate = S.rate;
+        audio.onended = function () { if (my === self.token) { self.on = false; paintTransport(); } };
+        audio.onerror = function () { if (my === self.token) { self.on = false; paintTransport(); } };
+        var pr = audio.play();
+        if (pr && pr.catch) pr.catch(function () {});
+        return true;
+      }).catch(function () { return false; });
+    },
+
+    /* Cihaz sesi: parçalar arasına küçük bir nefes koyarak okur */
+    device: function (text, my) {
+      if (!window.speechSynthesis) {
+        this.on = false; paintTransport();
+        toast(S.ui === 'tr' ? 'Bu cihazda sesli okuma yok.' : 'Speech is unavailable here.');
+        return;
+      }
+      this.queue = this.chunk(text);
+      this.idx = 0;
+      this.step(my == null ? this.token : my);
+    },
+    step: function (my) {
       var self = this;
-      if (!self.on || self.idx >= self.queue.length) { self.on = false; paintTransport(); return; }
-      var u = new SpeechSynthesisUtterance(self.queue[self.idx]);
+      if (!self.on || my !== self.token || self.idx >= self.queue.length) {
+        if (my === self.token) { self.on = false; paintTransport(); }
+        return;
+      }
+      var piece = self.queue[self.idx];
+      var u = new SpeechSynthesisUtterance(piece);
       var v = self.voice();
       if (v) u.voice = v;
       u.lang = langInfo(S.lang).v;
-      u.rate = S.rate; u.pitch = 1;
-      u.onend = function () { self.idx++; self.step(); };
-      u.onerror = function () { self.idx++; self.step(); };
+      u.rate = S.rate * 0.97;
+      u.pitch = 1;
+      var next = function () {
+        if (my !== self.token) return;
+        self.idx++;
+        /* cümle sonunda nefes, virgülle biten parçada daha kısa */
+        setTimeout(function () { self.step(my); }, /[.!?…]$/.test(piece) ? 190 : 90);
+      };
+      u.onend = next;
+      u.onerror = next;
       try { speechSynthesis.speak(u); } catch (e) { self.on = false; paintTransport(); }
+    },
+
+    sample: function () {
+      this.unlock();
+      this.speak(S.lang === 'tr'
+        ? 'Elindeki şey bir moka pot. Alt hazneye su, huniye öğütülmüş kahve koyup ocağa alıyorsun.'
+        : 'What you are holding is a moka pot. You put water in the base and ground coffee in the funnel.');
     },
     toggle: function (text) { if (this.on) this.stop(); else this.speak(text); },
     stop: function () {
+      this.token++;
       this.on = false; this.queue = []; this.idx = 0;
+      if (this.audio) { try { this.audio.pause(); this.audio.currentTime = 0; } catch (e) {} this.audio = null; }
       try { speechSynthesis.cancel(); } catch (e) {}
       paintTransport();
     }
@@ -1982,7 +2120,8 @@ dl.specs{margin:0}
   /* ── 21. Ortak akış (Supabase) ─────────────────────────── */
   var SETUP_SQL = [
     '-- LENSA ortak akışı — Supabase SQL Editor\'e yapıştırıp çalıştır.',
-    'create table if not exists lensa_finds (',
+    '-- Tekrar çalıştırmak zararsızdır.',
+    'create table if not exists public.lensa_finds (',
     '  id uuid primary key default gen_random_uuid(),',
     '  created_at timestamptz not null default now(),',
     '  title text not null,',
@@ -2000,26 +2139,32 @@ dl.specs{margin:0}
     '  flagged int not null default 0',
     ');',
     '',
-    'alter table lensa_finds enable row level security;',
+    'alter table public.lensa_finds enable row level security;',
     '',
-    'drop policy if exists "lensa read" on lensa_finds;',
-    'create policy "lensa read" on lensa_finds for select using (flagged < 3);',
+    '-- Politikalar: kimin neyi yapabileceği',
+    'drop policy if exists "lensa read" on public.lensa_finds;',
+    'create policy "lensa read" on public.lensa_finds for select using (flagged < 3);',
     '',
-    'drop policy if exists "lensa insert" on lensa_finds;',
-    'create policy "lensa insert" on lensa_finds for insert with check (',
+    'drop policy if exists "lensa insert" on public.lensa_finds;',
+    'create policy "lensa insert" on public.lensa_finds for insert with check (',
     '  char_length(title) between 1 and 200 and char_length(coalesce(thumb,\'\')) < 200000',
     ');',
     '',
-    'create or replace function lensa_like(find_id uuid) returns void',
-    '  language sql security definer as $$',
-    '  update lensa_finds set likes = likes + 1 where id = find_id; $$;',
+    '-- Beğeni ve bildirme sayaçları',
+    'create or replace function public.lensa_like(find_id uuid) returns void',
+    '  language sql security definer set search_path = public as $$',
+    '  update public.lensa_finds set likes = likes + 1 where id = find_id; $$;',
     '',
-    'create or replace function lensa_flag(find_id uuid) returns void',
-    '  language sql security definer as $$',
-    '  update lensa_finds set flagged = flagged + 1 where id = find_id; $$;',
+    'create or replace function public.lensa_flag(find_id uuid) returns void',
+    '  language sql security definer set search_path = public as $$',
+    '  update public.lensa_finds set flagged = flagged + 1 where id = find_id; $$;',
     '',
-    'grant execute on function lensa_like(uuid) to anon;',
-    'grant execute on function lensa_flag(uuid) to anon;'
+    '-- Tablo izinleri. Politikalar tek başına yetmez; bu satırlar olmadan',
+    '-- 42501 "permission denied for table" hatası alırsın.',
+    'grant usage on schema public to anon, authenticated;',
+    'grant select, insert on table public.lensa_finds to anon, authenticated;',
+    'grant execute on function public.lensa_like(uuid) to anon, authenticated;',
+    'grant execute on function public.lensa_flag(uuid) to anon, authenticated;'
   ].join('\n');
 
   /* Yapıştırma kazaları: baştaki "apikey:", "Bearer ", tırnaklar, satır sonları */
@@ -2060,6 +2205,11 @@ dl.specs{margin:0}
       var tr = S.ui === 'tr', m = String(msg || '');
       if (status >= 200 && status < 300) {
         return tr ? 'Her şey yolunda. Ortak akış çalışıyor.' : 'All good. The shared feed is working.';
+      }
+      if (/permission denied/i.test(m) || /42501/.test(m)) {
+        return tr
+          ? 'Tablo var ama anon rolüne izin verilmemiş. Kurulum SQL\'ini yeniden kopyalayıp çalıştır — GRANT satırlarını içeriyor.'
+          : 'The table exists but the anon role has no privileges. Copy the setup SQL again and run it — it now includes the GRANT statements.';
       }
       if (/no api key found/i.test(m)) {
         return tr ? 'Sunucu anahtarı hiç görmedi. Anahtar alanı boş kalmış olabilir.'
@@ -2278,6 +2428,17 @@ dl.specs{margin:0}
 
       swi('tgSpeak', tr ? 'Otomatik sesli anlat' : 'Speak automatically',
         tr ? 'Analiz biter bitmez okumaya başla' : 'Start reading as soon as analysis ends', S.autoSpeak) +
+
+      '<div class="field"><label>' + (tr ? 'Ses' : 'Voice') + '</label>' +
+      '<p>' + (tr ? 'Doğal ses buluttan gelir, cihazınkinden belirgin daha akıcıdır ama internet ister. Cihaz sesi anında başlar ve çevrimdışı çalışır.' : 'The natural voice comes from the cloud and sounds noticeably smoother, but needs a connection. The device voice starts instantly and works offline.') + '</p>' +
+      '<div class="seg" id="segVoice">' +
+      [['auto', tr ? 'Otomatik' : 'Automatic'], ['natural', tr ? 'Doğal ses' : 'Natural'], ['device', tr ? 'Cihaz sesi' : 'Device']]
+        .map(function (v) { return '<button data-v="' + v[0] + '" aria-pressed="' + (S.voiceEngine === v[0]) + '">' + esc(v[1]) + '</button>'; }).join('') +
+      '</div>' +
+      '<div id="voicePick" style="margin-top:10px"></div>' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="voiceTest">' + (tr ? 'Örnek dinle' : 'Hear a sample') + '</button></div>' +
+      '<span class="test-out" id="voiceHint"></span></div>' +
+
       swi('tgSave', tr ? 'Her keşfi kaydet' : 'Save every find',
         tr ? 'Koleksiyona otomatik eklenir' : 'Added to your collection automatically', S.autoSave) +
       swi('tgCheck', tr ? 'Şüphede ikinci geçiş' : 'Second pass when unsure',
@@ -2345,6 +2506,41 @@ dl.specs{margin:0}
         savePrefs(); renderSettings();
       };
     });
+
+    /* ── ses ── */
+    Array.prototype.forEach.call($('segVoice').children, function (b) {
+      b.onclick = function () {
+        S.voiceEngine = b.getAttribute('data-v');
+        TTS.stop(); savePrefs(); renderSettings();
+      };
+    });
+    function paintVoicePick() {
+      var box = $('voicePick'), hint = $('voiceHint');
+      if (!box) return;
+      if (S.voiceEngine === 'natural') { box.innerHTML = ''; hint.textContent = ''; hint.className = 'test-out'; return; }
+      var list = TTS.voices();
+      if (!list.length) {
+        box.innerHTML = '';
+        hint.className = 'test-out bad';
+        hint.textContent = tr
+          ? langInfo(S.lang).n + ' için cihazda ses bulunamadı. Doğal sesi kullanabilirsin.'
+          : 'No ' + langInfo(S.lang).n + ' voice installed. Use the natural voice instead.';
+        return;
+      }
+      box.innerHTML = '<select id="setVoice">' + list.map(function (v) {
+        return '<option value="' + esc(v.voiceURI) + '"' + (v.voiceURI === S.voiceURI ? ' selected' : '') + '>' +
+          esc(v.name) + '</option>';
+      }).join('') + '</select>';
+      $('setVoice').onchange = function () { S.voiceURI = this.value; savePrefs(); TTS.sample(); };
+      var best = list.some(function (v) { return /premium|enhanced|neural|natural/i.test(v.name); });
+      hint.className = 'test-out';
+      hint.textContent = best ? ''
+        : (tr ? 'İpucu: Ayarlar › Erişilebilirlik › Konuşulan İçerik › Sesler › Türkçe yolundan gelişmiş bir ses indirirsen cihaz sesi çok daha doğal olur.'
+              : 'Tip: download an enhanced voice under Settings › Accessibility › Spoken Content › Voices for a much smoother device voice.');
+    }
+    paintVoicePick();
+    if (window.speechSynthesis) speechSynthesis.onvoiceschanged = paintVoicePick;
+    $('voiceTest').onclick = function () { TTS.sample(); };
     bind('setKey', 'apiKey'); bind('setBase', 'customBase'); bind('setModel', 'customModel');
     bind('setCKey', 'customKey'); bind('setNick', 'nick');
     function bind(id, key) {
