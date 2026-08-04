@@ -1080,7 +1080,7 @@ dl.specs{margin:0}
     { id: 'genel', tr: 'Genel keşif', en: 'Everything', shop: 1,
       focus: 'Nesneyi genel olarak tanimla: ne oldugu, ne ise yaradigi, nasil kullanildigi, nereden alinabilecegi.' },
     { id: 'urun', tr: 'Ürün & fiyat', en: 'Product & price', shop: 1,
-      focus: 'Bunu bir alisveris nesnesi olarak ele al. Marka ve modeli tespit etmeye calis. specs icinde malzeme, olcu, kullanim alani gibi satin alma kararini etkileyen bilgiler ver. price alanini mutlaka doldur. alts icinde daha ucuz veya daha iyi 2-3 alternatif urun tipi oner.' },
+      focus: 'Bunu bir alisveris nesnesi olarak ele al. Once urunun tam turunu ve urun ailesini belirle; genericTitle alanini mutlaka doldur. Ambalajdaki tum okunabilir yazilari, logoyu, seri veya model kodunu incele. Marka kesin degilse title icinde urun turunu yaz, en guclu marka/model ihtimallerini brand.candidates icinde ver. specs icinde malzeme, olcu, kullanim alani gibi satin alma kararini etkileyen bilgiler ver. price alanini mutlaka doldur. alts icinde daha ucuz veya daha iyi 2-3 alternatif urun tipi oner.' },
     { id: 'yemek', tr: 'Yemek & besin', en: 'Food & nutrition', shop: 1,
       focus: 'Yemegi veya gida urununu tanimla. specs icinde yaklasik kalori, ana besin degerleri, alerjen uyarilari ve tipik porsiyon yer alsin. Ambalaj varsa etiketi oku. Tarif icin arama terimi ver.' },
     { id: 'bitki', tr: 'Bitki & bakım', en: 'Plant & care', shop: 1,
@@ -1249,7 +1249,7 @@ dl.specs{margin:0}
   /* ── 7. Görsel işleme ──────────────────────────────────── */
   /* 1120 piksel görme modelleri için 1568 kadar iyi sonuç verir ama
      yüklenmesi yarı yarıya sürer. Fark doğrudan bekleme süresine yansır. */
-  var MAXPX = 1120;
+  var MAXPX = 1568;
 
   function grabFrame() {
     var w = video.videoWidth, h = video.videoHeight;
@@ -1260,7 +1260,7 @@ dl.specs{margin:0}
     c.width = Math.round(w * sc); c.height = Math.round(h * sc);
     if (S.facing === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
     ctx.drawImage(video, 0, 0, c.width, c.height);
-    return c.toDataURL('image/jpeg', 0.82);
+    return c.toDataURL('image/jpeg', 0.90);
   }
 
   function fileToImage(file) {
@@ -1275,7 +1275,7 @@ dl.specs{margin:0}
           var sc = Math.min(1, MAXPX / Math.max(img.width, img.height));
           c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
           ctx.drawImage(img, 0, 0, c.width, c.height);
-          res(c.toDataURL('image/jpeg', 0.88));
+          res(c.toDataURL('image/jpeg', 0.92));
         };
         img.onerror = function () { rej(new Error('decode')); };
         img.src = fr.result;
@@ -1420,7 +1420,7 @@ dl.specs{margin:0}
 
   /* ── 9. İstem ──────────────────────────────────────────── */
   var SCHEMA =
-    '{"title":"","category":"","confidence":0,"summary":"","narration":"",' +
+    '{"title":"","genericTitle":"","category":"","confidence":0,"summary":"","narration":"",' +
     '"brand":{"name":"","model":"","verified":false,"readText":"","proofType":"none","proofDetail":"","candidates":[{"name":"","why":""}]},' +
     '"evidence":[""],"specs":[{"k":"","v":""}],"warning":null,"others":[""],' +
     '"price":{"min":null,"max":null,"cur":"TRY","note":""},' +
@@ -1467,6 +1467,8 @@ dl.specs{margin:0}
       '3. Emin degilsen UYDURMA. confidence puanini durust ver ve neyin belirsiz oldugunu summary icinde soyle. Marka veya model okunmuyorsa marka uydurma; jenerik ad kullan.',
       '3a. MARKA KURALI: Marka/model ancak okunabilir yazi, ayirt edici logo, barkod veya en az iki bagimsiz fiziksel delille desteklenirse kesin yazilir. Salt sekil benzerligi marka kaniti degildir.',
       '3b. brand.verified sadece dogrudan marka/model kaniti varsa true olur. readText alanina gercekten okudugun metni aynen yaz. proofType yalnizca text, logo, barcode, shape veya none olabilir. Salt urun sekli icin shape sec ve verified false tut. proofDetail alaninda gorulen kaniti tek cumlede acikla. Suphede en fazla 3 adayi candidates icinde ver, title jenerik kalsin ve confidence 74 puani gecmesin.',
+      '3bb. genericTitle ana nesnenin marka icermeyen fakat spesifik urun adidir. Ornek: kablosuz optik fare, 18 volt darbeli matkap, 500 mililitre sampuan. Urun, teknik, tamir ve arac modlarinda genericTitle ASLA bos kalmasin.',
+      '3bc. Bir urunun marka/modeli kesinlesmiyorsa urunu bulamadim deme. Once urun sinifini ve islevini net tanimla; sonra en olasi adaylari gerekceleriyle brand.candidates icinde sirala. Okunabilir metin parcasi varsa eksik harfleri tamamlamadan readText alanina yaz.',
       '3c. Yuz, plaka, kimlik/kart numarasi, adres, telefon, e-posta ve ozel belge metinlerini redactions alaninda 0-1 arasi normalize kutularla isaretle.',
       '3d. Gorunen ariza veya tamir modu varsa repair alanini doldur; elektrik, batarya, gaz, basinc ve yangin riskinde risk high olsun.',
       '4. narration alani yuksek sesle okunacak. Birine anlatir gibi yaz: ilk cumlede dogrudan ne oldugunu soyle, sonra kisa ve orta uzunlukta cumlelerle devam et. Kullaniciya dogrudan hitap et. Gunluk kelimeler sec, teknik terim kullanacaksan hemen yanina sade karsiligini koy.',
@@ -1566,7 +1568,8 @@ dl.specs{margin:0}
     if (!d || typeof d !== 'object') return null;
     var o = {};
     var str = function (v) { return v == null ? '' : String(v).trim(); };
-    o.title = str(d.title || d.name || d.baslik);
+    o.genericTitle = str(d.genericTitle || d.generic_title || d.genericName || d.generic_name);
+    o.title = str(d.title || d.name || d.baslik || o.genericTitle);
     if (!o.title) return null;
     o.category = str(d.category || d.kategori);
     var c = parseInt(d.confidence, 10);
@@ -1651,9 +1654,16 @@ dl.specs{margin:0}
     if (!o.brand.verified && ['shape','none'].indexOf(o.brand.proofType) >= 0 && (o.brand.name || o.brand.model)) {
       var weakName = [o.brand.name, o.brand.model].filter(Boolean).join(' ');
       if (weakName && !o.brand.candidates.some(function(x){return x.name.toLowerCase()===weakName.toLowerCase();}))
-        o.brand.candidates.unshift({name:weakName,why:o.brand.proofDetail || (S.ui==='tr'?'Yalnızca görsel benzerlik':'Visual similarity only')});
+        o.brand.candidates.unshift({name:weakName,why:o.brand.proofDetail || (S.ui==='tr'?'Görsel benzerlik; doğrudan logo veya yazı kanıtı yok':'Visual similarity; no direct logo or text evidence')});
       o.brand.candidates = o.brand.candidates.slice(0,3);
-      o.brand.name = ''; o.brand.model = ''; o.confidence = Math.min(o.confidence, 74);
+      if (o.genericTitle) o.title = o.genericTitle;
+      o.brand.name = ''; o.brand.model = ''; o.confidence = Math.min(o.confidence, 78);
+    }
+    if (!o.genericTitle) o.genericTitle = o.title;
+    if (!o.brand.verified && o.brand.candidates.length) {
+      var candidateQuery = o.brand.candidates[0].name;
+      if (candidateQuery && o.search.local.toLowerCase().indexOf(candidateQuery.toLowerCase()) < 0)
+        o.search.local = (candidateQuery + ' ' + o.genericTitle).trim();
     }
     var rp = d.repair || {};
     o.repair = {
@@ -2549,8 +2559,11 @@ dl.specs{margin:0}
 
     /* Barkod ve konum artık yapay zekâyı BEKLETMİYOR; paralel çalışıp
        sonuç geldiğinde kartı zenginleştiriyorlar. */
+    var barcodeHit = S.bc
+      ? Promise.resolve({ value: S.bc.code || S.bc.value || '', format: S.bc.format || '' })
+      : Barcode.sniff(S.image.dataUrl).catch(function () { return null; });
     var side = {
-      bc: S.bc ? Promise.resolve(S.bc) : Barcode.sniff(S.image.dataUrl).then(function (hit) {
+      bc: barcodeHit.then(function (hit) {
         if (!hit || !hit.value) return null;
         buzz(20);
         return ProductDB.lookup(hit.value).then(function (p) {
@@ -2559,6 +2572,13 @@ dl.specs{margin:0}
       }).catch(function () { return null; }),
       place: Place.nearby()
     };
+    /* Ürün odaklı modlarda barkodu yapay zekâ çağrısından önce kısa süre bekle.
+       Kod okunursa ilk teşhis doğrudan barkod kanıtını da görür; bulunamazsa gecikmeden devam eder. */
+    var productMode = ['oto','urun','yemek','teknik','tamir','arac'].indexOf(S.mode) >= 0;
+    var barcodePreflight = productMode ? Promise.race([
+      barcodeHit,
+      new Promise(function (resolve) { setTimeout(function () { resolve(null); }, 1800); })
+    ]) : Promise.resolve(null);
 
     /* İlk kelimeler gelir gelmez başlığı göster; beklemeyi yarı yarıya kısaltır */
     var shownEarly = false;
@@ -2572,7 +2592,10 @@ dl.specs{margin:0}
       showEarly(unesc(m[1]), c ? unesc(c[1]) : '');
     }
 
-    chainJSON(systemPrompt(), userPrompt(), imgs, onPartial)
+    barcodePreflight.then(function (hit) {
+      if (hit && hit.value && !S.bc) S.bc = { code: hit.value, value: hit.value, format: hit.format || '', product: null };
+      return chainJSON(systemPrompt(), userPrompt(), imgs, onPartial);
+    })
       .then(function (r) {
         clearInterval(tick);
         var rec = {
@@ -2702,7 +2725,8 @@ dl.specs{margin:0}
         if(S.current!==rec||!v||!v.data)return; var b=v.data.brand||{};
         var pt=String(b.proofType||'none').toLowerCase();if(['text','logo','barcode','shape','none'].indexOf(pt)<0)pt='none';
         rec.data.brand={name:String(b.name||''),model:String(b.model||''),verified:b.verified===true&&['text','logo','barcode'].indexOf(pt)>=0,readText:String(b.readText||''),proofType:pt,proofDetail:String(b.proofDetail||''),candidates:Array.isArray(b.candidates)?b.candidates.slice(0,3):[]};
-        if(!rec.data.brand.verified&&['shape','none'].indexOf(pt)>=0){var wn=[rec.data.brand.name,rec.data.brand.model].filter(Boolean).join(' ');if(wn)rec.data.brand.candidates.unshift({name:wn,why:rec.data.brand.proofDetail||'Yalnızca görsel benzerlik'});rec.data.brand.name='';rec.data.brand.model='';}
+        if(!rec.data.brand.verified&&['shape','none'].indexOf(pt)>=0){var wn=[rec.data.brand.name,rec.data.brand.model].filter(Boolean).join(' ');if(wn)rec.data.brand.candidates.unshift({name:wn,why:rec.data.brand.proofDetail||'Görsel benzerlik; doğrudan kanıt yok'});rec.data.brand.candidates=rec.data.brand.candidates.slice(0,3);rec.data.brand.name='';rec.data.brand.model='';if(rec.data.genericTitle)rec.data.title=rec.data.genericTitle;}
+        if(v.data.genericTitle) rec.data.genericTitle=String(v.data.genericTitle);
         if(v.data.title && (rec.data.brand.verified || rec.data.confidence<70)) rec.data.title=String(v.data.title);
         if(Number.isFinite(Number(v.data.confidence))) rec.data.confidence=clamp(Number(v.data.confidence),0,100);
         if(Array.isArray(v.data.evidence)&&v.data.evidence.length) rec.data.evidence=v.data.evidence.slice(0,6);
@@ -4184,7 +4208,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v8.1-enterprise';
+  var APP_VERSION = 'v8.2-product-fix';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
