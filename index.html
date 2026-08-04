@@ -579,6 +579,16 @@ dl.specs{margin:0}
 .sp-tag i:nth-child(3){color:#8B5CF6;animation-delay:1.7s}
 @keyframes lsFade{to{opacity:1}}
 
+.early{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:600;color:var(--brass)}
+.early-dot{width:6px;height:6px;border-radius:50%;background:var(--brass);animation:blinkcap 1s infinite}
+.link.shelf{border-color:rgba(184,133,63,.42);background:rgba(184,133,63,.09)}
+.link.shelf .glyph{background:var(--brass);color:#14100A}
+.arch-pin{display:inline-block;margin:14px 0 0 8px;padding:9px 15px;border-radius:20px;
+  border:1px solid rgba(184,133,63,.55);color:#7A5623;font-size:12.5px;font-weight:600;position:relative;z-index:1}
+.arch-wiki{display:inline-block;margin-top:14px;font-size:12px;font-weight:600;color:var(--brass);
+  text-decoration:none;border-bottom:1px solid rgba(184,133,63,.4);padding-bottom:2px;position:relative;z-index:1}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -1083,11 +1093,11 @@ dl.specs{margin:0}
     sbUrl: '', sbKey: '', nick: '',
     colFilter: '', colQuery: '', feedQuery: '',
     user: null, session: null, seenIntro: false, syncing: false,
-    bc: null, bcStop: null
+    bc: null, bcStop: null, useLocation: true, place: null
   };
 
   var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate', 'voiceEngine', 'voiceURI',
-    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick', 'seenIntro'];
+    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick', 'seenIntro', 'useLocation'];
 
   function loadPrefs() {
     var nav = (navigator.language || 'tr').slice(0, 2).toLowerCase();
@@ -1183,7 +1193,9 @@ dl.specs{margin:0}
   }
 
   /* ── 7. Görsel işleme ──────────────────────────────────── */
-  var MAXPX = 1568;
+  /* 1120 piksel görme modelleri için 1568 kadar iyi sonuç verir ama
+     yüklenmesi yarı yarıya sürer. Fark doğrudan bekleme süresine yansır. */
+  var MAXPX = 1120;
 
   function grabFrame() {
     var w = video.videoWidth, h = video.videoHeight;
@@ -1194,7 +1206,7 @@ dl.specs{margin:0}
     c.width = Math.round(w * sc); c.height = Math.round(h * sc);
     if (S.facing === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
     ctx.drawImage(video, 0, 0, c.width, c.height);
-    return c.toDataURL('image/jpeg', 0.88);
+    return c.toDataURL('image/jpeg', 0.82);
   }
 
   function fileToImage(file) {
@@ -1359,7 +1371,7 @@ dl.specs{margin:0}
     '"price":{"min":null,"max":null,"cur":"TRY","note":""},' +
     '"search":{"local":"","global":""},"where":[{"name":"","why":""}],' +
     '"alts":[{"name":"","why":""}],"fact":"","questions":["","",""],' +
-    '"heritage":null}';
+    '"retail":"genel","heritage":null}';
 
   function systemPrompt() {
     var L = langInfo(S.lang);
@@ -1371,6 +1383,13 @@ dl.specs{margin:0}
       'MOD: ' + m.tr + '. ' + m.focus
     ];
     if (S.focusNote) lines.push('', 'ODAK: ' + S.focusNote);
+    if (S.place && S.place.pages && S.place.pages.length) {
+      lines.push('', 'KONUM: Fotograf su koordinatta cekildi: ' +
+        S.place.fix.lat.toFixed(5) + ', ' + S.place.fix.lon.toFixed(5) + '.',
+        'Bu noktanin 600 metre cevresindeki ansiklopedi maddeleri (mesafe metre):',
+        S.place.pages.slice(0, 12).map(function (p) { return '- ' + p.title + ' (' + p.dist + ' m)'; }).join('\n'),
+        'Fotograftaki yapi bu listede varsa ADINI BIREBIR o maddeden al ve confidence degerini yuksek tut. Listede yoksa listeye zorlama.');
+    }
     if (S.bc) {
       var bl = 'BARKOD: Fotografta ' + S.bc.code + ' barkodu okundu.';
       if (S.bc.product && S.bc.product.name) {
@@ -1397,6 +1416,7 @@ dl.specs{margin:0}
       '9. GUVENLIK: ilac, kimyasal, mantar, elektrik, kesici alet, bozuk gida, yabani hayvan gibi riskli bir sey gorursen warning alanina net ve kisa uyari yaz. Ilac ise doz onerme, doktora yonlendir. Mantar ise yenilebilirlik hukmu VERME.',
       '10. Insan fotograflarinda kimlik tahmini yapma, isim soyleme, yas veya etnik koken cikarimi yapma. Sadece nesneleri, kiyafeti ve sahneyi anlat.',
       '11. questions kullanicinin sormak isteyecegi 3 kisa takip sorusu olsun.',
+      '11a. retail alani su listeden TEK bir deger olsun: market, elektronik, kozmetik, ev, yapi, giyim, kitap, spor, oyuncak, bahce, evcil, eczane, ikinci_el, otomotiv, genel. Bu urunun hangi rafta satildigini soyler; yanlis secim kullaniciyi yanlis magazaya gonderir.',
       '12. Iki gorsel gelirse: birincisi incelenecek nesne, ikincisi genel baglam karesidir. Teshisi birinciye gore yap.',
       '13. TARIHCE: Gordugun sey tarihi, kulturel, dini veya mimari deger tasiyorsa heritage alanini doldur. Ornek: cami, kilise, sinagog, saray, kale, sur, kopru, cesme, han, hamam, medrese, anit, heykel, muze binasi, arkeolojik kalinti, tarihi kent dokusu, muzelik obje, sikke, yazma eser, geleneksel el sanati, antika mobilya. Siradan gunluk bir nesne, urun veya gida ise heritage degerini null birak. Kararı fotografa gore sen ver, kullanici istemek zorunda degil.',
       '13a. heritage semasi: {"era":"donem","built":"yapim tarihi","patron":"yaptiran kisi veya kurum","architect":"mimar","style":"mimari uslup","status":"koruma statusu, UNESCO gibi","story":"anlati","timeline":[{"y":"yil veya yuzyil","e":"o yil ne oldu"}],"visit":"ziyaret bilgisi"}',
@@ -1499,6 +1519,9 @@ dl.specs{margin:0}
     o.others = Array.isArray(d.others) ? d.others.map(str).filter(Boolean).slice(0, 6) : [];
     o.questions = Array.isArray(d.questions) ? d.questions.map(str).filter(Boolean).slice(0, 3) : [];
     o.fact = str(d.fact);
+    var RETAIL = ['market','elektronik','kozmetik','ev','yapi','giyim','kitap','spor',
+      'oyuncak','bahce','evcil','eczane','ikinci_el','otomotiv','genel'];
+    o.retail = RETAIL.indexOf(str(d.retail)) >= 0 ? str(d.retail) : 'genel';
     o.warning = str(d.warning) || null;
 
     o.specs = [];
@@ -1542,6 +1565,7 @@ dl.specs{margin:0}
         era: str(hv.era), built: str(hv.built), patron: str(hv.patron),
         architect: str(hv.architect), style: str(hv.style), status: str(hv.status),
         story: line(hv.story), visit: line(hv.visit),
+        wiki: str(hv.wiki), pinned: (typeof hv.pinned === 'number' ? hv.pinned : null),
         timeline: Array.isArray(hv.timeline) ? hv.timeline.map(function (x) {
           if (!x) return null;
           if (typeof x === 'string') return null;
@@ -1569,8 +1593,33 @@ dl.specs{margin:0}
 
   function imagesFor(imgs) { return imgs.filter(Boolean); }
 
+  /* Akış halinde gelen yanıtı parçala; her parçada erken gösterim tetiklenir */
+  function pumpSSE(reader, dec, state, onPartial) {
+    return reader.read().then(function (res) {
+      if (res.done) return state.text;
+      state.buf += dec.decode(res.value, { stream: true });
+      var lines = state.buf.split('\n');
+      state.buf = lines.pop();
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (line.indexOf('data:') !== 0) continue;
+        try {
+          var ev = JSON.parse(line.slice(5).trim());
+          if (ev.type === 'content_block_delta' && ev.delta) {
+            var chunk = ev.delta.text || ev.delta.partial_json || '';
+            if (chunk) {
+              state.text += chunk;
+              if (onPartial) onPartial(state.text);
+            }
+          }
+        } catch (e) {}
+      }
+      return pumpSSE(reader, dec, state, onPartial);
+    });
+  }
+
   /* A — Anthropic (Claude içinde anahtarsız, dışarıda anahtarla) */
-  function pAnthropic(system, prompt, imgs) {
+  function pAnthropic(system, prompt, imgs, onPartial) {
     var content = [];
     imagesFor(imgs).forEach(function (im) {
       content.push({ type: 'image', source: { type: 'base64', media_type: im.mime, data: im.b64 } });
@@ -1584,30 +1633,51 @@ dl.specs{margin:0}
     }
     var ctrl = new AbortController();
     S.abort = ctrl;
+    var canStream = !!(onPartial && window.ReadableStream && window.TextDecoder);
     return withTimeout(fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST', headers: headers, signal: ctrl.signal,
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1400, system: system,
-        messages: [{ role: 'user', content: content }]
+        model: 'claude-sonnet-4-6', max_tokens: 1200, system: system,
+        stream: canStream, messages: [{ role: 'user', content: content }]
       })
     }).then(function (r) {
       if (!r.ok) throw new Error('anthropic ' + r.status);
-      return r.json();
-    }).then(function (d) {
-      var txt = pullText(d);
+      if (!canStream || !r.body || !r.body.getReader) {
+        return r.json().then(function (d) { return pullText(d); });
+      }
+      return pumpSSE(r.body.getReader(), new TextDecoder(), { buf: '', text: '' }, onPartial);
+    }).then(function (txt) {
       if (!txt) throw new Error('empty');
       return { text: txt, via: 'Claude' };
     }), 60000, ctrl);
   }
 
-  /* B — Puter.js (anahtarsız; GitHub Pages'te ana yol) */
+  /* Puter, oturum açık değilken kendi giriş sayfasına yönlendiriyor ve
+     kullanıcı uygulamadan kopuyor. Bu yüzden ancak iki durumda çağırıyoruz:
+     kullanıcı Puter'ı elle seçtiyse, ya da zaten oturum açıksa. */
+  var PUTER_URL = 'https://js.puter.com/v2/';
+  function puterGate(explicit) {
+    return loadScript(PUTER_URL).then(function () {
+      if (!window.puter || !window.puter.ai) throw new Error('puter yok');
+      if (explicit) return window.puter;
+      var signed = false;
+      try {
+        signed = !!(window.puter.auth && typeof window.puter.auth.isSignedIn === 'function' &&
+          window.puter.auth.isSignedIn());
+      } catch (e) { signed = false; }
+      if (!signed) throw new Error('puter-auth');
+      return window.puter;
+    });
+  }
+
+  /* B — Puter.js (anahtarsız) */
   function pPuter(system, prompt, imgs) {
-    return loadScript('https://js.puter.com/v2/').then(function () {
-      if (!window.puter || !window.puter.ai || !window.puter.ai.chat) throw new Error('puter yok');
+    return puterGate(S.provider === 'puter').then(function (puter) {
+      if (!puter.ai.chat) throw new Error('puter yok');
       var first = imagesFor(imgs)[0];
       var full = system + '\n\n' + prompt;
       return withTimeout(
-        first ? window.puter.ai.chat(full, first.dataUrl) : window.puter.ai.chat(full),
+        first ? puter.ai.chat(full, first.dataUrl) : puter.ai.chat(full),
         60000, null
       );
     }).then(function (r) {
@@ -1628,7 +1698,7 @@ dl.specs{margin:0}
     return withTimeout(fetch('https://text.pollinations.ai/openai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
       body: JSON.stringify({
-        model: 'openai', max_tokens: 1500,
+        model: 'openai', max_tokens: 1200,
         messages: [{ role: 'system', content: system }, { role: 'user', content: content }]
       })
     }).then(function (r) {
@@ -1676,16 +1746,16 @@ dl.specs{margin:0}
     }
     var list = [];
     if (S.customBase && S.customKey) list.push(pCustom);
-    list.push(pAnthropic, pPuter, pPollinations);
+    list.push(pAnthropic, pPollinations, pPuter);
     return list;
   }
 
   /* Zincir: sırayla dene, ağ hatasında bir kez tekrarla, hepsi düşerse en anlamlı hatayı döndür */
-  function chain(system, prompt, imgs) {
+  function chain(system, prompt, imgs, onPartial) {
     if (!navigator.onLine) return Promise.reject(new Error('offline'));
     var list = providerOrder(), i = 0, lastErr = null;
     function attempt(fn, retried) {
-      return fn(system, prompt, imgs).catch(function (e) {
+      return fn(system, prompt, imgs, onPartial).catch(function (e) {
         var msg = String(e && e.message || e);
         var retryable = /timeout|Failed to fetch|NetworkError|5\d\d|429/i.test(msg);
         if (!retried && retryable && navigator.onLine) {
@@ -1710,8 +1780,8 @@ dl.specs{margin:0}
   }
 
   /* JSON isteyen çağrılar: ayrıştır, onar, gerekirse bir kez daha iste */
-  function chainJSON(system, prompt, imgs) {
-    return chain(system, prompt, imgs).then(function (r) {
+  function chainJSON(system, prompt, imgs, onPartial) {
+    return chain(system, prompt, imgs, onPartial).then(function (r) {
       var d = normalize(parseJSON(r.text));
       if (d) return { data: d, via: r.via };
       return chain(system, prompt + '\n\nONEMLI: Onceki yanit gecersizdi. SADECE gecerli JSON dondur, baska hicbir sey yazma.', imgs)
@@ -1863,11 +1933,11 @@ dl.specs{margin:0}
     /* Doğal ses: bulut TTS. Başarısız olursa sessizce cihaz sesine düşer. */
     natural: function (text) {
       var self = this, my = this.token;
-      return loadScript('https://js.puter.com/v2/').then(function () {
-        if (!window.puter || !window.puter.ai || !window.puter.ai.txt2speech) throw new Error('yok');
+      return puterGate(S.voiceEngine === 'natural').then(function (puter) {
+        if (!puter.ai.txt2speech) throw new Error('yok');
         var opt = { language: langInfo(S.lang).v };
         if (VOICE_HINT[S.lang]) opt.voice = VOICE_HINT[S.lang];
-        return withTimeout(window.puter.ai.txt2speech(text.slice(0, 2800), opt), 20000, null);
+        return withTimeout(puter.ai.txt2speech(text.slice(0, 2800), opt), 20000, null);
       }).then(function (a) {
         if (my !== self.token) return true;
         var audio = (a && a.play) ? a : (a && a.audio ? a.audio : null);
@@ -2146,6 +2216,9 @@ dl.specs{margin:0}
 
     if (shop) {
       h.push('<div class="rule"></div><h3 class="sec-title">' + esc(t('where')) + '</h3><div class="links">');
+      shelfLinks(d.retail, local).forEach(function (m) {
+        h.push('<a class="link shelf" target="_blank" rel="noopener" href="' + m.u + '"><span class="glyph">' + esc(m.g) + '</span>' + esc(m.n) + '</a>');
+      });
       markets.forEach(function (m) {
         h.push('<a class="link" target="_blank" rel="noopener" href="' + m.u(local) + '"><span class="glyph">' + esc(m.g) + '</span>' + esc(m.n) + '</a>');
       });
@@ -2191,6 +2264,7 @@ dl.specs{margin:0}
       if (H.story) {
         h.push('<p class="arch-story">' + esc(H.story) + '</p>');
         h.push('<button class="arch-listen" id="histPlay">' + ICON.play + '<span>' + esc(t('hListen')) + '</span></button>');
+        if (!H.wiki) h.push('<button class="arch-pin" id="pinBtn">' + esc(S.ui === 'tr' ? 'Konumla doğrula' : 'Confirm by location') + '</button>');
       }
       if (H.timeline.length) {
         h.push('<ol class="timeline">');
@@ -2200,6 +2274,11 @@ dl.specs{margin:0}
         h.push('</ol>');
       }
       if (H.visit) h.push('<p class="arch-visit">' + esc(H.visit) + '</p>');
+      if (H.wiki) {
+        h.push('<a class="arch-wiki" target="_blank" rel="noopener" href="' + H.wiki + '">' +
+          (S.ui === 'tr' ? 'Ansiklopedi maddesi' : 'Encyclopedia entry') +
+          (H.pinned != null ? ' · ' + H.pinned + ' m' : '') + '</a>');
+      }
       h.push('</section>');
     }
 
@@ -2280,6 +2359,20 @@ dl.specs{margin:0}
       if (k) k.textContent = catNo(rec);
       buzz(14); toast(t('saved'));
     };
+    var pv = $('pinBtn');
+    if (pv) pv.onclick = function () {
+      pv.disabled = true;
+      pv.textContent = S.ui === 'tr' ? 'Konum alınıyor…' : 'Getting location…';
+      Place.nearby(true).then(function (place) {
+        if (!place) { pv.textContent = S.ui === 'tr' ? 'Konum alınamadı' : 'No location'; return; }
+        S.place = place;
+        return Heritage.pin(rec, place).then(function (ch) {
+          if (ch) { renderResult(rec); updateRecord(rec); toast(S.ui === 'tr' ? 'Konumla doğrulandı.' : 'Confirmed by location.'); }
+          else { pv.disabled = false; pv.textContent = S.ui === 'tr' ? 'Yakında eşleşme yok' : 'No match nearby'; }
+        });
+      }).catch(function () { pv.disabled = false; });
+    };
+
     var hp = $('histPlay');
     if (hp) hp.onclick = function () {
       TTS.unlock();
@@ -2346,47 +2439,54 @@ dl.specs{margin:0}
     var imgs = [S.image];
     if (S.fullImage && S.fullImage.dataUrl !== S.image.dataUrl) imgs.push(S.fullImage);
 
-    /* Barkod varsa teşhis tahmin olmaktan çıkıp doğrulamaya döner.
-       Bulunamazsa akış hiç değişmez. */
-    var bcStep = S.bc ? Promise.resolve(S.bc) : Barcode.sniff(S.image.dataUrl).then(function (hit) {
-      if (!hit || !hit.value) return null;
-      buzz(20);
-      setStage(t('bcFound') + ' · ' + hit.value);
-      return ProductDB.lookup(hit.value).then(function (p) {
-        return { code: hit.value, format: hit.format || '', product: p, origin: Barcode.origin(hit.value) };
-      });
-    }).catch(function () { return null; });
+    /* Barkod ve konum artık yapay zekâyı BEKLETMİYOR; paralel çalışıp
+       sonuç geldiğinde kartı zenginleştiriyorlar. */
+    var side = {
+      bc: S.bc ? Promise.resolve(S.bc) : Barcode.sniff(S.image.dataUrl).then(function (hit) {
+        if (!hit || !hit.value) return null;
+        buzz(20);
+        return ProductDB.lookup(hit.value).then(function (p) {
+          return { code: hit.value, format: hit.format || '', product: p, origin: Barcode.origin(hit.value) };
+        });
+      }).catch(function () { return null; }),
+      place: Place.nearby()
+    };
 
-    bcStep.then(function (bc) {
-      S.bc = bc;
-      return chainJSON(systemPrompt(), userPrompt(), imgs);
-    })
-      .then(function (r) {
-        if (S.doubleCheck && r.data.confidence < 70) {
-          clearInterval(tick);
-          setStage(t('checking'));
-          return verifyPass(r.data, imgs)
-            .then(function (r2) { return { data: r2.data, via: r2.via + ' ×2' }; })
-            .catch(function () { return r; });
-        }
-        return r;
-      })
+    /* İlk kelimeler gelir gelmez başlığı göster; beklemeyi yarı yarıya kısaltır */
+    var shownEarly = false;
+    function onPartial(txt) {
+      if (shownEarly) return;
+      var m = txt.match(/"title"\s*:\s*"((?:[^"\\]|\\.){2,90})"/);
+      if (!m) return;
+      var c = txt.match(/"category"\s*:\s*"((?:[^"\\]|\\.){0,60})"/);
+      shownEarly = true;
+      clearInterval(tick);
+      showEarly(unesc(m[1]), c ? unesc(c[1]) : '');
+    }
+
+    chainJSON(systemPrompt(), userPrompt(), imgs, onPartial)
       .then(function (r) {
         clearInterval(tick);
-        return shrink(S.image.dataUrl, 760, 0.74).then(function (thumb) {
-          var rec = {
-            id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-            ts: Date.now(), mode: S.mode, lang: S.lang, via: r.via,
-            thumb: thumb, data: r.data, qa: [], saved: false, no: null,
-            focused: !!S.focusNote, bc: S.bc || null
-          };
-          S.current = rec;
-          S.busy = false;
+        var rec = {
+          id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          ts: Date.now(), mode: S.mode, lang: S.lang, via: r.via,
+          thumb: S.image.dataUrl, data: r.data, qa: [], saved: false, no: null,
+          focused: !!S.focusNote, bc: null
+        };
+        S.current = rec;
+        S.busy = false;
+        renderResult(rec);
+        buzz(18);
+        if (S.autoSpeak) setTimeout(function () { TTS.speak(r.data.narration); }, 240);
+
+        /* Buradan sonrası kullanıcıyı bekletmez: küçük resim, barkod,
+           konum doğrulaması ve gerekiyorsa ikinci geçiş arka planda işler. */
+        shrink(S.image.dataUrl, 760, 0.74).then(function (thumb) {
+          rec.thumb = thumb;
           if (S.autoSave) saveRecord(rec);
-          renderResult(rec);
-          buzz(18);
-          if (S.autoSpeak) setTimeout(function () { TTS.speak(r.data.narration); }, 280);
+          else updateRecord(rec);
         });
+        enrich(rec, side, imgs);
       })
       .catch(function (e) {
         clearInterval(tick);
@@ -2429,8 +2529,9 @@ dl.specs{margin:0}
         var html = '<div class="lp-box"><div class="lp-head">' + esc(t('priceLive')) +
           (live.asOf ? ' · ' + esc(live.asOf) : '') + '</div>';
         rows.slice(0, 8).forEach(function (r, i) {
-          html += '<a class="lp-row" target="_blank" rel="noopener" href="https://www.google.com/search?q=' +
-            encodeURIComponent(r.seller + ' ' + (rec.data.search.local || rec.data.title)) + '">' +
+          var href = /^https?:\/\//.test(r.url || '') ? r.url
+            : 'https://www.google.com/search?q=' + encodeURIComponent(r.seller + ' ' + (rec.data.search.local || rec.data.title));
+          html += '<a class="lp-row" target="_blank" rel="noopener" href="' + esc(href) + '">' +
             '<span class="lp-seller">' + esc(r.seller) + (r.note ? '<small>' + esc(r.note) + '</small>' : '') + '</span>' +
             '<b class="lp-price' + (i === 0 ? ' best' : '') + '">' + esc(priceTag(r.price, r.cur)) + '</b></a>';
         });
@@ -2439,6 +2540,60 @@ dl.specs{margin:0}
         out.innerHTML = html;
         buzz(12);
       });
+  }
+
+  function unesc(v) {
+    try { return JSON.parse('"' + v + '"'); } catch (e) { return v.replace(/\\"/g, '"'); }
+  }
+
+  /* Yanıtın tamamı gelmeden başlığı göster */
+  function showEarly(title, category) {
+    var box = $('resultScroll');
+    box.innerHTML =
+      '<div style="height:14px"></div>' +
+      (S.image ? '<div class="plate scan-lines"><img src="' + S.image.dataUrl + '" alt=""></div>' : '') +
+      '<div class="card"><div class="kicker">' + esc(category || modeName(S.mode)) + '</div>' +
+      '<h1>' + esc(title) + '</h1>' +
+      '<div class="early"><span class="early-dot"></span>' + esc(t('writing')) + '</div>' +
+      '<div class="sk-line" style="margin-top:18px"></div><div class="sk-line w7"></div><div class="sk-line w5"></div></div>';
+    var live = $('live');
+    if (live) live.textContent = title;
+  }
+
+  /* Kartı bekletmeden zenginleştir: barkod, konum, gerekiyorsa doğrulama */
+  function enrich(rec, side, imgs) {
+    side.bc.then(function (bc) {
+      if (!bc || S.current !== rec) return;
+      rec.bc = bc;
+      S.bc = bc;
+      if (bc.product && bc.product.name) {
+        rec.data.title = bc.product.name;
+        rec.data.confidence = Math.max(rec.data.confidence, 93);
+        rec.data.search.local = bc.product.name + ' ' + bc.code;
+      } else {
+        rec.data.search.local = rec.data.search.local + ' ' + bc.code;
+      }
+      renderResult(rec);
+      updateRecord(rec);
+    });
+
+    side.place.then(function (place) {
+      if (!place || S.current !== rec) return;
+      return Heritage.pin(rec, place).then(function (changed) {
+        if (changed && S.current === rec) { renderResult(rec); updateRecord(rec); }
+      });
+    }).catch(function () {});
+
+    if (S.doubleCheck && rec.data.confidence < 62 && !rec.bc) {
+      verifyPass(rec.data, imgs).then(function (r2) {
+        if (S.current !== rec || !r2 || !r2.data) return;
+        if (r2.data.confidence <= rec.data.confidence) return;
+        rec.data = r2.data;
+        rec.via = r2.via + ' ×2';
+        renderResult(rec);
+        updateRecord(rec);
+      }).catch(function () {});
+    }
   }
 
   function askFollowUp(rec, q) {
@@ -3304,8 +3459,10 @@ dl.specs{margin:0}
 
       swi('tgSave', tr ? 'Her keşfi kaydet' : 'Save every find',
         tr ? 'Koleksiyona otomatik eklenir' : 'Added to your collection automatically', S.autoSave) +
+      swi('tgPlace', tr ? 'Konumu kullan' : 'Use my location',
+        tr ? 'Tarihi yapıları nokta atışı tanır. İzin yalnızca sen istediğinde sorulur, konum hiçbir yere gönderilmez.' : 'Pins historic sites precisely. Permission is only asked when you tap, and the location is never uploaded.', S.useLocation) +
       swi('tgCheck', tr ? 'Şüphede ikinci geçiş' : 'Second pass when unsure',
-        tr ? 'Güven düşükse teşhisi bir kez daha sorgular. Biraz yavaşlatır, isabeti artırır.' : 'Re-checks the call when confidence is low. Slower, more accurate.', S.doubleCheck) +
+        tr ? 'Güven düşükse arka planda bir kez daha sorgular. Kartı bekletmez, sonuç gelince günceller.' : 'Re-checks quietly in the background when confidence is low. Never delays the card.', S.doubleCheck) +
 
       '<h2 class="set-h">' + (tr ? 'Yapay zekâ' : 'AI') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Sağlayıcı' : 'Provider') + '</label>' +
@@ -3355,6 +3512,11 @@ dl.specs{margin:0}
       '<div class="btn-row"><button class="ghost-btn sm" id="fbSend">' + esc(t('send')) + '</button></div>' +
       '<span class="test-out" id="fbOut"></span></div>' +
 
+      '<h2 class="set-h">' + (tr ? 'Cihaz' : 'Device') + '</h2>' +
+      '<div class="field"><p>' + (tr ? 'Bu cihazda hangi yeteneklerin çalıştığı. Bir sorun yaşarsan bu listeyi paylaş.' : 'What works on this device. Share this list if something goes wrong.') + '</p>' +
+      '<pre class="diag" id="capOut"></pre>' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="capCopy">' + (tr ? 'Listeyi kopyala' : 'Copy list') + '</button></div></div>' +
+
       '<h2 class="set-h">' + esc(t('about')) + '</h2>' +
       '<div class="field"><div class="btn-row">' +
       '<button class="ghost-btn sm" id="docPrivacy">' + esc(t('privacy')) + '</button>' +
@@ -3385,6 +3547,8 @@ dl.specs{margin:0}
         .then(function () { $('fbText').value = ''; out.className = 'test-out ok'; out.textContent = t('feedbackThanks'); })
         .catch(function (e) { out.className = 'test-out bad'; out.textContent = String(e.message || e); });
     };
+    paintCapabilities();
+    $('capCopy').onclick = function () { copy($('capOut').textContent).then(function () { toast(t('copied')); }); };
     $('docPrivacy').onclick = function () { openDoc('privacy'); };
     $('docTerms').onclick = function () { openDoc('terms'); };
     $('showIntro').onclick = function () { openIntro(); };
@@ -3394,6 +3558,7 @@ dl.specs{margin:0}
       savePrefs(); applyUI(); renderSettings();
     };
     tg('tgSpeak', 'autoSpeak'); tg('tgSave', 'autoSave'); tg('tgCheck', 'doubleCheck');
+    tg('tgPlace', 'useLocation');
     function tg(id, key) {
       $(id).onclick = function () { S[key] = !S[key]; this.setAttribute('aria-checked', S[key]); savePrefs(); };
     }
@@ -3401,6 +3566,10 @@ dl.specs{margin:0}
       b.onclick = function () {
         S.provider = b.getAttribute('data-p');
         savePrefs(); renderSettings();
+        if (S.provider === 'puter') {
+          toast(tr ? 'Puter ilk kullanımda kendi sitesinde oturum açmanı isteyebilir.'
+                   : 'Puter may ask you to sign in on its own site the first time.', 4200);
+        }
       };
     });
 
@@ -3646,10 +3815,19 @@ dl.specs{margin:0}
         '<circle cx="109" cy="152" r="4.6" fill="#3B82F6"/>' +
         '<circle cx="122" cy="152" r="4.6" fill="#8B5CF6"/></svg>';
       var icon = 'data:image/svg+xml;base64,' + btoa(svg);
+      /* Manifest bir blob adresinden okunuyor; içindeki göreli yollar blob'a
+         göre çözülür ve Android'de ana ekran kısayolu yanlış adrese gider.
+         Bu yüzden hepsi mutlak yazılıyor. */
+      var here = location.href.split('#')[0].split('?')[0];
+      var scope = here.replace(/[^/]*$/, '');
       var man = {
-        name: 'LENSA', short_name: 'LENSA', start_url: '.', display: 'standalone',
+        id: here, name: 'LENSA', short_name: 'LENSA',
+        start_url: here, scope: scope, display: 'standalone',
         background_color: '#0E1113', theme_color: '#0E1113', orientation: 'portrait',
-        icons: [{ src: icon, sizes: '220x200 512x512', type: 'image/svg+xml', purpose: 'any' }]
+        icons: [
+          { src: icon, sizes: '192x192', type: 'image/svg+xml', purpose: 'any' },
+          { src: icon, sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' }
+        ]
       };
       var l1 = document.createElement('link');
       l1.rel = 'manifest';
@@ -3708,6 +3886,7 @@ dl.specs{margin:0}
         var f = grabFrame();
         if (f) { setImage(f); stopCam(); analyse(); return; }
       }
+      toast(S.ui === 'tr' ? 'Kamera uygulaması açılıyor…' : 'Opening the camera app\u2026', 1600);
       $('camPick').click();
     };
     $('galleryBtn').onclick = function () { TTS.unlock(); $('filePick').click(); };
@@ -3762,6 +3941,11 @@ dl.specs{margin:0}
     });
 
     if (!S.seenIntro) setTimeout(openIntro, 420);
+
+    /* İzin daha önce verilmişse konumu sessizce hazırla; analiz anında beklemesin */
+    setTimeout(function () {
+      Place.nearby(false).then(function (p) { if (p) S.place = p; }).catch(function () {});
+    }, 1200);
 
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { TTS.stop(); stopCam(); stopBarcodeScan(); }
@@ -4011,6 +4195,44 @@ dl.specs{margin:0}
     setTimeout(close, reduced ? 400 : 2350);
   }
 
+  /* ── 27c. Cihaz yetenekleri ───────────────────────────
+     Bir cihazda çalışan başka birinde çalışmıyor; sorunu tarif etmek
+     yerine listeyi göndermek yeterli olsun. */
+  function capabilities() {
+    var ua = navigator.userAgent || '';
+    var os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad|iPod/i.test(ua) ? 'iOS'
+      : /Windows/i.test(ua) ? 'Windows' : /Mac/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : '?';
+    var br = /EdgA?\//i.test(ua) ? 'Edge' : /SamsungBrowser/i.test(ua) ? 'Samsung'
+      : /FxiOS|Firefox/i.test(ua) ? 'Firefox' : /CriOS|Chrome/i.test(ua) ? 'Chrome'
+      : /Safari/i.test(ua) ? 'Safari' : '?';
+    var voices = 0;
+    try { voices = (window.speechSynthesis && speechSynthesis.getVoices() || []).length; } catch (e) {}
+    var yes = function (v) { return v ? 'var' : 'yok'; };
+    return [
+      ['Sistem', os + ' · ' + br],
+      ['Ekran', window.innerWidth + '×' + window.innerHeight + ' @' + (window.devicePixelRatio || 1) + 'x'],
+      ['Kamera', yes(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)],
+      ['Barkod (yerleşik)', yes(typeof window.BarcodeDetector === 'function')],
+      ['Barkod (yedek)', Barcode.engine === 'zxing' ? 'yüklü' : 'gerektiğinde yüklenir'],
+      ['Ses', yes(window.speechSynthesis) + (voices ? ' · ' + voices + ' ses' : '')],
+      ['Doğal ses', S.voiceEngine],
+      ['Konum', yes(navigator.geolocation) + (S.useLocation ? ' · açık' : ' · kapalı')],
+      ['Paylaşım', yes(navigator.share)],
+      ['Yerel kayıt', store.available ? 'açık' : 'KAPALI'],
+      ['Akış (stream)', yes(window.ReadableStream)],
+      ['Sağlayıcı', S.provider + (S.apiKey ? ' · anahtar var' : ' · anahtarsız')],
+      ['Ortak akış', Cloud.ready() ? 'bağlı' : 'yerel'],
+      ['Sürüm', APP_VERSION]
+    ];
+  }
+  function paintCapabilities() {
+    var el = $('capOut');
+    if (!el) return;
+    el.textContent = capabilities().map(function (r) {
+      return (r[0] + '                  ').slice(0, 18) + ': ' + r[1];
+    }).join('\n');
+  }
+
   /* ── 28. Geri bildirim ─────────────────────────────────── */
   function sendFeedback(msg) {
     if (!Cloud.ready()) {
@@ -4041,7 +4263,8 @@ dl.specs{margin:0}
         ['Hesap', 'Hesap açarsan e-posta adresin ve görünen adın saklanır. Şifreni LENSA görmez; doğrulamayı Supabase yapar.'],
         ['Anahtarlar', 'Girdiğin API anahtarları yalnızca bu cihazda kalır, hiçbir sunucuya gönderilmez.'],
         ['Silme', 'Ayarlar\'dan tüm yerel veriyi tek dokunuşla silebilirsin. Hesabını silersen buluttaki her şey de silinir.'],
-        ['Konum ve takip', 'Konumun alınmaz. Reklam yoktur, üçüncü taraf takip kodu yoktur, çerez kullanılmaz.']
+        ['Konum', 'Konum yalnızca sen izin verirsen ve yalnızca tarihi bir yapıyı doğrulamak için alınır. Koordinat hiçbir sunucuya gönderilmez; sadece Wikipedia\'ya "bu noktanın yakınında ne var" sorusu sorulur. Ayarlar\'dan tamamen kapatabilirsin.'],
+        ['Takip', 'Reklam yoktur, üçüncü taraf takip kodu yoktur, çerez kullanılmaz.']
       ] : [
         ['In short', 'LENSA runs no server of its own. Your photos and finds live in this browser. Nothing leaves it unless you ask.'],
         ['Photos', 'When you analyse a photo it is sent to the AI provider you picked in Settings, and the answer comes back. LENSA stores it nowhere. The provider\u2019s own retention policy applies.'],
@@ -4050,7 +4273,8 @@ dl.specs{margin:0}
         ['Account', 'If you sign up your email and display name are stored. LENSA never sees your password; Supabase handles it.'],
         ['Keys', 'API keys you enter stay on this device and are sent to no server.'],
         ['Deletion', 'You can wipe all local data from Settings in one tap. Deleting your account removes everything in the cloud too.'],
-        ['Location and tracking', 'Your location is never requested. No ads, no third-party trackers, no cookies.']
+        ['Location', 'Location is used only if you allow it, and only to confirm a historic site. The coordinates go to no server of ours; they are used to ask Wikipedia what stands nearby. You can switch it off entirely in Settings.'],
+        ['Tracking', 'No ads, no third-party trackers, no cookies.']
       ];
     }
     return tr ? [
@@ -4167,15 +4391,26 @@ dl.specs{margin:0}
       var self = this;
       if (self.tried) return Promise.resolve(self.engine);
       self.tried = true;
-      if (typeof window.BarcodeDetector === 'function') {
-        try {
-          self.native = new window.BarcodeDetector({
-            formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code']
-          });
-          self.engine = 'native';
-          return Promise.resolve('native');
-        } catch (e) { self.native = null; }
+      if (typeof window.BarcodeDetector === "function") {
+        var want = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code'];
+        var ask = window.BarcodeDetector.getSupportedFormats
+          ? window.BarcodeDetector.getSupportedFormats().catch(function () { return null; })
+          : Promise.resolve(null);
+        return ask.then(function (have) {
+          /* Cihazın desteklemediği bir format istenirse kurucu hata veriyor */
+          var use = have && have.length ? want.filter(function (f) { return have.indexOf(f) >= 0; }) : null;
+          if (have && have.length && !use.length) throw new Error('format yok');
+          try {
+            self.native = new window.BarcodeDetector(use ? { formats: use } : undefined);
+            self.engine = 'native';
+            return 'native';
+          } catch (e) { self.native = null; throw e; }
+        }).catch(function () { return self.viaZxing(); });
       }
+      return self.viaZxing();
+    },
+    viaZxing: function () {
+      var self = this;
       return loadScript(ZXING_URL).then(function () {
         if (!window.ZXing || !window.ZXing.BrowserMultiFormatReader) throw new Error('zxing yok');
         self.zxing = new window.ZXing.BrowserMultiFormatReader();
@@ -4357,9 +4592,11 @@ dl.specs{margin:0}
       : 'major retailers in the user\'s region';
     var sys = 'Sen bir fiyat arastirmacisisin. Web aramasi yaparak asagidaki urunun GUNCEL satis fiyatlarini bul. ' +
       market + ' oncelikli olsun. Sadece gercekten arama sonuclarinda gordugun fiyatlari yaz, tahmin ekleme. ' +
-      'En fazla 6 satir. Fiyati bulunamazsa items dizisini bos birak ve summary icinde durumu soyle. ' +
+      'En fazla 6 satir. url alanina ARAMA SAYFASI degil, dogrudan urunun satis sayfasinin tam adresini yaz; ' +
+      'sadece arama sonuclarinda gordugun gercek adresleri kullan, adres uydurma, bulamazsan url alanini bos birak. ' +
+      'Fiyati bulunamazsa items dizisini bos birak ve summary icinde durumu soyle. ' +
       'Tum metinleri ' + L.n + ' dilinde yaz. SADECE gecerli JSON dondur, baska hicbir sey yazma. Sema: ' +
-      '{"items":[{"seller":"","price":0,"cur":"TRY","note":""}],"summary":"","asOf":""}';
+      '{"items":[{"seller":"","price":0,"cur":"TRY","url":"","note":""}],"summary":"","asOf":""}';
     var prompt = 'Urun: ' + d.title + (d.category ? ' (' + d.category + ')' : '') +
       (rec.barcode ? '\nBarkod: ' + rec.barcode : '') +
       '\nArama terimi: ' + q + '\nGuncel fiyatlari bul ve JSON dondur.';
@@ -4371,8 +4608,10 @@ dl.specs{margin:0}
         if (!x) return null;
         var p = parseNum(x.price);
         if (p == null) return null;
+        var u = String(x.url || '');
         return { seller: String(x.seller || '').slice(0, 40), price: p,
-          cur: String(x.cur || L.cur).slice(0, 5), note: String(x.note || '').slice(0, 60) };
+          cur: String(x.cur || L.cur).slice(0, 5), note: String(x.note || '').slice(0, 60),
+          url: /^https?:\/\//.test(u) ? u : '' };
       }).filter(Boolean).slice(0, 6);
       items.sort(function (a, b) { return a.price - b.price; });
       return { items: items, summary: String(j.summary || ''), asOf: String(j.asOf || ''), via: r.via };
@@ -4424,6 +4663,194 @@ dl.specs{margin:0}
     }
     if (!navigator.onLine) return Promise.reject(new Error('offline'));
     return anthropicSearch().catch(function () { return pollinationsSearch(); });
+  }
+
+  /* ── 34. Önbellek ──────────────────────────────────────
+     Aynı barkod, aynı yapı, aynı sorgu tekrar geldiğinde ağa çıkma. */
+  var Cache = {
+    TTL: 30 * 24 * 3600 * 1000,
+    all: function () { return store.json('lensa.cache', {}); },
+    get: function (k) {
+      var c = this.all()[k];
+      if (!c) return null;
+      if (Date.now() - c.t > this.TTL) return null;
+      return c.v;
+    },
+    set: function (k, v) {
+      var c = this.all();
+      c[k] = { t: Date.now(), v: v };
+      var keys = Object.keys(c);
+      if (keys.length > 160) {
+        keys.sort(function (a, b) { return c[a].t - c[b].t; });
+        keys.slice(0, keys.length - 160).forEach(function (x) { delete c[x]; });
+      }
+      try { store.set('lensa.cache', JSON.stringify(c)); } catch (e) {}
+    }
+  };
+
+  /* ── 35. Konum ─────────────────────────────────────────
+     Tarihi bir yapıyı ismiyle tahmin etmek zordur; nerede durduğunu
+     bilmek işi kesinleştirir. İzin verilmemişse hiç sorulmaz. */
+  var Place = {
+    last: null,
+    permission: function () {
+      if (!navigator.geolocation) return Promise.resolve('denied');
+      if (!navigator.permissions || !navigator.permissions.query) return Promise.resolve('prompt');
+      return navigator.permissions.query({ name: 'geolocation' })
+        .then(function (p) { return p.state; }).catch(function () { return 'prompt'; });
+    },
+    fix: function (force) {
+      var self = this;
+      if (self.last && Date.now() - self.last.at < 180000) return Promise.resolve(self.last);
+      if (!navigator.geolocation || !S.useLocation) return Promise.resolve(null);
+      return self.permission().then(function (state) {
+        if (state !== 'granted' && !force) return null;
+        return new Promise(function (res) {
+          navigator.geolocation.getCurrentPosition(function (p) {
+            self.last = { lat: p.coords.latitude, lon: p.coords.longitude,
+              acc: p.coords.accuracy, at: Date.now() };
+            res(self.last);
+          }, function () { res(null); },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 120000 });
+        });
+      });
+    },
+    /* Yakındaki ansiklopedi maddeleri: yapıyı tanımanın en güçlü ipucu */
+    nearby: function (force) {
+      var self = this;
+      return self.fix(force).then(function (fix) {
+        if (!fix) return null;
+        var key = 'geo:' + fix.lat.toFixed(4) + ',' + fix.lon.toFixed(4) + ':' + S.lang;
+        var hit = Cache.get(key);
+        if (hit) return { fix: fix, pages: hit };
+        var wiki = WIKI_LANG[S.lang] ? S.lang : 'en';
+        var url = 'https://' + wiki + '.wikipedia.org/w/api.php?action=query&list=geosearch' +
+          '&gscoord=' + fix.lat + '%7C' + fix.lon + '&gsradius=600&gslimit=14&format=json&origin=*';
+        return withTimeout(fetch(url).then(function (r) { return r.ok ? r.json() : null; }), 9000, null)
+          .then(function (d) {
+            var pages = (d && d.query && d.query.geosearch) ? d.query.geosearch.map(function (g) {
+              return { title: g.title, dist: Math.round(g.dist) };
+            }) : [];
+            Cache.set(key, pages);
+            return { fix: fix, pages: pages };
+          }).catch(function () { return { fix: fix, pages: [] }; });
+      }).catch(function () { return null; });
+    }
+  };
+  var WIKI_LANG = { tr: 1, en: 1, de: 1, fr: 1, es: 1, it: 1, pt: 1, nl: 1, ru: 1, uk: 1,
+    ar: 1, fa: 1, az: 1, el: 1, pl: 1, hi: 1, ja: 1, ko: 1, zh: 1 };
+
+  /* ── 36. Yapı doğrulama ────────────────────────────────
+     Yapay zekânın verdiği adı ansiklopedide arayıp gerçek maddeye
+     bağlarız. Konum varsa eşleşme neredeyse kesinleşir. */
+  var Heritage = {
+    norm: function (s) {
+      return String(s || '').toLocaleLowerCase('tr')
+        .replace(/[''`’]/g, '').replace(/[^\wçğıöşü\s]/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+    },
+    score: function (a, b) {
+      a = this.norm(a); b = this.norm(b);
+      if (!a || !b) return 0;
+      if (a === b) return 1;
+      var wa = a.split(' '), wb = b.split(' '), hit = 0;
+      wa.forEach(function (w) { if (w.length > 2 && wb.indexOf(w) >= 0) hit++; });
+      return hit / Math.max(wa.length, wb.length);
+    },
+    summary: function (title) {
+      var wiki = WIKI_LANG[S.lang] ? S.lang : 'en';
+      var key = 'wiki:' + wiki + ':' + title;
+      var hit = Cache.get(key);
+      if (hit) return Promise.resolve(hit);
+      return withTimeout(fetch('https://' + wiki + '.wikipedia.org/api/rest_v1/page/summary/' +
+        encodeURIComponent(title.replace(/ /g, '_')))
+        .then(function (r) { return r.ok ? r.json() : null; }), 9000, null)
+        .then(function (d) {
+          if (!d || d.type === 'https://mediawiki.org/wiki/HyperSwitch/errors/not_found') return null;
+          var out = {
+            title: d.titles && d.titles.normalized ? d.titles.normalized : d.title,
+            extract: d.extract || '', desc: d.description || '',
+            url: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || '',
+            lat: d.coordinates ? d.coordinates.lat : null,
+            lon: d.coordinates ? d.coordinates.lon : null
+          };
+          Cache.set(key, out);
+          return out;
+        }).catch(function () { return null; });
+    },
+
+    /* Kaydı gerçek maddeye sabitle. Değişiklik olduysa true döner. */
+    pin: function (rec, place) {
+      var self = this, d = rec.data;
+      if (!place || !place.pages || !place.pages.length) return Promise.resolve(false);
+
+      var best = null;
+      place.pages.forEach(function (p) {
+        var sc = self.score(d.title, p.title);
+        /* çok yakındaki tek aday, isim tutmasa da güçlü ipucudur */
+        var near = p.dist <= 90 ? 0.35 : p.dist <= 220 ? 0.18 : 0;
+        var total = sc * 0.8 + near;
+        if (!best || total > best.total) best = { page: p, sc: sc, total: total };
+      });
+      if (!best || best.total < 0.42) return Promise.resolve(false);
+
+      return self.summary(best.page.title).then(function (w) {
+        if (!w) return false;
+        var changed = false;
+        if (best.sc < 0.95) { d.title = w.title; changed = true; }
+        d.confidence = Math.max(d.confidence, best.sc > 0.5 ? 96 : 88);
+        if (!d.heritage) d.heritage = { era: '', built: '', patron: '', architect: '', style: '',
+          status: '', story: '', visit: '', timeline: [] };
+        if (w.desc && !d.heritage.era) d.heritage.era = w.desc;
+        if (w.extract && w.extract.length > (d.heritage.story || '').length * 0.6) {
+          d.heritage.story = w.extract;
+          changed = true;
+        }
+        d.heritage.wiki = w.url;
+        d.heritage.pinned = best.page.dist;
+        d.search.local = w.title;
+        rec.place = { name: w.title, dist: best.page.dist, lat: w.lat, lon: w.lon };
+        return true;
+      });
+    }
+  };
+
+  /* ── 37. Satıcı yelpazesi ──────────────────────────────
+     Tek liste herkese uymuyor: gofret için Teknosa, matkap için Gratis
+     anlamsız. Modelin verdiği raf bilgisine göre satıcı seçiyoruz. */
+  var SHELVES_TR = {
+    market: [['Migros', 'https://www.migros.com.tr/arama?q='], ['CarrefourSA', 'https://www.carrefoursa.com/search?text='],
+      ['A101', 'https://www.a101.com.tr/arama?k='], ['ŞOK', 'https://www.sokmarket.com.tr/arama?q='],
+      ['Getir', 'https://getir.com/arama/?q=']],
+    elektronik: [['Teknosa', 'https://www.teknosa.com/arama?s='], ['Vatan', 'https://www.vatanbilgisayar.com/arama/?q='],
+      ['MediaMarkt', 'https://www.mediamarkt.com.tr/tr/search.html?query='], ['Amazon TR', 'https://www.amazon.com.tr/s?k=']],
+    kozmetik: [['Gratis', 'https://www.gratis.com/arama?q='], ['Watsons', 'https://www.watsons.com.tr/search?text='],
+      ['Rossmann', 'https://www.rossmann.com.tr/arama?q='], ['Sephora', 'https://www.sephora.com.tr/search?q=']],
+    ev: [['IKEA', 'https://www.ikea.com.tr/arama?q='], ['Koçtaş', 'https://www.koctas.com.tr/arama?q='],
+      ['Tepe Home', 'https://www.tepehome.com/arama?q='], ['Madame Coco', 'https://www.madamecoco.com/arama?q=']],
+    yapi: [['Koçtaş', 'https://www.koctas.com.tr/arama?q='], ['Bauhaus', 'https://www.bauhaus.com.tr/arama?q='],
+      ['Tekzen', 'https://www.tekzen.com.tr/arama?q=']],
+    giyim: [['Boyner', 'https://www.boyner.com.tr/arama?q='], ['LC Waikiki', 'https://www.lcw.com/arama?q='],
+      ['DeFacto', 'https://www.defacto.com.tr/arama?q='], ['Zara', 'https://www.zara.com/tr/tr/search?searchTerm=']],
+    kitap: [['D&R', 'https://www.dr.com.tr/search?q='], ['Kitapyurdu', 'https://www.kitapyurdu.com/index.php?route=product/search&filter_name='],
+      ['İdefix', 'https://www.idefix.com/search?Q=']],
+    spor: [['Decathlon', 'https://www.decathlon.com.tr/search?q='], ['Sportive', 'https://www.sportive.com.tr/arama?q='],
+      ['Nike', 'https://www.nike.com/tr/w?q=']],
+    oyuncak: [['Toyzz Shop', 'https://www.toyzzshop.com/arama?q='], ['Ebebek', 'https://www.ebebek.com/arama?q=']],
+    bahce: [['Çiçeksepeti', 'https://www.ciceksepeti.com/arama?query='], ['Koçtaş', 'https://www.koctas.com.tr/arama?q=']],
+    evcil: [['Petlebi', 'https://www.petlebi.com/arama?q='], ['Pet Shop', 'https://www.petshop.com.tr/arama?q=']],
+    eczane: [['Dermokozmetika', 'https://www.dermokozmetika.com.tr/arama?q='], ['Watsons', 'https://www.watsons.com.tr/search?text=']],
+    ikinci_el: [['sahibinden', 'https://www.sahibinden.com/arama?query_text='], ['Dolap', 'https://dolap.com/arama?q='],
+      ['letgo', 'https://www.letgo.com/tr/ara?q=']],
+    otomotiv: [['Oto Doktoru', 'https://www.google.com/search?q='], ['sahibinden', 'https://www.sahibinden.com/arama?query_text=']]
+  };
+
+  function shelfLinks(retail, q) {
+    var extra = SHELVES_TR[retail];
+    if (!extra || S.lang !== 'tr') return [];
+    return extra.map(function (x) {
+      return { n: x[0], g: x[0].slice(0, 2).toUpperCase(), u: x[1] + q };
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
