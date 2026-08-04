@@ -1249,7 +1249,7 @@ dl.specs{margin:0}
   /* ── 7. Görsel işleme ──────────────────────────────────── */
   /* 1120 piksel görme modelleri için 1568 kadar iyi sonuç verir ama
      yüklenmesi yarı yarıya sürer. Fark doğrudan bekleme süresine yansır. */
-  var MAXPX = 1344;
+  var MAXPX = 1568;
 
   function grabFrame() {
     var w = video.videoWidth, h = video.videoHeight;
@@ -1260,7 +1260,7 @@ dl.specs{margin:0}
     c.width = Math.round(w * sc); c.height = Math.round(h * sc);
     if (S.facing === 'user') { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
     ctx.drawImage(video, 0, 0, c.width, c.height);
-    return c.toDataURL('image/jpeg', 0.82);
+    return c.toDataURL('image/jpeg', 0.90);
   }
 
   function fileToImage(file) {
@@ -1275,7 +1275,7 @@ dl.specs{margin:0}
           var sc = Math.min(1, MAXPX / Math.max(img.width, img.height));
           c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
           ctx.drawImage(img, 0, 0, c.width, c.height);
-          res(c.toDataURL('image/jpeg', 0.84));
+          res(c.toDataURL('image/jpeg', 0.92));
         };
         img.onerror = function () { rej(new Error('decode')); };
         img.src = fr.result;
@@ -1342,9 +1342,12 @@ dl.specs{margin:0}
      daha küçük bir kopya üretir. Birinci kare ayrıntıyı, ikinci kare bağlamı taşır. */
   function prepareAnalysisImages(imgs) {
     imgs = imagesFor(imgs).slice(0, 2);
+    var productDetail = ['oto','urun','yemek','teknik','tamir','arac','metin','belge'].indexOf(S.mode) >= 0;
     return Promise.all(imgs.map(function (im, i) {
-      var max = i === 0 ? 1280 : 960;
-      var q = i === 0 ? 0.82 : 0.76;
+      /* Ürün, etiket ve teknik parçalarda küçük yazı/logo kaybı yaşanmaması için
+         ilk kareyi daha yüksek çözünürlükte gönder. İkinci kare yalnızca bağlamdır. */
+      var max = productDetail ? (i === 0 ? 1536 : 1120) : (i === 0 ? 1408 : 1024);
+      var q = productDetail ? (i === 0 ? 0.90 : 0.84) : (i === 0 ? 0.86 : 0.80);
       return shrink(im.dataUrl, max, q).then(function (url) { return asPayload(url || im.dataUrl); });
     }));
   }
@@ -1743,7 +1746,7 @@ dl.specs{margin:0}
       system: system, prompt: prompt,
       images: imagesFor(imgs).slice(0, 4).map(function (im) { return { mime: im.mime, b64: im.b64 }; }),
       context: { mode: S.mode, language: S.lang, barcode: S.bc ? (S.bc.code || S.bc.value || '') : '' }
-    }, 60000).then(function (d) {
+    }, 75000).then(function (d) {
       var txt = d && (d.text || d.output || d.content);
       if (!txt) throw new Error('lensa-server empty');
       return { text: String(txt), via: d.via || 'LENSA AI' };
@@ -4233,7 +4236,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v8.3-stall-fix';
+  var APP_VERSION = 'v8.4-recognition-fix';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */

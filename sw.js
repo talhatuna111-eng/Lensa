@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lensa-v8.3-stall-fix-20260804-1';
+const CACHE_NAME = 'lensa-v8.4-recognition-fix-20260804-1';
 const APP_SHELL = ['./', './index.html', './admin.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
