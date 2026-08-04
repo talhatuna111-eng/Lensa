@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="LENSA">
 <meta name="description" content="Bilmediğin şeyin fotoğrafını çek. LENSA ne olduğunu sesli anlatsın, nerede bulunacağını söylesin.">
 <title>LENSA — Ne bu? Nerede bulunur?</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -3873,6 +3875,17 @@ dl.specs{margin:0}
   }
 
   function init() {
+    // Service Worker Kaydı
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+          console.log('ServiceWorker kayıt başarılı:', reg.scope);
+        }).catch(function(err) {
+          console.log('ServiceWorker kayıt hatası:', err);
+        });
+      });
+    }
+
     video = $('video'); finder = $('finder');
     loadPrefs();
     applyUI();
