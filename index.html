@@ -63,8 +63,13 @@ a{color:inherit}
   background:linear-gradient(180deg,rgba(14,17,19,.92) 58%,rgba(14,17,19,0));
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
-.wordmark{font-family:var(--disp);font-size:21px;letter-spacing:.26em;font-weight:500;margin-right:auto;padding-left:.26em}
-.wordmark b{color:var(--brass-hi);font-weight:500}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand-mark{width:30px;display:block;color:var(--label)}
+.brand-mark .lensa-mark{width:100%;height:auto;display:block}
+.wordmark{font-size:17px;letter-spacing:.34em;font-weight:600;padding-left:.34em;
+  animation:chroma .78s steps(2,end) both}
+.idle-mark{display:block;width:78px;margin:0 auto;color:var(--label);opacity:.9}
+.idle-mark .lensa-mark{width:100%;height:auto;display:block}
 .icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);color:var(--chrome);transition:.2s var(--ease)}
 .icon-btn:active{transform:scale(.92);background:var(--void-2)}
 .lang-btn{width:auto;padding:0 12px;font-size:11px;font-weight:600;letter-spacing:.1em;border-radius:19px}
@@ -410,18 +415,257 @@ dl.specs{margin:0}
   font-size:12.5px;line-height:1.6;color:var(--ink-soft);position:relative;z-index:1;
 }
 
+/* ── hesap kartı ─────────────────────────── */
+.acct{padding:16px 0 4px}
+.acct-row{display:flex;align-items:center;gap:13px}
+.avatar{
+  width:48px;height:48px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--disp);font-size:21px;color:var(--chrome);
+  border:1px solid var(--line);background:var(--void-2);
+}
+.avatar.on{color:#14100A;background:linear-gradient(140deg,var(--brass-hi),var(--brass));border-color:var(--brass)}
+.acct-txt{flex:1;min-width:0}
+.acct-txt strong{display:block;font-size:15px;font-weight:600}
+.acct-txt span{display:block;font-size:12px;color:var(--chrome-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-out{padding:8px 13px;border-radius:16px;border:1px solid var(--line);color:var(--chrome-2);font-size:12px;font-weight:600}
+.acct-note{margin:12px 0 0;font-size:12px;color:var(--chrome-2);line-height:1.55}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.statrow div{padding:13px 8px;border-radius:13px;border:1px solid var(--line);text-align:center;background:rgba(255,255,255,.02)}
+.statrow b{display:block;font-family:var(--disp);font-size:23px;font-weight:500;line-height:1}
+.statrow span{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--chrome-2);margin-top:5px}
+.tabs2{display:flex;gap:6px;margin-bottom:12px}
+.tabs2 button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--line);color:var(--chrome-2);font-size:13px;font-weight:600}
+.tabs2 button[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:#14100A}
+.acct input{width:100%;padding:12px 14px;border-radius:12px;background:var(--void-2);border:1px solid var(--line);
+  color:var(--label);font-size:14.5px;margin-bottom:8px}
+.solid-btn{width:100%;padding:13px;border-radius:13px;background:var(--brass);color:#14100A;font-size:14px;font-weight:700;
+  transition:transform .15s var(--ease)}
+.solid-btn:active{transform:scale(.98)}
+.link-btn{display:block;width:100%;padding:12px;margin-top:6px;color:var(--brass-hi);font-size:12.5px;font-weight:600}
+.field textarea{width:100%;padding:12px 14px;border-radius:12px;background:var(--void-2);border:1px solid var(--line);
+  color:var(--label);font-size:14.5px;resize:vertical;font-family:inherit}
+
+/* ── ilk kullanım turu ───────────────────── */
+#intro{position:fixed;inset:0;z-index:98;display:flex;align-items:flex-end;
+  background:rgba(8,9,10,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:24px 18px calc(var(--safe-b) + 24px)}
+.intro-card{width:100%;max-width:480px;margin:0 auto;background:rgba(237,231,218,.94);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  color:var(--ink);border-radius:var(--r-l);padding:26px 22px 22px;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.intro-card::before{content:"";position:absolute;left:22px;right:22px;top:12px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--brass) 14%,var(--brass) 86%,transparent);opacity:.6}
+.intro-num{font-size:10px;letter-spacing:.22em;font-weight:700;color:var(--brass)}
+.intro-card h2{font-family:var(--disp);font-weight:500;font-size:29px;line-height:1.1;margin:10px 0 10px;
+  animation:chroma .5s steps(2,end) both}
+.intro-card p{margin:0;font-size:14.5px;line-height:1.65;color:#2B2E30}
+.intro-dots{display:flex;gap:6px;margin:20px 0 16px}
+.intro-dots i{width:22px;height:3px;border-radius:2px;background:rgba(21,24,26,.18);transition:.25s var(--ease)}
+.intro-dots i.on{background:var(--brass);width:34px}
+.intro-actions{display:flex;gap:10px;align-items:center}
+.intro-actions #introSkip{padding:13px 16px;color:var(--ink-soft);font-size:13px;font-weight:600}
+.intro-actions .solid-btn{flex:1}
+
+/* ── belge sayfası ───────────────────────── */
+#sheet{position:fixed;inset:0;z-index:97;display:flex;align-items:flex-end;
+  background:rgba(8,9,10,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sheet-card{width:100%;max-width:520px;margin:0 auto;max-height:86dvh;display:flex;flex-direction:column;
+  background:rgba(237,231,218,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  color:var(--ink);border-radius:var(--r-l) var(--r-l) 0 0;animation:rise .4s var(--ease) both}
+.sheet-top{display:flex;align-items:center;gap:12px;padding:20px 20px 12px;border-bottom:1px solid var(--line-ink)}
+.sheet-top h3{flex:1;margin:0;font-family:var(--disp);font-weight:500;font-size:23px}
+.sheet-top button{width:34px;height:34px;border-radius:50%;background:rgba(21,24,26,.07);font-size:20px;line-height:1;color:var(--ink-soft)}
+.sheet-body{overflow-y:auto;padding:16px 20px calc(var(--safe-b) + 28px)}
+.sheet-body h4{margin:18px 0 5px;font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;font-weight:700;color:var(--brass)}
+.sheet-body h4:first-child{margin-top:2px}
+.sheet-body p{margin:0;font-size:14px;line-height:1.68;color:#2B2E30}
+.doc-foot{margin-top:24px!important;font-size:11px!important;color:#96918A!important;text-align:center}
+
+/* ── barkod ──────────────────────────────── */
+.finder .bcbtn{position:absolute;top:12px;left:12px;z-index:4;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;background:rgba(8,9,10,.6);backdrop-filter:blur(6px);
+  color:var(--chrome);border:1px solid var(--line)}
+.finder .bcbtn.on{color:#14100A;background:var(--brass);border-color:var(--brass)}
+.bcband{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:36px 16px 16px;
+  background:linear-gradient(0deg,rgba(8,9,10,.94),transparent);display:flex;align-items:center;gap:11px}
+.bcband em{flex:1;font-style:normal;font-size:12.5px;color:var(--brass-hi)}
+.bcband button{padding:8px 13px;border-radius:16px;border:1px solid var(--line);color:var(--chrome);font-size:12px;font-weight:600}
+.bcline{position:absolute;left:8%;right:8%;top:34%;height:2px;background:var(--brass-hi);
+  box-shadow:0 0 14px 2px rgba(224,174,99,.6);animation:bcsweep 1.6s var(--ease) infinite}
+@keyframes bcsweep{0%,100%{top:26%;opacity:.35}50%{top:64%;opacity:1}}
+.bc-chip{display:inline-flex;align-items:center;gap:7px;margin-left:7px;padding:6px 11px;border-radius:20px;
+  border:1px solid var(--line-ink);background:rgba(255,255,255,.4);text-decoration:none;
+  font-size:11.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace;letter-spacing:.02em}
+.bc-chip:active{transform:scale(.96)}
+
+/* ── ürün veritabanı ─────────────────────── */
+.dbhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.score{margin-left:auto;padding:5px 11px;border-radius:14px;font-size:10.5px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:#fff;background:#7A7A72}
+.score.nA{background:#1E8E3E}.score.nB{background:#7CB342}.score.nC{background:#F9A825;color:#2B2410}
+.score.nD{background:#EF6C00}.score.nE{background:#C62828}
+.ingr{margin-top:12px;border-top:1px solid var(--line-ink);padding-top:10px}
+.ingr summary{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer}
+.ingr p{margin:9px 0 0;font-size:13px;line-height:1.6;color:#2B2E30}
+
+/* ── canlı fiyat ─────────────────────────── */
+.live-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:12px;
+  padding:13px;border-radius:13px;border:1px dashed rgba(184,133,63,.6);color:#7A5623;
+  background:rgba(184,133,63,.06);font-size:13.5px;font-weight:600;transition:transform .15s var(--ease)}
+.live-btn:active{transform:scale(.98)}
+.live-btn[disabled]{opacity:.55}
+.lp-wait{margin-top:10px;padding:13px;border-radius:12px;background:rgba(21,24,26,.05);
+  font-size:13px;color:var(--ink-soft);text-align:center}
+.lp-box{margin-top:12px;border:1px solid var(--line-ink);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.36)}
+.lp-head{padding:11px 14px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+  color:var(--brass);border-bottom:1px solid var(--line-ink)}
+.lp-row{display:flex;align-items:center;gap:12px;padding:12px 14px;text-decoration:none;color:var(--ink);
+  border-bottom:1px solid rgba(21,24,26,.07)}
+.lp-row:last-of-type{border-bottom:0}
+.lp-row:active{background:rgba(184,133,63,.12)}
+.lp-seller{flex:1;font-size:13.5px;font-weight:600}
+.lp-seller small{display:block;font-weight:400;font-size:11px;color:var(--ink-soft)}
+.lp-price{font-family:var(--disp);font-size:19px;font-weight:500}
+.lp-price.best{color:#1E8E3E}
+.lp-note{margin:0;padding:11px 14px;font-size:11px;line-height:1.55;color:var(--ink-soft);
+  border-top:1px solid var(--line-ink)}
+
+/* ── açılış ekranı ───────────────────────────
+   Mercek açılır, halka çizilir, tarama köşeleri yerine oturur,
+   sonra ad harf harf yükselir. Dokunulursa atlanır. */
+#splash{
+  position:fixed;inset:0;z-index:120;background:var(--void);display:grid;place-items:center;
+  transition:opacity .55s var(--ease),visibility .55s;
+}
+#splash.gone{opacity:0;visibility:hidden;pointer-events:none}
+.sp-inner{text-align:center;transform:translateY(-4%);padding:0 24px}
+.sp-mark{width:min(46vw,178px);margin:0 auto;color:var(--label)}
+.sp-mark .lensa-mark{width:100%;height:auto;display:block;overflow:visible}
+
+.sp-mark .ls-ring path{stroke-dasharray:100;stroke-dashoffset:100;animation:lsDraw .8s var(--ease) forwards}
+.sp-mark .ls-a1{animation-delay:.06s}
+.sp-mark .ls-a2{animation-delay:.26s}
+.sp-mark .ls-a3{animation-delay:.42s}
+@keyframes lsDraw{to{stroke-dashoffset:0}}
+
+.sp-mark .ls-lens{transform-origin:100px 90px;animation:lsLens .8s .3s var(--ease) both}
+@keyframes lsLens{from{transform:scale(.16) rotate(-40deg);opacity:0}to{transform:none;opacity:1}}
+.sp-mark .ls-blades{transform-origin:100px 90px;animation:lsSpin 14s linear infinite}
+@keyframes lsSpin{to{transform:rotate(360deg)}}
+
+.sp-mark .ls-corner path{opacity:0;animation:lsCorner .55s .8s var(--ease) forwards}
+.sp-mark .ls-corner path:last-child{animation-delay:.92s}
+@keyframes lsCorner{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+.sp-mark .ls-dot{opacity:0;animation:lsDot .4s var(--ease) forwards}
+.sp-mark .d1{animation-delay:.98s}.sp-mark .d2{animation-delay:1.06s}.sp-mark .d3{animation-delay:1.14s}
+@keyframes lsDot{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+.sp-word{margin-top:26px;display:flex;justify-content:center;gap:.30em;
+  font-size:clamp(30px,9vw,42px);font-weight:600;letter-spacing:.06em;color:var(--label)}
+.sp-word span{display:inline-block;opacity:0;animation:lsUp .55s var(--ease) forwards}
+.sp-word span:nth-child(1){animation-delay:1.12s}
+.sp-word span:nth-child(2){animation-delay:1.19s}
+.sp-word span:nth-child(3){animation-delay:1.26s}
+.sp-word span:nth-child(4){animation-delay:1.33s}
+.sp-word span:nth-child(5){animation-delay:1.40s}
+@keyframes lsUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+.sp-tag{margin-top:12px;display:flex;justify-content:center;gap:9px;
+  font-size:11.5px;font-weight:600;letter-spacing:.26em}
+.sp-tag i{font-style:normal;opacity:0;animation:lsFade .5s var(--ease) forwards}
+.sp-tag i:nth-child(1){color:var(--chrome);animation-delay:1.5s}
+.sp-tag i:nth-child(2){color:#3B82F6;animation-delay:1.6s}
+.sp-tag i:nth-child(3){color:#8B5CF6;animation-delay:1.7s}
+@keyframes lsFade{to{opacity:1}}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
 </head>
 <body>
+<div id="splash">
+  <div class="sp-inner">
+    <div class="sp-mark"><svg class="lensa-mark" viewBox="0 0 220 200" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="lsIris" cx="36%" cy="30%" r="76%">
+      <stop offset="0%" stop-color="#D8B4FE"/><stop offset="34%" stop-color="#8B5CF6"/>
+      <stop offset="72%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </radialGradient>
+    <linearGradient id="lsCorner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <g class="ls-ring" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path class="ls-a1" pathLength="100" d="M34.3 72.4 A68 68 0 0 1 165.7 72.4"/>
+    <path class="ls-a2" pathLength="100" d="M165.7 107.6 A68 68 0 0 1 82.4 155.7"/>
+    <path class="ls-a3" pathLength="100" d="M82.4 155.7 L44 185 L57.2 142.8 A68 68 0 0 1 34.3 72.4"/>
+  </g>
+  <g class="ls-corner" stroke="url(#lsCorner)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M176 45 L195 45 Q201 45 201 51 L201 69"/>
+    <path d="M201 121 L201 139 Q201 145 195 145 L176 145"/>
+  </g>
+  <g class="ls-lens">
+    <circle cx="100" cy="90" r="50" fill="#0B0E10"/>
+    <circle cx="100" cy="90" r="43" fill="#1B2126"/>
+    <circle cx="100" cy="90" r="36" fill="url(#lsIris)"/>
+    <g class="ls-blades" stroke="rgba(255,255,255,.22)" stroke-width="1.6">
+      <path d="M100 54 L118 84"/><path d="M131 71 L118 96"/><path d="M131 109 L100 108"/>
+      <path d="M100 126 L82 96"/><path d="M69 109 L82 84"/><path d="M69 71 L100 72"/>
+    </g>
+    <circle cx="100" cy="90" r="18" fill="#080A0C"/>
+    <circle cx="100" cy="90" r="9" fill="#030405"/>
+    <ellipse cx="87" cy="75" rx="10" ry="6" fill="rgba(255,255,255,.5)" transform="rotate(-32 87 75)"/>
+  </g>
+  <circle class="ls-dot d1" cx="96" cy="152" r="4.6" fill="currentColor"/>
+  <circle class="ls-dot d2" cx="109" cy="152" r="4.6" fill="#3B82F6"/>
+  <circle class="ls-dot d3" cx="122" cy="152" r="4.6" fill="#8B5CF6"/>
+</svg></div>
+    <div class="sp-word" aria-label="LENSA"><span>L</span><span>E</span><span>N</span><span>S</span><span>A</span></div>
+    <div class="sp-tag"><i>GÖR.</i><i>TANI.</i><i>ÖĞREN.</i></div>
+  </div>
+</div>
 <div id="bgart" aria-hidden="true"></div>
 <div id="netbar" role="status"></div>
 <div id="app">
 
   <header class="topbar">
-    <div class="wordmark">LEN<b>S</b>A</div>
+    <div class="brand"><span class="brand-mark"><svg class="lensa-mark" viewBox="0 0 220 200" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="lsIris" cx="36%" cy="30%" r="76%">
+      <stop offset="0%" stop-color="#D8B4FE"/><stop offset="34%" stop-color="#8B5CF6"/>
+      <stop offset="72%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </radialGradient>
+    <linearGradient id="lsCorner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <g class="ls-ring" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path class="ls-a1" pathLength="100" d="M34.3 72.4 A68 68 0 0 1 165.7 72.4"/>
+    <path class="ls-a2" pathLength="100" d="M165.7 107.6 A68 68 0 0 1 82.4 155.7"/>
+    <path class="ls-a3" pathLength="100" d="M82.4 155.7 L44 185 L57.2 142.8 A68 68 0 0 1 34.3 72.4"/>
+  </g>
+  <g class="ls-corner" stroke="url(#lsCorner)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M176 45 L195 45 Q201 45 201 51 L201 69"/>
+    <path d="M201 121 L201 139 Q201 145 195 145 L176 145"/>
+  </g>
+  <g class="ls-lens">
+    <circle cx="100" cy="90" r="50" fill="#0B0E10"/>
+    <circle cx="100" cy="90" r="43" fill="#1B2126"/>
+    <circle cx="100" cy="90" r="36" fill="url(#lsIris)"/>
+    <g class="ls-blades" stroke="rgba(255,255,255,.22)" stroke-width="1.6">
+      <path d="M100 54 L118 84"/><path d="M131 71 L118 96"/><path d="M131 109 L100 108"/>
+      <path d="M100 126 L82 96"/><path d="M69 109 L82 84"/><path d="M69 71 L100 72"/>
+    </g>
+    <circle cx="100" cy="90" r="18" fill="#080A0C"/>
+    <circle cx="100" cy="90" r="9" fill="#030405"/>
+    <ellipse cx="87" cy="75" rx="10" ry="6" fill="rgba(255,255,255,.5)" transform="rotate(-32 87 75)"/>
+  </g>
+  <circle class="ls-dot d1" cx="96" cy="152" r="4.6" fill="currentColor"/>
+  <circle class="ls-dot d2" cx="109" cy="152" r="4.6" fill="#3B82F6"/>
+  <circle class="ls-dot d3" cx="122" cy="152" r="4.6" fill="#8B5CF6"/>
+</svg></span><span class="wordmark">LENSA</span></div>
     <button class="icon-btn lang-btn" id="langBtn" aria-label="Dil">TR</button>
     <button class="icon-btn" id="settingsBtn" aria-label="Ayarlar">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -437,14 +681,49 @@ dl.specs{margin:0}
           <img id="shot" class="shot hide" alt="">
           <div class="ticks" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
           <div class="sweep" id="sweep" aria-hidden="true"></div>
+          <button class="bcbtn" id="bcBtn" aria-label="Barkod tara">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="5" width="2" height="14"/><rect x="6" y="5" width="1" height="14"/><rect x="9" y="5" width="3" height="14"/><rect x="14" y="5" width="1" height="14"/><rect x="17" y="5" width="2" height="14"/><rect x="21" y="5" width="1" height="14"/></svg>
+          </button>
+          <div class="bcband hide" id="bcBand"><span class="bcline"></span><em id="bcMsg"></em><button id="bcCancel">Vazgeç</button></div>
           <button class="torch hide" id="torchBtn" aria-label="Fener">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M9 2h6v4l-1.5 2v12a1.5 1.5 0 0 1-3 0V8L9 6z"/></svg>
           </button>
           <div class="finder-idle" id="finderIdle">
-            <svg class="aperture-mark" width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3">
-              <circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="7.5"/>
-              <path d="M24 5v11.5M40.5 14.5 30.5 20.5M40.5 33.5 30.5 27.5M24 43V31.5M7.5 33.5 17.5 27.5M7.5 14.5 17.5 20.5"/>
-            </svg>
+<span class="idle-mark"><svg class="lensa-mark" viewBox="0 0 220 200" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="lsIris" cx="36%" cy="30%" r="76%">
+      <stop offset="0%" stop-color="#D8B4FE"/><stop offset="34%" stop-color="#8B5CF6"/>
+      <stop offset="72%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </radialGradient>
+    <linearGradient id="lsCorner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <g class="ls-ring" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path class="ls-a1" pathLength="100" d="M34.3 72.4 A68 68 0 0 1 165.7 72.4"/>
+    <path class="ls-a2" pathLength="100" d="M165.7 107.6 A68 68 0 0 1 82.4 155.7"/>
+    <path class="ls-a3" pathLength="100" d="M82.4 155.7 L44 185 L57.2 142.8 A68 68 0 0 1 34.3 72.4"/>
+  </g>
+  <g class="ls-corner" stroke="url(#lsCorner)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M176 45 L195 45 Q201 45 201 51 L201 69"/>
+    <path d="M201 121 L201 139 Q201 145 195 145 L176 145"/>
+  </g>
+  <g class="ls-lens">
+    <circle cx="100" cy="90" r="50" fill="#0B0E10"/>
+    <circle cx="100" cy="90" r="43" fill="#1B2126"/>
+    <circle cx="100" cy="90" r="36" fill="url(#lsIris)"/>
+    <g class="ls-blades" stroke="rgba(255,255,255,.22)" stroke-width="1.6">
+      <path d="M100 54 L118 84"/><path d="M131 71 L118 96"/><path d="M131 109 L100 108"/>
+      <path d="M100 126 L82 96"/><path d="M69 109 L82 84"/><path d="M69 71 L100 72"/>
+    </g>
+    <circle cx="100" cy="90" r="18" fill="#080A0C"/>
+    <circle cx="100" cy="90" r="9" fill="#030405"/>
+    <ellipse cx="87" cy="75" rx="10" ry="6" fill="rgba(255,255,255,.5)" transform="rotate(-32 87 75)"/>
+  </g>
+  <circle class="ls-dot d1" cx="96" cy="152" r="4.6" fill="currentColor"/>
+  <circle class="ls-dot d2" cx="109" cy="152" r="4.6" fill="#3B82F6"/>
+  <circle class="ls-dot d3" cx="122" cy="152" r="4.6" fill="#8B5CF6"/>
+</svg></span>
             <h2 id="idleTitle">Bilmediğin şeyi göster</h2>
             <p id="idleSub">Kamerayı çevir ya da galerinden bir fotoğraf seç.</p>
           </div>
@@ -503,6 +782,26 @@ dl.specs{margin:0}
   <div class="marker-actions">
     <button id="markerCancel">Vazgeç</button>
     <button id="markerUse" disabled>Bu bölgeyi incele</button>
+  </div>
+</div>
+
+<div id="intro" class="hide" aria-hidden="true">
+  <div class="intro-card">
+    <span class="intro-num" id="introNum"></span>
+    <h2 id="introK"></h2>
+    <p id="introD"></p>
+    <div class="intro-dots" id="introDots"></div>
+    <div class="intro-actions">
+      <button id="introSkip">Atla</button>
+      <button id="introNext" class="solid-btn">Devam</button>
+    </div>
+  </div>
+</div>
+
+<div id="sheet" class="hide" aria-hidden="true" role="dialog">
+  <div class="sheet-card">
+    <div class="sheet-top"><h3 id="sheetTitle"></h3><button id="sheetClose" aria-label="Kapat">×</button></div>
+    <div class="sheet-body" id="sheetBody"></div>
   </div>
 </div>
 
@@ -629,6 +928,30 @@ dl.specs{margin:0}
       pasteLink: 'LENSA bağlantısını yapıştır', badLink: 'Bağlantı okunamadı.',
       sureH: 'Kesin teşhis', likelyH: 'Büyük olasılıkla', maybeH: 'Muhtemelen', lowH: 'Şüpheli — doğrula',
       others: 'Fotoğraftaki diğer şeyler', inspect: 'Bunu incele',
+      scanBarcode: 'Barkod tara', bcSeeking: 'Barkod aranıyor…', bcFound: 'Barkod okundu',
+      bcNone: 'Barkod bulunamadı.', bcLabel: 'Barkod', bcStop: 'Vazgeç',
+      livePrice: 'Canlı fiyat ara', priceSearching: 'Fiyatlar aranıyor…',
+      priceNone: 'Güncel fiyat bulunamadı.', priceLive: 'Bulunan fiyatlar',
+      priceWarn: 'Web aramasından geldi, satıcı sayfasında değişebilir.',
+      nutri: 'Besin skoru', allergens: 'Alerjen', dbSource: 'Ürün veritabanı',
+      ingredients: 'İçindekiler',
+      account: 'Hesap', signIn: 'Giriş yap', signUp: 'Kayıt ol', signOut: 'Çıkış yap',
+      guest: 'Misafir', email: 'E-posta', password: 'Şifre', magic: 'Şifresiz bağlantı gönder',
+      magicSent: 'Bağlantı e-postana gönderildi. Açtığında giriş yapmış olacaksın.',
+      welcome: 'Hoş geldin', signedInAs: 'Giriş yapıldı',
+      needAccount: 'Bunun için hesap gerekli.', wrongCreds: 'E-posta ya da şifre hatalı.',
+      weakPass: 'Şifre en az 6 karakter olmalı.', badEmail: 'Geçerli bir e-posta yaz.',
+      checkMail: 'E-postanı kontrol et, hesabını doğrula.', accountMade: 'Hesap oluşturuldu.',
+      syncUp: 'Buluta yedekle', syncDown: 'Buluttan getir', syncing: 'Eşitleniyor…',
+      synced: 'Eşitlendi', syncNote: 'Koleksiyonun cihazlar arasında taşınır.',
+      stats: 'Sayılar', sFinds: 'Keşif', sShared: 'Paylaşım', sLikes: 'Beğeni',
+      profile: 'Profil', displayName: 'Görünen ad', deleteAcct: 'Hesabı sil',
+      deleteAcctQ: 'Hesabın ve buluttaki tüm verin silinsin mi? Bu geri alınamaz.',
+      about: 'Hakkında', privacy: 'Gizlilik', terms: 'Kullanım şartları',
+      feedback: 'Geri bildirim', feedbackPh: 'Ne düzelmeli, ne eksik?', send: 'Gönder',
+      feedbackThanks: 'Teşekkürler, iletildi.',
+      mine: 'Benim', deletePost: 'Paylaşımı sil', searchFeed: 'Akışta ara…',
+      introSkip: 'Atla', introNext: 'Devam', introGo: 'Başla',
       heritage: 'Tarihçe', hEra: 'Dönem', hBuilt: 'Yapımı', hPatron: 'Yaptıran',
       hArchitect: 'Mimar', hStyle: 'Üslup', hListen: 'Tarihçeyi dinle', hVisit: 'Ziyaret',
       provider: 'Kaynak', mark: 'Nesneyi işaretle', markHint: 'Parmağınla anlatmamı istediğin şeyin etrafına bir kutu çiz.',
@@ -672,6 +995,30 @@ dl.specs{margin:0}
       pasteLink: 'Paste the LENSA link', badLink: 'Could not read that link.',
       sureH: 'Confirmed', likelyH: 'Very likely', maybeH: 'Probably', lowH: 'Uncertain \u2014 verify',
       others: 'Also in the frame', inspect: 'Look at this',
+      scanBarcode: 'Scan barcode', bcSeeking: 'Looking for a barcode\u2026', bcFound: 'Barcode read',
+      bcNone: 'No barcode found.', bcLabel: 'Barcode', bcStop: 'Cancel',
+      livePrice: 'Find live prices', priceSearching: 'Searching prices\u2026',
+      priceNone: 'No current price found.', priceLive: 'Prices found',
+      priceWarn: 'From a web search; the seller page may differ.',
+      nutri: 'Nutri-Score', allergens: 'Allergens', dbSource: 'Product database',
+      ingredients: 'Ingredients',
+      account: 'Account', signIn: 'Sign in', signUp: 'Sign up', signOut: 'Sign out',
+      guest: 'Guest', email: 'Email', password: 'Password', magic: 'Send a passwordless link',
+      magicSent: 'Link sent to your inbox. Opening it signs you in.',
+      welcome: 'Welcome', signedInAs: 'Signed in',
+      needAccount: 'That needs an account.', wrongCreds: 'Wrong email or password.',
+      weakPass: 'Password must be at least 6 characters.', badEmail: 'Enter a valid email.',
+      checkMail: 'Check your inbox to confirm your account.', accountMade: 'Account created.',
+      syncUp: 'Back up to cloud', syncDown: 'Restore from cloud', syncing: 'Syncing\u2026',
+      synced: 'Synced', syncNote: 'Your collection follows you across devices.',
+      stats: 'Numbers', sFinds: 'Finds', sShared: 'Shared', sLikes: 'Likes',
+      profile: 'Profile', displayName: 'Display name', deleteAcct: 'Delete account',
+      deleteAcctQ: 'Delete your account and everything stored in the cloud? This cannot be undone.',
+      about: 'About', privacy: 'Privacy', terms: 'Terms of use',
+      feedback: 'Feedback', feedbackPh: 'What should be better?', send: 'Send',
+      feedbackThanks: 'Thank you, sent.',
+      mine: 'Mine', deletePost: 'Delete post', searchFeed: 'Search the feed\u2026',
+      introSkip: 'Skip', introNext: 'Next', introGo: 'Start',
       heritage: 'History', hEra: 'Period', hBuilt: 'Built', hPatron: 'Commissioned by',
       hArchitect: 'Architect', hStyle: 'Style', hListen: 'Hear the history', hVisit: 'Visiting',
       provider: 'Source', mark: 'Mark the object', markHint: 'Draw a box around the thing you want me to describe.',
@@ -734,11 +1081,13 @@ dl.specs{margin:0}
     provider: 'auto', apiKey: '',
     customBase: '', customModel: '', customKey: '',
     sbUrl: '', sbKey: '', nick: '',
-    colFilter: '', colQuery: ''
+    colFilter: '', colQuery: '', feedQuery: '',
+    user: null, session: null, seenIntro: false, syncing: false,
+    bc: null, bcStop: null
   };
 
   var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate', 'voiceEngine', 'voiceURI',
-    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick'];
+    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick', 'seenIntro'];
 
   function loadPrefs() {
     var nav = (navigator.language || 'tr').slice(0, 2).toLowerCase();
@@ -1022,6 +1371,17 @@ dl.specs{margin:0}
       'MOD: ' + m.tr + '. ' + m.focus
     ];
     if (S.focusNote) lines.push('', 'ODAK: ' + S.focusNote);
+    if (S.bc) {
+      var bl = 'BARKOD: Fotografta ' + S.bc.code + ' barkodu okundu.';
+      if (S.bc.product && S.bc.product.name) {
+        bl += ' Acik urun veritabanina gore bu urun: ' + S.bc.product.name +
+          (S.bc.product.brand ? ' (marka: ' + S.bc.product.brand + ')' : '') +
+          '. Bu bilgi dogrulanmistir; title alanini buna gore yaz ve confidence degerini yuksek tut.';
+      } else {
+        bl += ' Veritabaninda kayit yok. Barkodu search.local ve search.global icine ekle ki dogru urun bulunabilsin.';
+      }
+      lines.push('', bl);
+    }
     lines.push(
       '',
       'KURALLAR',
@@ -1631,6 +1991,8 @@ dl.specs{margin:0}
     heart: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7C19 15.6 12 20 12 20z"/></svg>',
     flag: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></svg>',
     warn: '<svg width="18" height="18" style="flex:0 0 auto;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+    bars: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="5" width="2" height="14"/><rect x="6" y="5" width="1" height="14"/><rect x="9" y="5" width="3" height="14"/><rect x="14" y="5" width="1" height="14"/><rect x="17" y="5" width="2" height="14"/><rect x="21" y="5" width="1" height="14"/></svg>',
+    search: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>',
     aperture: '<svg class="aperture-mark" width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="7.5"/><path d="M24 5v11.5M40.5 14.5 30.5 20.5M40.5 33.5 30.5 27.5M24 43V31.5M7.5 33.5 17.5 27.5M7.5 14.5 17.5 20.5"/></svg>'
   };
 
@@ -1640,13 +2002,21 @@ dl.specs{margin:0}
     if (c >= 45) return { cls: '', txt: t('maybeH') };
     return { cls: 'low', txt: t('lowH') };
   }
+  var SYM = { TRY: '₺', USD: '$', EUR: '€', GBP: '£', JPY: '¥', CNY: '¥', INR: '₹' };
   function money(p) {
     if (!p || p.min == null || p.max == null) return '';
     var cur = p.cur || 'TRY';
-    var sym = { TRY: '₺', USD: '$', EUR: '€', GBP: '£', JPY: '¥', CNY: '¥', INR: '₹' }[cur] || (cur + ' ');
+    var sym = SYM[cur] || (cur + ' ');
     var loc = S.lang === 'tr' ? 'tr-TR' : 'en-US';
     var f = function (n) { return Number(n).toLocaleString(loc, { maximumFractionDigits: 0 }); };
     return sym + f(p.min) + ' – ' + sym + f(p.max);
+  }
+  /* Tek fiyatta kuruş önemlidir; 29,90 ile 30 aynı şey değil. */
+  function priceTag(v, cur) {
+    var sym = SYM[cur] || ((cur || '') + ' ');
+    var loc = S.lang === 'tr' ? 'tr-TR' : 'en-US';
+    var dec = (Math.abs(v) < 10000 && Math.round(v) !== v) ? 2 : 0;
+    return sym + Number(v).toLocaleString(loc, { minimumFractionDigits: dec, maximumFractionDigits: dec });
   }
   function catNo(rec) {
     return rec && rec.no ? 'KAT. ' + String(rec.no).padStart(4, '0') : 'KAT. ——';
@@ -1716,6 +2086,11 @@ dl.specs{margin:0}
     h.push('<div class="kicker">' + esc(d.category || modeName(rec.mode)) + '</div>');
     h.push('<h1>' + esc(d.title) + '</h1>');
     h.push('<span class="hallmark ' + hm.cls + '">' + ICON.star + esc(hm.txt) + ' · ' + d.confidence + '</span>');
+    if (rec.bc && rec.bc.code) {
+      h.push('<a class="bc-chip" target="_blank" rel="noopener" href="' +
+        (rec.bc.product ? rec.bc.product.url : 'https://www.google.com/search?q=' + encodeURIComponent(rec.bc.code)) +
+        '">' + ICON.bars + '<span>' + esc(rec.bc.code) + (rec.bc.origin ? ' · ' + esc(rec.bc.origin) : '') + '</span></a>');
+    }
 
     var bars = '';
     for (var i = 0; i < 22; i++) bars += '<i></i>';
@@ -1737,9 +2112,36 @@ dl.specs{margin:0}
       h.push('</dl>');
     }
 
+    var P = rec.bc && rec.bc.product;
+    if (P) {
+      h.push('<div class="rule"></div><div class="dbhead"><h3 class="sec-title" style="margin:0">' + esc(t('dbSource')) + '</h3>');
+      if (P.nutri) h.push('<span class="score n' + esc(P.nutri) + '">' + esc(t('nutri')) + ' ' + esc(P.nutri) + '</span>');
+      h.push('</div>');
+      if (P.specs.length) {
+        h.push('<dl class="specs">');
+        P.specs.forEach(function (x) {
+          h.push('<div class="spec"><dt>' + esc(x.k) + '</dt><span class="lead"></span><dd>' + esc(x.v) + '</dd></div>');
+        });
+        h.push('</dl>');
+      }
+      if (P.allergens.length) {
+        h.push('<div class="warn" style="margin-top:12px">' + ICON.warn + '<div><b>' + esc(t('allergens')) + ':</b> ' +
+          esc(P.allergens.join(', ')) + '</div></div>');
+      }
+      if (P.ingredients) {
+        h.push('<details class="ingr"><summary>' + esc(t('ingredients')) + '</summary><p>' + esc(P.ingredients) + '</p></details>');
+      }
+    }
+
     if (shop && d.price.min != null) {
       h.push('<div style="height:16px"></div><div class="pricebox"><span class="amount">' +
         esc(money(d.price)) + '</span><small>' + esc(d.price.note || t('priceNote')) + '</small></div>');
+    }
+    if (shop) {
+      h.push('<button class="live-btn" id="liveBtn">' + ICON.search + '<span>' + esc(t('livePrice')) +
+        (S.apiKey || S.provider === 'anthropic' ? '' : '<small>' + esc(S.ui === 'tr' ? 'Kendi anahtarınla daha isabetli' : 'More reliable with your own key') + '</small>') +
+        '</span></button>');
+      h.push('<div id="liveOut"></div>');
     }
 
     if (shop) {
@@ -1884,6 +2286,8 @@ dl.specs{margin:0}
       TTS.toggle(d.heritage.story);
       buzz(8);
     };
+    var lb = $('liveBtn');
+    if (lb) lb.onclick = function () { runLivePrice(rec); };
     $('shareBtn').onclick = function () { shareRecord(rec); };
     $('cardBtn').onclick = function () { makeCard(rec); };
 
@@ -1942,7 +2346,21 @@ dl.specs{margin:0}
     var imgs = [S.image];
     if (S.fullImage && S.fullImage.dataUrl !== S.image.dataUrl) imgs.push(S.fullImage);
 
-    chainJSON(systemPrompt(), userPrompt(), imgs)
+    /* Barkod varsa teşhis tahmin olmaktan çıkıp doğrulamaya döner.
+       Bulunamazsa akış hiç değişmez. */
+    var bcStep = S.bc ? Promise.resolve(S.bc) : Barcode.sniff(S.image.dataUrl).then(function (hit) {
+      if (!hit || !hit.value) return null;
+      buzz(20);
+      setStage(t('bcFound') + ' · ' + hit.value);
+      return ProductDB.lookup(hit.value).then(function (p) {
+        return { code: hit.value, format: hit.format || '', product: p, origin: Barcode.origin(hit.value) };
+      });
+    }).catch(function () { return null; });
+
+    bcStep.then(function (bc) {
+      S.bc = bc;
+      return chainJSON(systemPrompt(), userPrompt(), imgs);
+    })
       .then(function (r) {
         if (S.doubleCheck && r.data.confidence < 70) {
           clearInterval(tick);
@@ -1960,7 +2378,7 @@ dl.specs{margin:0}
             id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
             ts: Date.now(), mode: S.mode, lang: S.lang, via: r.via,
             thumb: thumb, data: r.data, qa: [], saved: false, no: null,
-            focused: !!S.focusNote
+            focused: !!S.focusNote, bc: S.bc || null
           };
           S.current = rec;
           S.busy = false;
@@ -1985,6 +2403,41 @@ dl.specs{margin:0}
           '<button class="act" id="backScan2"><span>' + esc(t('newScan')) + '</span></button></div></div>';
         $('retryBtn').onclick = function () { analyse(true); };
         $('backScan2').onclick = function () { go('scan'); resetScan(); };
+      });
+  }
+
+  function runLivePrice(rec) {
+    var btn = $('liveBtn'), out = $('liveOut');
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
+    out.innerHTML = '<div class="lp-wait">' + esc(t('priceSearching')) + '</div>';
+
+    var openPrices = rec.bc && rec.bc.code ? ProductDB.prices(rec.bc.code) : Promise.resolve([]);
+
+    Promise.all([livePrice(rec).catch(function (e) { return { items: [], summary: errorText(e), asOf: '', via: '' }; }), openPrices])
+      .then(function (res) {
+        var live = res[0], open = res[1] || [];
+        btn.disabled = false;
+        var rows = live.items.concat(open.map(function (o) {
+          return { seller: o.seller, price: o.price, cur: o.cur, note: o.date };
+        }));
+        rows.sort(function (a, b) { return a.price - b.price; });
+        if (!rows.length) {
+          out.innerHTML = '<div class="lp-wait">' + esc(live.summary || t('priceNone')) + '</div>';
+          return;
+        }
+        var html = '<div class="lp-box"><div class="lp-head">' + esc(t('priceLive')) +
+          (live.asOf ? ' · ' + esc(live.asOf) : '') + '</div>';
+        rows.slice(0, 8).forEach(function (r, i) {
+          html += '<a class="lp-row" target="_blank" rel="noopener" href="https://www.google.com/search?q=' +
+            encodeURIComponent(r.seller + ' ' + (rec.data.search.local || rec.data.title)) + '">' +
+            '<span class="lp-seller">' + esc(r.seller) + (r.note ? '<small>' + esc(r.note) + '</small>' : '') + '</span>' +
+            '<b class="lp-price' + (i === 0 ? ' best' : '') + '">' + esc(priceTag(r.price, r.cur)) + '</b></a>';
+        });
+        html += '<p class="lp-note">' + esc(live.summary || t('priceWarn')) +
+          (live.via ? ' · ' + esc(live.via) : '') + '</p></div>';
+        out.innerHTML = html;
+        buzz(12);
       });
   }
 
@@ -2332,7 +2785,67 @@ dl.specs{margin:0}
     'grant usage on schema public to anon, authenticated;',
     'grant select, insert on table public.lensa_finds to anon, authenticated;',
     'grant execute on function public.lensa_like(uuid) to anon, authenticated;',
-    'grant execute on function public.lensa_flag(uuid) to anon, authenticated;'
+    'grant execute on function public.lensa_flag(uuid) to anon, authenticated;',
+    '',
+    '-- ══ HESAP SİSTEMİ ══',
+    'alter table public.lensa_finds add column if not exists user_id uuid references auth.users on delete set null;',
+    '',
+    'drop policy if exists "lensa own delete" on public.lensa_finds;',
+    'create policy "lensa own delete" on public.lensa_finds for delete using (auth.uid() = user_id);',
+    'grant delete on table public.lensa_finds to authenticated;',
+    '',
+    '-- Koleksiyon yedeği: yalnızca sahibi görür ve yazar',
+    'create table if not exists public.lensa_saves (',
+    '  id uuid primary key default gen_random_uuid(),',
+    '  user_id uuid not null references auth.users on delete cascade,',
+    '  local_id text not null,',
+    '  updated_at timestamptz not null default now(),',
+    '  no int, title text, category text, lang text, mode text, thumb text,',
+    '  data jsonb not null,',
+    '  unique (user_id, local_id)',
+    ');',
+    'alter table public.lensa_saves enable row level security;',
+    'drop policy if exists "saves own" on public.lensa_saves;',
+    'create policy "saves own" on public.lensa_saves for all',
+    '  using (auth.uid() = user_id) with check (auth.uid() = user_id);',
+    'grant select, insert, update, delete on table public.lensa_saves to authenticated;',
+    '',
+    '-- Beğeniler: kullanıcı başına tek',
+    'create table if not exists public.lensa_likes (',
+    '  find_id uuid not null references public.lensa_finds on delete cascade,',
+    '  user_id uuid not null references auth.users on delete cascade,',
+    '  primary key (find_id, user_id)',
+    ');',
+    'alter table public.lensa_likes enable row level security;',
+    'drop policy if exists "likes read" on public.lensa_likes;',
+    'create policy "likes read" on public.lensa_likes for select using (true);',
+    'drop policy if exists "likes own" on public.lensa_likes;',
+    'create policy "likes own" on public.lensa_likes for all',
+    '  using (auth.uid() = user_id) with check (auth.uid() = user_id);',
+    'grant select on table public.lensa_likes to anon, authenticated;',
+    'grant insert, delete on table public.lensa_likes to authenticated;',
+    '',
+    '-- Geri bildirim kutusu',
+    'create table if not exists public.lensa_feedback (',
+    '  id uuid primary key default gen_random_uuid(),',
+    '  created_at timestamptz not null default now(),',
+    '  user_id uuid references auth.users on delete set null,',
+    '  message text not null, lang text, agent text',
+    ');',
+    'alter table public.lensa_feedback enable row level security;',
+    'drop policy if exists "feedback write" on public.lensa_feedback;',
+    'create policy "feedback write" on public.lensa_feedback for insert',
+    '  with check (char_length(message) between 3 and 2000);',
+    'grant insert on table public.lensa_feedback to anon, authenticated;',
+    '',
+    '-- Kullanıcının kendi hesabını silmesi',
+    'create or replace function public.lensa_delete_me() returns void',
+    '  language plpgsql security definer set search_path = public, auth as $$',
+    'begin',
+    '  if auth.uid() is null then raise exception \'oturum yok\'; end if;',
+    '  delete from auth.users where id = auth.uid();',
+    'end; $$;',
+    'grant execute on function public.lensa_delete_me() to authenticated;'
   ].join('\n');
 
   /* Yapıştırma kazaları: baştaki "apikey:", "Bearer ", tırnaklar, satır sonları */
@@ -2363,7 +2876,13 @@ dl.specs{margin:0}
        başlayan anon anahtarları Bearer olarak da gönderilebilir. */
     head: function (extra) {
       var h = { apikey: S.sbKey, 'Content-Type': 'application/json' };
-      if (/^eyJ/.test(S.sbKey)) h.Authorization = 'Bearer ' + S.sbKey;
+      /* Oturum varsa kullanicinin jetonu gider; boylece kendi satirlarina
+         yazma ve silme hakki dogar. Yoksa eski anon anahtari JWT ise o gider. */
+      if (S.session && S.session.access_token && Date.now() < S.session.expires_at) {
+        h.Authorization = 'Bearer ' + S.session.access_token;
+      } else if (/^eyJ/.test(S.sbKey)) {
+        h.Authorization = 'Bearer ' + S.sbKey;
+      }
       if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
       return h;
     },
@@ -2425,7 +2944,7 @@ dl.specs{margin:0}
     },
     list: function () {
       var self = this;
-      var cols = 'id,created_at,title,category,summary,narration,query,specs,price,lang,mode,thumb,author,likes';
+      var cols = 'id,created_at,title,category,summary,narration,query,specs,price,lang,mode,thumb,author,likes,user_id';
       return withTimeout(fetch(self.base() + '/lensa_finds?select=' + cols + '&order=created_at.desc&limit=48',
         { headers: self.head() }).then(function (r) { return self.check(r); }).then(function (r) { return r.json(); }), 15000, null);
     },
@@ -2437,10 +2956,35 @@ dl.specs{margin:0}
           body: JSON.stringify({
             title: d.title, category: d.category, summary: d.summary, narration: d.narration,
             query: d.search.local, specs: d.specs.slice(0, 6), price: d.price.min != null ? d.price : null,
-            lang: rec.lang, mode: rec.mode, thumb: thumb, author: S.nick
+            lang: rec.lang, mode: rec.mode, thumb: thumb, author: S.nick,
+            user_id: (S.user && S.user.id) || null
           })
         }).then(function (r) { return self.check(r); }).then(function () { return true; }), 20000, null);
       });
+    },
+    remove: function (id) {
+      var self = this;
+      return fetch(self.base() + '/lensa_finds?id=eq.' + encodeURIComponent(id), {
+        method: 'DELETE', headers: self.head({ Prefer: 'return=minimal' })
+      }).then(function (r) { return self.check(r); });
+    },
+    likeRow: function (findId) {
+      var self = this;
+      return fetch(self.base() + '/lensa_likes', {
+        method: 'POST', headers: self.head({ Prefer: 'resolution=ignore-duplicates,return=minimal' }),
+        body: JSON.stringify({ find_id: findId, user_id: S.user.id })
+      }).then(function (r) { return r.ok ? true : self.check(r); });
+    },
+    myLikes: function () {
+      var self = this;
+      if (!S.user) return Promise.resolve({});
+      return fetch(self.base() + '/lensa_likes?select=find_id&user_id=eq.' + encodeURIComponent(S.user.id),
+        { headers: self.head() }).then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          var m = {};
+          (rows || []).forEach(function (x) { m[x.find_id] = 1; });
+          return m;
+        }).catch(function () { return {}; });
     },
     rpc: function (fn, id) {
       var self = this;
@@ -2504,74 +3048,223 @@ dl.specs{margin:0}
       '<span class="badge' + (Cloud.ready() ? ' live' : '') + '">' + esc(Cloud.ready() ? t('cloudOn') : t('cloudOff')) + '</span>' +
       '<button class="mode" id="impBtn">' + esc(t('importLink')) + '</button>' +
       (Cloud.ready() ? '<button class="mode" id="refBtn">' + esc(t('refresh')) + '</button>' : '') +
-      '</div>';
+      '</div>' +
+      '<input class="search" id="feedSearch" placeholder="' + esc(t('searchFeed')) + '" value="' + esc(S.feedQuery) + '">';
 
-    function paint(items, note) {
-      if (!items.length) {
-        body.innerHTML = head + emptyBlock(t('emptyFeedT'), t('emptyFeedP'), t('startScan'), 'goScan2');
-        var g = $('goScan2'); if (g) g.onclick = function () { go('scan'); };
-      } else {
-        body.innerHTML = head + (note ? '<div class="note">' + esc(note) + '</div>' : '') +
-          '<div class="grid">' + items.map(function (i) {
-            var mine = i.mine ? (S.ui === 'tr' ? 'Senin keşfin' : 'Your find') : (i.author || (S.ui === 'tr' ? 'Paylaşılan' : 'Shared'));
-            return '<div class="tile"><button class="tile-main" data-q="' + esc(i.query || i.title) + '" data-i="' + esc(i.id) + '">' +
-              (i.thumb ? '<img src="' + i.thumb + '" alt="" loading="lazy">' : '<div class="noimg"></div>') +
-              '<div class="meta"><div class="tt">' + esc(i.title || '—') + '</div>' +
-              '<div class="ts">' + esc(mine) + (i.category ? ' · ' + esc(i.category) : '') + '</div></div></button>' +
-              (i.cloud ? '<div class="tile-bar">' +
-                '<button class="mini" data-like="' + esc(i.id) + '">' + ICON.heart + '<span>' + (i.likes || 0) + '</span></button>' +
-                '<button class="mini" data-flag="' + esc(i.id) + '" aria-label="' + esc(t('report')) + '">' + ICON.flag + '</button>' +
-              '</div>' : '') + '</div>';
-          }).join('') + '</div>';
+    var current = [];
 
-        Array.prototype.forEach.call(body.querySelectorAll('.tile-main'), function (b) {
-          b.onclick = function () {
-            window.open('https://www.google.com/search?q=' + encodeURIComponent(b.getAttribute('data-q')), '_blank', 'noopener');
-          };
-        });
-        Array.prototype.forEach.call(body.querySelectorAll('[data-like]'), function (b) {
-          b.onclick = function (e) {
-            e.stopPropagation();
-            var span = b.querySelector('span');
-            span.textContent = (parseInt(span.textContent, 10) || 0) + 1;
-            b.classList.add('liked'); buzz(10);
-            Cloud.rpc('lensa_like', b.getAttribute('data-like')).catch(function () {});
-          };
-        });
-        Array.prototype.forEach.call(body.querySelectorAll('[data-flag]'), function (b) {
-          b.onclick = function (e) {
-            e.stopPropagation();
-            Cloud.rpc('lensa_flag', b.getAttribute('data-flag')).catch(function () {});
-            b.closest('.tile').style.display = 'none';
-            toast(t('reported'));
-          };
-        });
-      }
+    function wireHead() {
       var ib = $('impBtn');
       if (ib) ib.onclick = function () { var v = prompt(t('pasteLink')); if (v) importLink(v); };
       var rb = $('refBtn');
       if (rb) rb.onclick = function () { renderFeed(); };
+      var fs = $('feedSearch');
+      if (fs) fs.oninput = function () { S.feedQuery = fs.value; paintGrid(); };
+    }
+
+    function paintGrid(note) {
+      var host = $('feedGrid');
+      if (!host) return;
+      var q = S.feedQuery.toLocaleLowerCase(S.lang === 'tr' ? 'tr' : 'en');
+      var items = !q ? current : current.filter(function (i) {
+        return ((i.title || '') + ' ' + (i.category || '') + ' ' + (i.summary || ''))
+          .toLocaleLowerCase(S.lang === 'tr' ? 'tr' : 'en').indexOf(q) >= 0;
+      });
+      if (!items.length) {
+        host.innerHTML = current.length
+          ? '<div class="empty"><p>' + esc(t('noMatch')) + '</p></div>'
+          : emptyBlock(t('emptyFeedT'), t('emptyFeedP'), t('startScan'), 'goScan2');
+        var g = $('goScan2'); if (g) g.onclick = function () { go('scan'); };
+        return;
+      }
+      host.innerHTML = (note ? '<div class="note">' + esc(note) + '</div>' : '') +
+        '<div class="grid">' + items.map(function (i) {
+          var who = i.mine ? t('mine') : (i.author || (S.ui === 'tr' ? 'Paylaşılan' : 'Shared'));
+          return '<div class="tile"><button class="tile-main" data-q="' + esc(i.query || i.title) + '">' +
+            (i.thumb ? '<img src="' + i.thumb + '" alt="" loading="lazy">' : '<div class="noimg"></div>') +
+            '<div class="meta"><div class="tt">' + esc(i.title || '—') + '</div>' +
+            '<div class="ts">' + esc(who) + (i.category ? ' · ' + esc(i.category) : '') + '</div></div></button>' +
+            (i.cloud ? '<div class="tile-bar">' +
+              '<button class="mini' + (i.liked ? ' liked' : '') + '" data-like="' + esc(i.id) + '">' + ICON.heart + '<span>' + (i.likes || 0) + '</span></button>' +
+              (i.owned
+                ? '<button class="mini" data-del="' + esc(i.id) + '" aria-label="' + esc(t('deletePost')) + '">×</button>'
+                : '<button class="mini" data-flag="' + esc(i.id) + '" aria-label="' + esc(t('report')) + '">' + ICON.flag + '</button>') +
+            '</div>' : '') + '</div>';
+        }).join('') + '</div>';
+
+      Array.prototype.forEach.call(host.querySelectorAll('.tile-main'), function (b) {
+        b.onclick = function () {
+          window.open('https://www.google.com/search?q=' + encodeURIComponent(b.getAttribute('data-q')), '_blank', 'noopener');
+        };
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-like]'), function (b) {
+        b.onclick = function (e) {
+          e.stopPropagation();
+          if (b.classList.contains('liked')) return;
+          var span = b.querySelector('span');
+          span.textContent = (parseInt(span.textContent, 10) || 0) + 1;
+          b.classList.add('liked'); buzz(10);
+          var id = b.getAttribute('data-like');
+          Cloud.rpc('lensa_like', id).catch(function () {});
+          if (S.user) Cloud.likeRow(id).catch(function () {});
+        };
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-flag]'), function (b) {
+        b.onclick = function (e) {
+          e.stopPropagation();
+          Cloud.rpc('lensa_flag', b.getAttribute('data-flag')).catch(function () {});
+          b.closest('.tile').style.display = 'none';
+          toast(t('reported'));
+        };
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-del]'), function (b) {
+        b.onclick = function (e) {
+          e.stopPropagation();
+          if (!confirm(t('deleteQ'))) return;
+          var id = b.getAttribute('data-del');
+          Cloud.remove(id).then(function () {
+            current = current.filter(function (x) { return x.id !== id; });
+            paintGrid(); toast(t('removed'));
+          }).catch(function (err) { toast(String(err.message || err)); });
+        };
+      });
     }
 
     var local = localFeed().slice().reverse();
-    if (!Cloud.ready()) return paint(local, '');
+    body.innerHTML = head + '<div id="feedGrid"></div>';
+    wireHead();
 
-    body.innerHTML = head + '<div class="note">' + esc(t('loading')) + '</div>';
-    var ib0 = $('impBtn');
-    if (ib0) ib0.onclick = function () { var v = prompt(t('pasteLink')); if (v) importLink(v); };
+    if (!Cloud.ready()) { current = local; paintGrid(); return; }
 
+    $('feedGrid').innerHTML = '<div class="note">' + esc(t('loading')) + '</div>';
     Cloud.list().then(function (rows) {
-      var items = (rows || []).map(function (r) {
-        return {
-          id: r.id, title: r.title, category: r.category, summary: r.summary,
-          query: r.query || r.title, thumb: r.thumb || '', lang: r.lang, mode: r.mode,
-          price: r.price, author: r.author, likes: r.likes || 0, cloud: true,
-          mine: r.author === S.nick
-        };
+      return (S.user ? Cloud.myLikes() : Promise.resolve({})).then(function (likes) {
+        current = (rows || []).map(function (r) {
+          var owned = !!(S.user && r.user_id && r.user_id === S.user.id);
+          return {
+            id: r.id, title: r.title, category: r.category, summary: r.summary,
+            query: r.query || r.title, thumb: r.thumb || '', lang: r.lang, mode: r.mode,
+            price: r.price, author: r.author, likes: r.likes || 0, cloud: true,
+            owned: owned, liked: !!likes[r.id],
+            mine: owned || (!S.user && r.author === S.nick)
+          };
+        }).concat(local.filter(function (l) { return !l.mine; }));
+        paintGrid();
       });
-      paint(items.concat(local.filter(function (l) { return !l.mine; })), '');
     }).catch(function () {
-      paint(local, t('cloudFail'));
+      current = local;
+      paintGrid(t('cloudFail'));
+    });
+  }
+
+  /* Hesap kartı: giriş yapılmışsa profil, yapılmamışsa giriş formu */
+  function accountBlock() {
+    var tr = S.ui === 'tr';
+    if (!Auth.ready()) {
+      return '<div class="acct guestbox"><div class="acct-row"><div class="avatar">' + esc(initial(S.nick)) + '</div>' +
+        '<div class="acct-txt"><strong>' + esc(S.nick) + '</strong><span>' + esc(t('guest')) + '</span></div></div>' +
+        '<p class="acct-note">' + (tr ? 'Hesap açmak için önce aşağıdan Supabase bağlantısını kur.' : 'Connect Supabase below to enable accounts.') + '</p></div>';
+    }
+    if (S.user) {
+      var st = Sync.stats();
+      var shown = S.user.name || S.nick || (S.user.email || '').split('@')[0];
+      return '<div class="acct"><div class="acct-row">' +
+        '<div class="avatar on">' + esc(initial(shown)) + '</div>' +
+        '<div class="acct-txt"><strong>' + esc(shown) + '</strong>' +
+        '<span>' + esc(S.user.email || '') + '</span></div>' +
+        '<button class="mini-out" id="signOutBtn">' + esc(t('signOut')) + '</button></div>' +
+        '<div class="statrow">' +
+        '<div><b>' + st.finds + '</b><span>' + esc(t('sFinds')) + '</span></div>' +
+        '<div><b>' + st.shared + '</b><span>' + esc(t('sShared')) + '</span></div>' +
+        '<div><b>' + esc(catNo({ no: st.finds }).replace('KAT. ', '')) + '</b><span>' + esc(t('heritage') === 'Tarihçe' ? 'Katalog' : 'Catalogue') + '</span></div>' +
+        '</div>' +
+        '<div class="btn-row"><button class="ghost-btn sm" id="syncUpBtn">' + esc(t('syncUp')) + '</button>' +
+        '<button class="ghost-btn sm" id="syncDownBtn">' + esc(t('syncDown')) + '</button></div>' +
+        '<span class="test-out" id="syncOut"></span></div>';
+    }
+    return '<div class="acct"><div class="tabs2" id="authTabs">' +
+      '<button data-a="in" aria-pressed="true">' + esc(t('signIn')) + '</button>' +
+      '<button data-a="up" aria-pressed="false">' + esc(t('signUp')) + '</button></div>' +
+      '<input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="' + esc(t('email')) + '">' +
+      '<input id="authName" class="hide" placeholder="' + esc(t('displayName')) + '" maxlength="28">' +
+      '<input id="authPass" type="password" autocomplete="current-password" placeholder="' + esc(t('password')) + '">' +
+      '<button class="solid-btn" id="authGo">' + esc(t('signIn')) + '</button>' +
+      '<button class="link-btn" id="authMagic">' + esc(t('magic')) + '</button>' +
+      '<span class="test-out" id="authOut"></span></div>';
+  }
+  function initial(s) {
+    s = String(s || '?').trim();
+    return (s.charAt(0) || '?').toLocaleUpperCase(S.lang === 'tr' ? 'tr' : 'en');
+  }
+
+  function wireAccount() {
+    var tr = S.ui === 'tr';
+    if ($('signOutBtn')) {
+      $('signOutBtn').onclick = function () {
+        Auth.signOut().then(function () { toast(tr ? 'Çıkış yapıldı.' : 'Signed out.'); renderSettings(); });
+      };
+      $('syncUpBtn').onclick = function () { runSync(Sync.up, t('synced')); };
+      $('syncDownBtn').onclick = function () {
+        runSync(Sync.down, t('synced'), function () { if (S.view === 'collection') renderCollection(); });
+      };
+      return;
+    }
+    if (!$('authTabs')) return;
+
+    var mode = 'in';
+    Array.prototype.forEach.call($('authTabs').children, function (b) {
+      b.onclick = function () {
+        mode = b.getAttribute('data-a');
+        Array.prototype.forEach.call($('authTabs').children, function (x) {
+          x.setAttribute('aria-pressed', x === b);
+        });
+        $('authName').classList.toggle('hide', mode !== 'up');
+        $('authGo').textContent = mode === 'up' ? t('signUp') : t('signIn');
+        $('authPass').autocomplete = mode === 'up' ? 'new-password' : 'current-password';
+      };
+    });
+
+    var out = $('authOut');
+    var say = function (cls, txt) { out.className = 'test-out ' + cls; out.textContent = txt; };
+
+    $('authGo').onclick = function () {
+      var em = $('authEmail').value.trim(), pw = $('authPass').value;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return say('bad', t('badEmail'));
+      if (pw.length < 6) return say('bad', t('weakPass'));
+      say('', t('testing'));
+      var go = mode === 'up'
+        ? Auth.signUp(em, pw, $('authName').value.trim())
+        : Auth.signIn(em, pw);
+      go.then(function (res) {
+        if (mode === 'up' && res && res.confirm) { say('ok', t('checkMail')); return; }
+        toast(t('welcome') + (S.nick ? ', ' + S.nick : ''));
+        renderSettings();
+      }).catch(function (e) { say('bad', String(e.message || e)); });
+    };
+    $('authMagic').onclick = function () {
+      var em = $('authEmail').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return say('bad', t('badEmail'));
+      say('', t('testing'));
+      Auth.magic(em)
+        .then(function () { say('ok', t('magicSent')); })
+        .catch(function (e) { say('bad', String(e.message || e)); });
+    };
+  }
+
+  function runSync(fn, okMsg, after) {
+    var out = $('syncOut');
+    if (S.syncing) return;
+    S.syncing = true;
+    out.className = 'test-out'; out.textContent = t('syncing');
+    fn.call(Sync).then(function (n) {
+      S.syncing = false;
+      out.className = 'test-out ok';
+      out.textContent = okMsg + (typeof n === 'number' ? ' · ' + n : '');
+      if (after) after();
+    }).catch(function (e) {
+      S.syncing = false;
+      out.className = 'test-out bad';
+      out.textContent = String(e.message || e);
     });
   }
 
@@ -2588,6 +3281,8 @@ dl.specs{margin:0}
 
     body.innerHTML =
       '<div style="height:6px"></div>' +
+      '<h2 class="set-h">' + esc(t('account')) + '</h2>' +
+      accountBlock() +
 
       '<h2 class="set-h">' + (tr ? 'Anlatım' : 'Narration') + '</h2>' +
       '<div class="field"><label for="setLang">' + (tr ? 'Dil' : 'Language') + '</label>' +
@@ -2621,7 +3316,8 @@ dl.specs{margin:0}
 
       '<div class="field"><label for="setKey">' + (tr ? 'Anthropic API anahtarı' : 'Anthropic API key') + '</label>' +
       '<p>' + (tr ? 'İsteğe bağlı. Yalnızca bu cihazda saklanır, hiçbir yere gönderilmez.' : 'Optional. Stored on this device only.') + '</p>' +
-      '<input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…" value="' + esc(S.apiKey) + '"></div>' +
+      '<input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…" value="' + esc(S.apiKey) + '">' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="keyHelp">' + (tr ? 'Anahtarı nereden alırım?' : 'Where do I get a key?') + '</button></div></div>' +
 
       '<div class="field"><label>' + (tr ? 'Kendi sağlayıcın (OpenAI uyumlu)' : 'Your own provider (OpenAI compatible)') + '</label>' +
       '<p>' + (tr ? 'Örnek: https://api.openai.com/v1' : 'e.g. https://api.openai.com/v1') + '</p>' +
@@ -2652,13 +3348,46 @@ dl.specs{margin:0}
       '<div class="btn-row"><button class="ghost-btn sm" id="exportBtn">' + (tr ? 'Yedeği indir' : 'Download backup') + '</button>' +
       '<button class="ghost-btn sm danger" id="wipeBtn">' + (tr ? 'Tümünü sil' : 'Delete everything') + '</button></div></div>' +
 
-      '<div class="provenance" style="padding:22px 0 8px">LENSA · ' +
+      (S.user ? '<div class="field"><button class="ghost-btn sm danger" id="delAcct">' + esc(t('deleteAcct')) + '</button></div>' : '') +
+
+      '<h2 class="set-h">' + esc(t('feedback')) + '</h2>' +
+      '<div class="field"><textarea id="fbText" rows="3" placeholder="' + esc(t('feedbackPh')) + '"></textarea>' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="fbSend">' + esc(t('send')) + '</button></div>' +
+      '<span class="test-out" id="fbOut"></span></div>' +
+
+      '<h2 class="set-h">' + esc(t('about')) + '</h2>' +
+      '<div class="field"><div class="btn-row">' +
+      '<button class="ghost-btn sm" id="docPrivacy">' + esc(t('privacy')) + '</button>' +
+      '<button class="ghost-btn sm" id="docTerms">' + esc(t('terms')) + '</button>' +
+      '<button class="ghost-btn sm" id="showIntro">' + (tr ? 'Turu tekrar izle' : 'Replay the tour') + '</button>' +
+      '</div></div>' +
+
+      '<div class="provenance" style="padding:22px 0 8px">LENSA ' + APP_VERSION + ' · ' +
       esc(store.available ? (tr ? 'yerel kayıt açık' : 'local storage on') : (tr ? 'yerel kayıt kapalı, oturumluk' : 'local storage off, session only')) + '</div>';
 
     function swi(id, title, sub, on) {
       return '<div class="switch"><div class="txt"><strong>' + esc(title) + '</strong><span>' + esc(sub) + '</span></div>' +
         '<button class="toggle" id="' + id + '" role="switch" aria-checked="' + !!on + '" aria-label="' + esc(title) + '"></button></div>';
     }
+
+    wireAccount();
+    if ($('delAcct')) $('delAcct').onclick = function () {
+      if (!confirm(t('deleteAcctQ'))) return;
+      Auth.deleteAccount()
+        .then(function () { toast(tr ? 'Hesap silindi.' : 'Account deleted.'); renderSettings(); })
+        .catch(function (e) { toast(String(e.message || e)); });
+    };
+    $('fbSend').onclick = function () {
+      var msg = $('fbText').value.trim(), out = $('fbOut');
+      if (msg.length < 3) { out.className = 'test-out bad'; out.textContent = t('feedbackPh'); return; }
+      out.className = 'test-out'; out.textContent = t('testing');
+      sendFeedback(msg)
+        .then(function () { $('fbText').value = ''; out.className = 'test-out ok'; out.textContent = t('feedbackThanks'); })
+        .catch(function (e) { out.className = 'test-out bad'; out.textContent = String(e.message || e); });
+    };
+    $('docPrivacy').onclick = function () { openDoc('privacy'); };
+    $('docTerms').onclick = function () { openDoc('terms'); };
+    $('showIntro').onclick = function () { openIntro(); };
 
     $('setLang').onchange = function () {
       S.lang = this.value; S.ui = S.lang === 'tr' ? 'tr' : 'en';
@@ -2709,7 +3438,18 @@ dl.specs{margin:0}
     paintVoicePick();
     if (window.speechSynthesis) speechSynthesis.onvoiceschanged = paintVoicePick;
     $('voiceTest').onclick = function () { TTS.sample(); };
-    bind('setKey', 'apiKey'); bind('setBase', 'customBase'); bind('setModel', 'customModel');
+    $('keyHelp').onclick = function () { openDoc('key'); };
+    $('setKey').onchange = $('setKey').onblur = function () {
+      var v = cleanKey(this.value);
+      this.value = v;
+      var had = !!S.apiKey;
+      S.apiKey = v;
+      /* Anahtar ilk kez girildiğinde sağlayıcıyı ona çevir, yoksa boşa girilmiş olur */
+      if (v && !had && S.provider === 'auto') S.provider = 'anthropic';
+      savePrefs();
+      if (v && !had) { toast(tr ? 'Anahtar kaydedildi, sağlayıcı Claude yapıldı.' : 'Key saved, provider set to Claude.'); renderSettings(); }
+    };
+    bind('setBase', 'customBase'); bind('setModel', 'customModel');
     bind('setCKey', 'customKey'); bind('setNick', 'nick');
     function bind(id, key) {
       var n = $(id);
@@ -2810,9 +3550,42 @@ dl.specs{margin:0}
     else stopCam();
   }
 
+  function startBarcodeScan() {
+    if (!S.stream) { toast(t('camDenied')); return; }
+    if (S.bcStop) return stopBarcodeScan();
+    S.bc = null;
+    $('bcBtn').classList.add('on');
+    $('bcBand').classList.remove('hide');
+    $('bcMsg').textContent = t('bcSeeking');
+    $('bcCancel').textContent = t('bcStop');
+    var give = setTimeout(function () {
+      if (S.bcStop) { $('bcMsg').textContent = t('bcNone'); }
+    }, 12000);
+    S.bcStop = Barcode.live(video, function (hit) {
+      clearTimeout(give);
+      if (!hit || !hit.value) { $('bcMsg').textContent = t('bcNone'); return; }
+      buzz(24);
+      $('bcMsg').textContent = t('bcFound') + ' · ' + hit.value;
+      var frame = grabFrame();
+      stopBarcodeScan();
+      S.bc = { code: hit.value, format: hit.format || '', origin: Barcode.origin(hit.value), product: null };
+      ProductDB.lookup(hit.value).then(function (p) {
+        S.bc.product = p;
+        if (frame) { setImage(frame); stopCam(); }
+        analyse(true);
+      });
+    });
+  }
+  function stopBarcodeScan() {
+    if (S.bcStop) { try { S.bcStop(); } catch (e) {} S.bcStop = null; }
+    $('bcBtn').classList.remove('on');
+    $('bcBand').classList.add('hide');
+  }
+
   function resetScan() {
     if (S.abort) { try { S.abort.abort(); } catch (e) {} S.abort = null; }
-    S.image = null; S.fullImage = null; S.current = null; S.focusNote = '';
+    S.image = null; S.fullImage = null; S.current = null; S.focusNote = ''; S.bc = null;
+    stopBarcodeScan();
     setBackdrop('');
     $('shot').classList.add('hide');
     $('finderIdle').classList.remove('hide');
@@ -2850,15 +3623,33 @@ dl.specs{margin:0}
   /* ── 24. Başlangıç ─────────────────────────────────────── */
   function installManifest() {
     try {
-      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
-        '<rect width="192" height="192" rx="42" fill="#0E1113"/>' +
-        '<g fill="none" stroke="#E0AE63" stroke-width="6"><circle cx="96" cy="96" r="58"/><circle cx="96" cy="96" r="23"/>' +
-        '<path d="M96 38v35M147 67 96 96M147 125 96 96M96 154v-35M45 125 96 96M45 67 96 96"/></g></svg>';
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 200" width="220" height="200">' +
+        '<defs><radialGradient id="i" cx="36%" cy="30%" r="76%">' +
+        '<stop offset="0%" stop-color="#D8B4FE"/><stop offset="34%" stop-color="#8B5CF6"/>' +
+        '<stop offset="72%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#22D3EE"/></radialGradient>' +
+        '<linearGradient id="c" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs>' +
+        '<rect width="220" height="200" fill="#0E1113"/>' +
+        '<g stroke="#EDE7DA" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M34.3 72.4 A68 68 0 0 1 165.7 72.4"/>' +
+        '<path d="M165.7 107.6 A68 68 0 0 1 82.4 155.7"/>' +
+        '<path d="M82.4 155.7 L44 185 L57.2 142.8 A68 68 0 0 1 34.3 72.4"/></g>' +
+        '<g stroke="url(#c)" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M176 45 L195 45 Q201 45 201 51 L201 69"/>' +
+        '<path d="M201 121 L201 139 Q201 145 195 145 L176 145"/></g>' +
+        '<circle cx="100" cy="90" r="50" fill="#0B0E10"/>' +
+        '<circle cx="100" cy="90" r="43" fill="#1B2126"/>' +
+        '<circle cx="100" cy="90" r="36" fill="url(#i)"/>' +
+        '<circle cx="100" cy="90" r="18" fill="#080A0C"/>' +
+        '<circle cx="100" cy="90" r="9" fill="#030405"/>' +
+        '<circle cx="96" cy="152" r="4.6" fill="#EDE7DA"/>' +
+        '<circle cx="109" cy="152" r="4.6" fill="#3B82F6"/>' +
+        '<circle cx="122" cy="152" r="4.6" fill="#8B5CF6"/></svg>';
       var icon = 'data:image/svg+xml;base64,' + btoa(svg);
       var man = {
         name: 'LENSA', short_name: 'LENSA', start_url: '.', display: 'standalone',
         background_color: '#0E1113', theme_color: '#0E1113', orientation: 'portrait',
-        icons: [{ src: icon, sizes: '192x192', type: 'image/svg+xml', purpose: 'any' }]
+        icons: [{ src: icon, sizes: '220x200 512x512', type: 'image/svg+xml', purpose: 'any' }]
       };
       var l1 = document.createElement('link');
       l1.rel = 'manifest';
@@ -2907,6 +3698,7 @@ dl.specs{margin:0}
     video = $('video'); finder = $('finder');
     loadPrefs();
     applyUI();
+    runSplash();
     installManifest();
     setupZoom();
 
@@ -2924,6 +3716,8 @@ dl.specs{margin:0}
       startCam();
     };
     $('torchBtn').onclick = toggleTorch;
+    $('bcBtn').onclick = function () { startBarcodeScan(); };
+    $('bcCancel').onclick = function () { stopBarcodeScan(); };
 
     function handlePick(e) {
       var f = e.target.files && e.target.files[0];
@@ -2958,16 +3752,678 @@ dl.specs{margin:0}
     window.addEventListener('offline', net);
     net();
 
+    Auth.load();
+    Auth.catchRedirect();
+
     if (openSharedLink()) return;
 
     startCam().then(function (ok) {
       if (!ok) $('idleSub').textContent = t('camDenied');
     });
 
+    if (!S.seenIntro) setTimeout(openIntro, 420);
+
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden) { TTS.stop(); stopCam(); }
+      if (document.hidden) { TTS.stop(); stopCam(); stopBarcodeScan(); }
       else if (S.view === 'scan' && !S.image) startCam();
     });
+  }
+
+
+  /* ── 25. Hesap ─────────────────────────────────────────
+     Supabase Auth'a doğrudan REST ile bağlanıyoruz; kütüphane yok.
+     Giriş isteğe bağlı: uygulamanın tamamı misafir olarak da çalışır. */
+  var Auth = {
+    base: function () { return cleanUrl(S.sbUrl) + '/auth/v1'; },
+    head: function (token) {
+      var h = { apikey: S.sbKey, 'Content-Type': 'application/json' };
+      if (token) h.Authorization = 'Bearer ' + token;
+      return h;
+    },
+    ready: function () { return !!(S.sbUrl && S.sbKey); },
+
+    load: function () {
+      var raw = store.json('lensa.session', null);
+      if (!raw || !raw.access_token) return;
+      S.session = raw;
+      S.user = raw.user || null;
+      if (S.user && S.user.name) S.nick = S.user.name;
+    },
+    save: function () {
+      try {
+        if (S.session) store.set('lensa.session', JSON.stringify(S.session));
+        else store.del('lensa.session');
+      } catch (e) {}
+    },
+    setSession: function (d) {
+      if (!d || !d.access_token) return null;
+      S.session = {
+        access_token: d.access_token,
+        refresh_token: d.refresh_token,
+        expires_at: Date.now() + ((d.expires_in || 3600) * 1000) - 60000,
+        user: d.user ? { id: d.user.id, email: d.user.email,
+          name: (d.user.user_metadata && d.user.user_metadata.name) || '' } : null
+      };
+      S.user = S.session.user;
+      if (S.user && S.user.name) { S.nick = S.user.name; savePrefs(); }
+      this.save();
+      return S.session;
+    },
+
+    /* Süresi dolmuşsa jetonu sessizce tazele */
+    token: function () {
+      var self = this;
+      if (!S.session) return Promise.resolve(null);
+      if (Date.now() < S.session.expires_at) return Promise.resolve(S.session.access_token);
+      return fetch(self.base() + '/token?grant_type=refresh_token', {
+        method: 'POST', headers: self.head(),
+        body: JSON.stringify({ refresh_token: S.session.refresh_token })
+      }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d) { S.session = null; S.user = null; self.save(); return null; }
+          self.setSession(d);
+          return S.session.access_token;
+        }).catch(function () { return null; });
+    },
+
+    fail: function (r) {
+      return r.text().then(function (txt) {
+        var m = '';
+        try { var j = JSON.parse(txt); m = j.msg || j.message || j.error_description || j.error || ''; }
+        catch (e) { m = String(txt).slice(0, 120); }
+        var tr = S.ui === 'tr';
+        if (/invalid login|invalid credentials/i.test(m)) m = t('wrongCreds');
+        else if (/password/i.test(m) && /6|short|least/i.test(m)) m = t('weakPass');
+        else if (/email/i.test(m) && /invalid|valid/i.test(m)) m = t('badEmail');
+        else if (/already registered|already exists/i.test(m)) m = tr ? 'Bu e-posta zaten kayıtlı. Giriş yap.' : 'Already registered. Sign in instead.';
+        else if (/rate|too many/i.test(m)) m = tr ? 'Çok fazla deneme. Biraz bekle.' : 'Too many attempts. Wait a moment.';
+        throw new Error(m || (S.ui === 'tr' ? 'İşlem tamamlanamadı.' : 'Could not complete that.'));
+      });
+    },
+
+    signUp: function (email, password, name) {
+      var self = this;
+      return fetch(self.base() + '/signup', {
+        method: 'POST', headers: self.head(),
+        body: JSON.stringify({ email: email, password: password, data: { name: name || '' } })
+      }).then(function (r) {
+        if (!r.ok) return self.fail(r);
+        return r.json();
+      }).then(function (d) {
+        /* e-posta doğrulaması açıksa oturum gelmez */
+        return { session: self.setSession(d), confirm: !d.access_token };
+      });
+    },
+    signIn: function (email, password) {
+      var self = this;
+      return fetch(self.base() + '/token?grant_type=password', {
+        method: 'POST', headers: self.head(),
+        body: JSON.stringify({ email: email, password: password })
+      }).then(function (r) {
+        if (!r.ok) return self.fail(r);
+        return r.json();
+      }).then(function (d) { return self.setSession(d); });
+    },
+    magic: function (email) {
+      var self = this;
+      return fetch(self.base() + '/otp', {
+        method: 'POST', headers: self.head(),
+        body: JSON.stringify({ email: email, create_user: true,
+          options: { email_redirect_to: location.origin + location.pathname } })
+      }).then(function (r) { if (!r.ok) return self.fail(r); return true; });
+    },
+    signOut: function () {
+      var self = this;
+      var tk = S.session && S.session.access_token;
+      S.session = null; S.user = null; self.save();
+      if (tk) {
+        fetch(self.base() + '/logout', { method: 'POST', headers: self.head(tk) }).catch(function () {});
+      }
+      return Promise.resolve(true);
+    },
+    updateName: function (name) {
+      var self = this;
+      return self.token().then(function (tk) {
+        if (!tk) throw new Error(t('needAccount'));
+        return fetch(self.base() + '/user', {
+          method: 'PUT', headers: self.head(tk),
+          body: JSON.stringify({ data: { name: name } })
+        }).then(function (r) { if (!r.ok) return self.fail(r); return true; });
+      });
+    },
+    /* Hesabı silmek için sunucu tarafı fonksiyon gerekir; kurulum SQL'i onu kuruyor */
+    deleteAccount: function () {
+      var self = this;
+      return self.token().then(function (tk) {
+        if (!tk) throw new Error(t('needAccount'));
+        return fetch(cleanUrl(S.sbUrl) + '/rest/v1/rpc/lensa_delete_me', {
+          method: 'POST', headers: self.head(tk), body: '{}'
+        }).then(function (r) {
+          if (!r.ok) return Cloud.check(r);
+          return self.signOut();
+        });
+      });
+    },
+
+    /* Adres çubuğunda oturum bilgisi varsa (şifresiz bağlantı dönüşü) yakala */
+    catchRedirect: function () {
+      var h = location.hash || '';
+      if (h.indexOf('access_token=') < 0) return false;
+      var p = {};
+      h.replace(/^#/, '').split('&').forEach(function (kv) {
+        var i = kv.indexOf('=');
+        if (i > 0) p[decodeURIComponent(kv.slice(0, i))] = decodeURIComponent(kv.slice(i + 1));
+      });
+      if (!p.access_token) return false;
+      this.setSession({ access_token: p.access_token, refresh_token: p.refresh_token,
+        expires_in: parseInt(p.expires_in, 10) || 3600 });
+      history.replaceState(null, '', location.pathname + location.search);
+      var self = this;
+      fetch(self.base() + '/user', { headers: self.head(p.access_token) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (u) {
+          if (!u) return;
+          S.session.user = { id: u.id, email: u.email, name: (u.user_metadata && u.user_metadata.name) || '' };
+          S.user = S.session.user;
+          self.save();
+          if (S.view === 'settings') renderSettings();
+        }).catch(function () {});
+      return true;
+    }
+  };
+
+  /* ── 26. Bulut senkronu ────────────────────────────────
+     Yerel koleksiyon kaynak; bulut yedek. Çakışmada yeni olan kazanır. */
+  var Sync = {
+    up: function () {
+      var list = allRecords();
+      if (!list.length) return Promise.resolve(0);
+      return Auth.token().then(function (tk) {
+        if (!tk) throw new Error(t('needAccount'));
+        var rows = list.map(function (r) {
+          return {
+            user_id: S.user.id, local_id: r.id, no: r.no || null,
+            title: (r.data && r.data.title) || '', category: (r.data && r.data.category) || '',
+            lang: r.lang, mode: r.mode, thumb: r.thumb || '', data: r.data,
+            updated_at: new Date(r.ts || Date.now()).toISOString()
+          };
+        });
+        return fetch(Cloud.base() + '/lensa_saves?on_conflict=user_id,local_id', {
+          method: 'POST',
+          headers: { apikey: S.sbKey, Authorization: 'Bearer ' + tk,
+            'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify(rows)
+        }).then(function (r) {
+          if (!r.ok) return Cloud.check(r);
+          return rows.length;
+        });
+      });
+    },
+    down: function () {
+      return Auth.token().then(function (tk) {
+        if (!tk) throw new Error(t('needAccount'));
+        return fetch(Cloud.base() + '/lensa_saves?select=local_id,no,lang,mode,thumb,data,updated_at&order=updated_at.desc&limit=200',
+          { headers: { apikey: S.sbKey, Authorization: 'Bearer ' + tk } })
+          .then(function (r) { if (!r.ok) return Cloud.check(r); return r.json(); })
+          .then(function (rows) {
+            var local = allRecords(), byId = {};
+            local.forEach(function (r) { byId[r.id] = r; });
+            var added = 0;
+            (rows || []).forEach(function (row) {
+              if (!row.data || byId[row.local_id]) return;
+              local.push({
+                id: row.local_id, ts: new Date(row.updated_at).getTime(), mode: row.mode || 'genel',
+                lang: row.lang || S.lang, via: 'Bulut', thumb: row.thumb || '',
+                data: row.data, qa: [], saved: true, no: row.no || null
+              });
+              added++;
+            });
+            local.sort(function (a, b) { return a.ts - b.ts; });
+            writeRecords(local.slice(-120));
+            return added;
+          });
+      });
+    },
+    stats: function () {
+      var recs = allRecords();
+      return { finds: recs.length, shared: localFeed().filter(function (f) { return f.mine; }).length };
+    }
+  };
+
+  /* ── 27. Sürüm ─────────────────────────────────────────── */
+  var APP_VERSION = 'v3.0';
+
+  /* ── 27b. Açılış ekranı ────────────────────────────────
+     Animasyon kendi süresinde biter; dokunan beklemez. */
+  function runSplash() {
+    var sp = $('splash');
+    if (!sp) return;
+    var done = false;
+    function close() {
+      if (done) return;
+      done = true;
+      sp.classList.add('gone');
+      setTimeout(function () { if (sp.parentNode) sp.parentNode.removeChild(sp); }, 620);
+    }
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sp.addEventListener('click', close);
+    sp.addEventListener('touchstart', close, { passive: true });
+    setTimeout(close, reduced ? 400 : 2350);
+  }
+
+  /* ── 28. Geri bildirim ─────────────────────────────────── */
+  function sendFeedback(msg) {
+    if (!Cloud.ready()) {
+      return copy(msg).then(function () { return true; });
+    }
+    return Auth.token().then(function (tk) {
+      return fetch(Cloud.base() + '/lensa_feedback', {
+        method: 'POST', headers: Cloud.head({ Prefer: 'return=minimal' }),
+        body: JSON.stringify({
+          message: msg.slice(0, 2000), lang: S.lang,
+          agent: (navigator.userAgent || '').slice(0, 180),
+          user_id: (S.user && S.user.id) || null
+        })
+      }).then(function (r) { return r.ok ? true : Cloud.check(r); });
+    });
+  }
+
+  /* ── 29. Hukuki belgeler ───────────────────────────────
+     Ne söylediğimiz ile uygulamanın gerçekte yaptığı aynı olmalı. */
+  function docText(kind) {
+    var tr = S.ui === 'tr';
+    if (kind === 'privacy') {
+      return tr ? [
+        ['Kısaca', 'LENSA sunucu tutmaz. Çektiğin fotoğraflar ve keşiflerin bu tarayıcıda saklanır. Bir şey buluta yalnızca sen istediğinde çıkar.'],
+        ['Fotoğraflar', 'Bir fotoğrafı incelettiğinde, o kare Ayarlar\'da seçtiğin yapay zekâ sağlayıcısına gönderilir ve cevabı alınır. Fotoğraf LENSA tarafından hiçbir yerde saklanmaz. Sağlayıcının kendi saklama politikası geçerlidir.'],
+        ['Koleksiyon', 'Kaydettiğin keşifler tarayıcının yerel deposunda durur. Hesap açıp "Buluta yedekle" dersen kendi Supabase projene kopyalanır ve yalnızca senin hesabın görebilir.'],
+        ['Ortak akış', 'Yalnızca Paylaş dediğin keşifler akışa çıkar. Bunlar herkese açıktır: başlık, özet, küçük görsel ve görünen adın görünür.'],
+        ['Hesap', 'Hesap açarsan e-posta adresin ve görünen adın saklanır. Şifreni LENSA görmez; doğrulamayı Supabase yapar.'],
+        ['Anahtarlar', 'Girdiğin API anahtarları yalnızca bu cihazda kalır, hiçbir sunucuya gönderilmez.'],
+        ['Silme', 'Ayarlar\'dan tüm yerel veriyi tek dokunuşla silebilirsin. Hesabını silersen buluttaki her şey de silinir.'],
+        ['Konum ve takip', 'Konumun alınmaz. Reklam yoktur, üçüncü taraf takip kodu yoktur, çerez kullanılmaz.']
+      ] : [
+        ['In short', 'LENSA runs no server of its own. Your photos and finds live in this browser. Nothing leaves it unless you ask.'],
+        ['Photos', 'When you analyse a photo it is sent to the AI provider you picked in Settings, and the answer comes back. LENSA stores it nowhere. The provider\u2019s own retention policy applies.'],
+        ['Collection', 'Saved finds sit in local storage. If you sign in and choose Back up to cloud they are copied to your own Supabase project, visible only to your account.'],
+        ['Shared feed', 'Only finds you explicitly share are published. Those are public: title, summary, a small image and your display name.'],
+        ['Account', 'If you sign up your email and display name are stored. LENSA never sees your password; Supabase handles it.'],
+        ['Keys', 'API keys you enter stay on this device and are sent to no server.'],
+        ['Deletion', 'You can wipe all local data from Settings in one tap. Deleting your account removes everything in the cloud too.'],
+        ['Location and tracking', 'Your location is never requested. No ads, no third-party trackers, no cookies.']
+      ];
+    }
+    return tr ? [
+      ['Ne olduğu', 'LENSA bir görsel tanıma yardımcısıdır. Verdiği bilgiler yapay zekâ tahminidir ve yanlış olabilir.'],
+      ['Güvenme sınırı', 'Sağlık, ilaç, mantar, elektrik, yapısal güvenlik, hukuk ve para konularında LENSA\'nın dediğine dayanarak karar verme. Bu alanlarda yetkili bir uzmana danış.'],
+      ['Fiyatlar', 'Gösterilen fiyat aralıkları tahmindir, teklif değildir. Satın alma bağlantıları arama sonucudur; LENSA satıcı değildir ve komisyon almaz.'],
+      ['Sen ne yapmayacaksın', 'Başkalarının mahremiyetini ihlal eden, yasa dışı ya da zarar verici içerik yükleme ve paylaşma. İnsanların kimliğini tespit etmek için kullanma.'],
+      ['Paylaşılan içerik', 'Akışa koyduğun içerikten sen sorumlusun. Kural dışı paylaşımlar bildirim üzerine kaldırılır.'],
+      ['Sorumluluk', 'Uygulama olduğu gibi sunulur. Kullanımından doğan sonuçlardan geliştirici sorumlu tutulamaz.']
+    ] : [
+      ['What this is', 'LENSA is a visual identification assistant. What it tells you is an AI estimate and can be wrong.'],
+      ['Where not to rely on it', 'Do not base decisions on LENSA for health, medication, mushrooms, electricity, structural safety, legal or financial matters. Consult a qualified professional.'],
+      ['Prices', 'Price ranges are estimates, not quotes. Shopping links are searches; LENSA is not a seller and takes no commission.'],
+      ['Your part', 'Do not upload or share content that is illegal, harmful, or violates someone\u2019s privacy. Do not use it to identify people.'],
+      ['Shared content', 'You are responsible for what you publish to the feed. Reported content is removed.'],
+      ['Liability', 'The app is provided as is. The developer is not liable for outcomes of its use.']
+    ];
+  }
+
+  function keyGuide() {
+    var tr = S.ui === 'tr';
+    return tr ? [
+      ['1 · Hesap aç', 'console.anthropic.com adresine git ve bir hesap oluştur. Claude uygulaması hesabından ayrıdır.'],
+      ['2 · Bakiye yükle', 'Billing bölümünden kart ekleyip en az 5 dolar kredi yükle. Kullandığın kadar düşer, abonelik değildir. Bir fotoğraf analizi kuruşlarla ölçülür.'],
+      ['3 · Anahtar üret', 'API Keys sayfasında Create Key düğmesine bas. Anahtar sk-ant- ile başlar ve yalnızca bir kez tam olarak gösterilir; hemen kopyala.'],
+      ['4 · Buraya yapıştır', 'Ayarlar içindeki Anthropic API anahtarı alanına yapıştır, sonra Bağlantıyı test et düğmesine bas.'],
+      ['Neden gerekli', 'Anahtarsız sağlayıcılar ücretsizdir ama yavaşlayabilir ve web araması yapamaz. Canlı fiyat özelliği için arama yapabilen bir sağlayıcı gerekir.'],
+      ['Güvenlik', 'Anahtar yalnızca bu cihazın tarayıcısında saklanır. Siteye gömülü değildir, GitHub deposuna çıkmaz, hiçbir sunucuya gönderilmez. Kaybolursa panelden iptal edip yenisini üret.']
+    ] : [
+      ['1 · Create an account', 'Go to console.anthropic.com and sign up. This is separate from your Claude app account.'],
+      ['2 · Add credit', 'Under Billing add a card and load at least five dollars. It is pay as you go, not a subscription. One photo costs a fraction of a cent.'],
+      ['3 · Generate a key', 'On the API Keys page press Create Key. It starts with sk-ant- and is shown in full only once, so copy it immediately.'],
+      ['4 · Paste it here', 'Paste it into the Anthropic API key field in Settings, then press Test connection.'],
+      ['Why it helps', 'The keyless providers are free but can be slow and cannot search the web. Live prices need a provider that can search.'],
+      ['Safety', 'The key is stored only in this browser. It is not baked into the site, never reaches your GitHub repo, and is sent to no server. If it leaks, revoke it in the console and make a new one.']
+    ];
+  }
+
+  function openDoc(kind) {
+    var lay = $('sheet');
+    $('sheetTitle').textContent = kind === 'privacy' ? t('privacy')
+      : kind === 'key' ? (S.ui === 'tr' ? 'Anahtar nasıl alınır' : 'How to get a key') : t('terms');
+    var rows = kind === 'key' ? keyGuide() : docText(kind);
+    $('sheetBody').innerHTML = rows.map(function (p) {
+      return '<h4>' + esc(p[0]) + '</h4><p>' + esc(p[1]) + '</p>';
+    }).join('') + '<p class="doc-foot">LENSA ' + APP_VERSION + '</p>';
+    lay.classList.remove('hide');
+    lay.setAttribute('aria-hidden', 'false');
+    $('sheetClose').onclick = function () {
+      lay.classList.add('hide');
+      lay.setAttribute('aria-hidden', 'true');
+    };
+  }
+
+  /* ── 30. İlk kullanım turu ─────────────────────────────── */
+  function introSlides() {
+    var tr = S.ui === 'tr';
+    return tr ? [
+      { k: 'Bilmediğin şeyi göster', d: 'Kameranı bir nesneye, bir bitkiye ya da bir binaya çevir. LENSA ne olduğunu söyler ve sesli anlatır.' },
+      { k: 'Doğru lensi seç', d: 'Ürün, yemek, bitki, metin, sanat, teknik parça ve sesli betimleme modları var. Mod, sorulan soruyu değiştirir.' },
+      { k: 'Sonra ne yapacağını da söyler', d: 'Nerede bulunur, ne kadar eder, yerine ne alınır. Tarihi bir yapıysa tarihçesini ayrıca anlatır.' },
+      { k: 'Biriktir ve paylaş', d: 'Her keşif katalog numarasıyla koleksiyonuna girer. İstediğini akışta paylaşırsın.' }
+    ] : [
+      { k: 'Show it what you don\u2019t know', d: 'Point the camera at an object, a plant or a building. LENSA names it and reads the answer aloud.' },
+      { k: 'Pick the right lens', d: 'Product, food, plant, text, art, tech parts and scene description. The mode changes the question being asked.' },
+      { k: 'It tells you what to do next', d: 'Where to find it, what it costs, what to get instead. If it is historic, you get its history too.' },
+      { k: 'Collect and share', d: 'Every find enters your collection with a catalogue number. Share the ones you like.' }
+    ];
+  }
+
+  function openIntro() {
+    var lay = $('intro'), slides = introSlides(), i = 0;
+    lay.classList.remove('hide');
+    lay.setAttribute('aria-hidden', 'false');
+
+    function paint() {
+      var s = slides[i];
+      $('introNum').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+      $('introK').textContent = s.k;
+      $('introD').textContent = s.d;
+      $('introDots').innerHTML = slides.map(function (_, n) {
+        return '<i class="' + (n === i ? 'on' : '') + '"></i>';
+      }).join('');
+      $('introNext').textContent = i === slides.length - 1 ? t('introGo') : t('introNext');
+      $('introK').style.animation = 'none';
+      void $('introK').offsetWidth;
+      $('introK').style.animation = '';
+    }
+    function close() {
+      lay.classList.add('hide');
+      lay.setAttribute('aria-hidden', 'true');
+      S.seenIntro = true;
+      savePrefs();
+    }
+    $('introSkip').textContent = t('introSkip');
+    $('introSkip').onclick = close;
+    $('introNext').onclick = function () {
+      if (i === slides.length - 1) return close();
+      i++; paint(); buzz(8);
+    };
+    paint();
+  }
+
+  /* ── 31. Barkod ────────────────────────────────────────
+     Üç kademe: tarayıcının yerleşik okuyucusu, ZXing, son çare olarak
+     rakamları yapay zekâya okutmak. iOS'ta yerleşik okuyucu yok, o yüzden
+     ikinci kademe şart. */
+  var ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+
+  var Barcode = {
+    engine: null, native: null, zxing: null, tried: false,
+
+    prepare: function () {
+      var self = this;
+      if (self.tried) return Promise.resolve(self.engine);
+      self.tried = true;
+      if (typeof window.BarcodeDetector === 'function') {
+        try {
+          self.native = new window.BarcodeDetector({
+            formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code']
+          });
+          self.engine = 'native';
+          return Promise.resolve('native');
+        } catch (e) { self.native = null; }
+      }
+      return loadScript(ZXING_URL).then(function () {
+        if (!window.ZXing || !window.ZXing.BrowserMultiFormatReader) throw new Error('zxing yok');
+        self.zxing = new window.ZXing.BrowserMultiFormatReader();
+        self.engine = 'zxing';
+        return 'zxing';
+      }).catch(function () { self.engine = null; return null; });
+    },
+
+    clean: function (raw) {
+      if (!raw) return null;
+      var v = String(raw).trim();
+      if (/^\d{8}$|^\d{12,14}$/.test(v)) return v;
+      if (/^https?:\/\//i.test(v)) return v;      /* QR bağlantısı */
+      return v.length >= 6 ? v : null;
+    },
+
+    fromSource: function (src) {
+      var self = this;
+      return self.prepare().then(function (eng) {
+        if (!eng) return null;
+        if (eng === 'native') {
+          return self.native.detect(src).then(function (list) {
+            if (!list || !list.length) return null;
+            return { value: self.clean(list[0].rawValue), format: list[0].format };
+          }).catch(function () { return null; });
+        }
+        var url = typeof src === 'string' ? src : null;
+        if (!url) {
+          var c = document.createElement('canvas'), ctx = c.getContext('2d');
+          if (!ctx || !src.videoWidth) return null;
+          c.width = src.videoWidth; c.height = src.videoHeight;
+          ctx.drawImage(src, 0, 0);
+          url = c.toDataURL('image/jpeg', 0.9);
+        }
+        return self.zxing.decodeFromImageUrl(url).then(function (r) {
+          return r ? { value: self.clean(r.getText()), format: String(r.getBarcodeFormat && r.getBarcodeFormat()) } : null;
+        }).catch(function () { return null; });
+      });
+    },
+
+    /* Çekilen kareyi sessizce yokla; bulunamazsa akış hiç değişmez */
+    sniff: function (dataUrl) {
+      return this.fromSource(dataUrl).then(function (r) {
+        return r && r.value ? r : null;
+      }).catch(function () { return null; });
+    },
+
+    /* Canlı tarama: bulana kadar belirli aralıkla kareye bakar */
+    live: function (videoEl, onFound) {
+      var self = this, stopped = false;
+      function tick() {
+        if (stopped) return;
+        var src = self.engine === 'native' ? videoEl : videoEl;
+        self.fromSource(src).then(function (r) {
+          if (stopped) return;
+          if (r && r.value) { stopped = true; onFound(r); }
+          else setTimeout(tick, 320);
+        }).catch(function () { if (!stopped) setTimeout(tick, 480); });
+      }
+      self.prepare().then(function (eng) {
+        if (!eng) { onFound(null); return; }
+        tick();
+      });
+      return function () { stopped = true; };
+    },
+
+    /* İlk hanelerden menşe ülkesi; kesin değil ama yararlı bir ipucu */
+    origin: function (code) {
+      if (!/^\d{8,14}$/.test(code)) return '';
+      var n = parseInt(code.slice(0, 3), 10);
+      var map = [
+        [0, 19, 'ABD / Kanada'], [30, 37, 'Fransa'], [40, 44, 'Almanya'], [45, 49, 'Japonya'],
+        [50, 50, 'Birleşik Krallık'], [54, 54, 'Belçika'], [57, 57, 'Danimarka'], [64, 64, 'Finlandiya'],
+        [70, 73, 'Norveç / İsveç'], [76, 76, 'İsviçre'], [80, 83, 'İtalya'], [84, 84, 'İspanya'],
+        [87, 87, 'Hollanda'], [90, 91, 'Avusturya'], [869, 869, 'Türkiye'], [690, 699, 'Çin'],
+        [880, 880, 'Güney Kore'], [471, 471, 'Tayvan'], [489, 489, 'Hong Kong'], [629, 629, 'BAE'],
+        [890, 890, 'Hindistan'], [603, 603, 'Gana'], [780, 780, 'Şili'], [789, 790, 'Brezilya']
+      ];
+      var two = parseInt(code.slice(0, 2), 10);
+      for (var i = 0; i < map.length; i++) {
+        var m = map[i];
+        if (m[0] > 99) { if (n >= m[0] && n <= m[1]) return m[2]; }
+        else if (two >= m[0] && two <= m[1]) return m[2];
+      }
+      return '';
+    }
+  };
+
+  /* ── 32. Açık ürün veritabanı ──────────────────────────
+     Open Food / Beauty / Products Facts: anahtarsız, CORS açık, gerçek veri. */
+  var ProductDB = {
+    hosts: ['world.openfoodfacts.org', 'world.openbeautyfacts.org', 'world.openproductsfacts.org'],
+    fields: 'product_name,product_name_tr,generic_name,brands,quantity,categories,' +
+      'nutriscore_grade,nova_group,ecoscore_grade,allergens_tags,origins,labels,' +
+      'countries,ingredients_text,ingredients_text_tr,nutriments,image_front_small_url,serving_size',
+
+    lookup: function (code) {
+      var self = this, i = 0;
+      if (!/^\d{8,14}$/.test(code)) return Promise.resolve(null);
+      function next() {
+        if (i >= self.hosts.length) return Promise.resolve(null);
+        var host = self.hosts[i++];
+        return withTimeout(fetch('https://' + host + '/api/v2/product/' + code + '.json?fields=' + self.fields)
+          .then(function (r) { return r.ok ? r.json() : null; }), 9000, null)
+          .then(function (d) {
+            if (d && d.status === 1 && d.product) return self.shape(d.product, host, code);
+            return next();
+          }).catch(function () { return next(); });
+      }
+      return next();
+    },
+
+    ALLERGEN_TR: {
+      milk: 'süt', gluten: 'gluten', eggs: 'yumurta', egg: 'yumurta', nuts: 'sert kabuklu yemiş',
+      peanuts: 'yer fıstığı', soybeans: 'soya', soy: 'soya', 'sesame-seeds': 'susam', sesame: 'susam',
+      fish: 'balık', crustaceans: 'kabuklu deniz ürünü', molluscs: 'yumuşakça', celery: 'kereviz',
+      mustard: 'hardal', lupin: 'acı bakla', 'sulphur-dioxide-and-sulphites': 'sülfit',
+      sulphites: 'sülfit', 'tree-nuts': 'sert kabuklu yemiş', hazelnut: 'fındık', almond: 'badem'
+    },
+    shape: function (p, host, code) {
+      var tr = S.lang === 'tr';
+      var name = (tr && p.product_name_tr) || p.product_name || p.generic_name || '';
+      var specs = [];
+      var add = function (k, v) { if (v) specs.push({ k: k, v: String(v).slice(0, 80) }); };
+      add(tr ? 'Marka' : 'Brand', p.brands);
+      add(tr ? 'Miktar' : 'Quantity', p.quantity);
+      add(tr ? 'Porsiyon' : 'Serving', p.serving_size);
+      var n = p.nutriments || {};
+      if (n['energy-kcal_100g']) add(tr ? 'Enerji' : 'Energy', Math.round(n['energy-kcal_100g']) + ' kcal / 100 g');
+      if (n.proteins_100g != null) add(tr ? 'Protein' : 'Protein', n.proteins_100g + ' g');
+      if (n.carbohydrates_100g != null) add(tr ? 'Karbonhidrat' : 'Carbs', n.carbohydrates_100g + ' g');
+      if (n.sugars_100g != null) add(tr ? 'Şeker' : 'Sugar', n.sugars_100g + ' g');
+      if (n.fat_100g != null) add(tr ? 'Yağ' : 'Fat', n.fat_100g + ' g');
+      if (n.salt_100g != null) add(tr ? 'Tuz' : 'Salt', n.salt_100g + ' g');
+      add(tr ? 'Menşe' : 'Origin', p.origins);
+      var self = this;
+      var allergens = (p.allergens_tags || []).map(function (a) {
+        var key = String(a).replace(/^[a-z]{2}:/, '');
+        if (tr && self.ALLERGEN_TR[key]) return self.ALLERGEN_TR[key];
+        return key.replace(/-/g, ' ');
+      }).filter(Boolean);
+      return {
+        code: code, source: host.split('.')[1], name: name, brand: p.brands || '',
+        specs: specs.slice(0, 8), allergens: allergens.slice(0, 6),
+        nutri: p.nutriscore_grade ? String(p.nutriscore_grade).toUpperCase() : '',
+        nova: p.nova_group || null,
+        eco: p.ecoscore_grade ? String(p.ecoscore_grade).toUpperCase() : '',
+        ingredients: ((tr && p.ingredients_text_tr) || p.ingredients_text || '').slice(0, 400),
+        image: p.image_front_small_url || '',
+        url: 'https://' + host + '/product/' + code
+      };
+    },
+
+    /* Open Prices: gerçek, kullanıcı bildirimli fiyatlar. Türkiye'de veri az. */
+    prices: function (code) {
+      return withTimeout(fetch('https://prices.openfoodfacts.org/api/v1/prices?product_code=' +
+        encodeURIComponent(code) + '&order_by=-date&size=8')
+        .then(function (r) { return r.ok ? r.json() : null; }), 9000, null)
+        .then(function (d) {
+          if (!d || !d.items || !d.items.length) return [];
+          return d.items.map(function (x) {
+            return {
+              seller: (x.location && (x.location.osm_name || x.location.osm_address_city)) || 'Open Prices',
+              price: x.price, cur: x.currency || 'EUR', date: x.date || '', url: ''
+            };
+          });
+        }).catch(function () { return []; });
+    }
+  };
+
+  /* ── 33. Canlı fiyat ───────────────────────────────────
+     Pazaryeri sayfalarına tarayıcıdan doğrudan erişilemez (CORS).
+     Bu yüzden fiyatı, web araması yapabilen modele arattırıyoruz. */
+  function livePrice(rec) {
+    var L = langInfo(S.lang), d = rec.data;
+    var q = d.search.local + (rec.barcode ? ' ' + rec.barcode : '');
+    var market = S.lang === 'tr'
+      ? 'Trendyol, Hepsiburada, Amazon TR, n11, Migros, CarrefourSA gibi Turkiye satis noktalari'
+      : 'major retailers in the user\'s region';
+    var sys = 'Sen bir fiyat arastirmacisisin. Web aramasi yaparak asagidaki urunun GUNCEL satis fiyatlarini bul. ' +
+      market + ' oncelikli olsun. Sadece gercekten arama sonuclarinda gordugun fiyatlari yaz, tahmin ekleme. ' +
+      'En fazla 6 satir. Fiyati bulunamazsa items dizisini bos birak ve summary icinde durumu soyle. ' +
+      'Tum metinleri ' + L.n + ' dilinde yaz. SADECE gecerli JSON dondur, baska hicbir sey yazma. Sema: ' +
+      '{"items":[{"seller":"","price":0,"cur":"TRY","note":""}],"summary":"","asOf":""}';
+    var prompt = 'Urun: ' + d.title + (d.category ? ' (' + d.category + ')' : '') +
+      (rec.barcode ? '\nBarkod: ' + rec.barcode : '') +
+      '\nArama terimi: ' + q + '\nGuncel fiyatlari bul ve JSON dondur.';
+
+    return searchCapable(sys, prompt).then(function (r) {
+      var j = parseJSON(r.text);
+      if (!j) throw new Error('parse');
+      var items = (Array.isArray(j.items) ? j.items : []).map(function (x) {
+        if (!x) return null;
+        var p = parseNum(x.price);
+        if (p == null) return null;
+        return { seller: String(x.seller || '').slice(0, 40), price: p,
+          cur: String(x.cur || L.cur).slice(0, 5), note: String(x.note || '').slice(0, 60) };
+      }).filter(Boolean).slice(0, 6);
+      items.sort(function (a, b) { return a.price - b.price; });
+      return { items: items, summary: String(j.summary || ''), asOf: String(j.asOf || ''), via: r.via };
+    });
+  }
+
+  /* Web araması yalnızca bazı sağlayıcılarda var; sırayla dene */
+  function searchCapable(system, prompt) {
+    function anthropicSearch() {
+      var headers = { 'Content-Type': 'application/json' };
+      if (S.apiKey) {
+        headers['x-api-key'] = S.apiKey;
+        headers['anthropic-version'] = '2023-06-01';
+        headers['anthropic-dangerous-direct-browser-access'] = 'true';
+      }
+      var ctrl = new AbortController();
+      return withTimeout(fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: headers, signal: ctrl.signal,
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6', max_tokens: 1600, system: system,
+          messages: [{ role: 'user', content: prompt }],
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }]
+        })
+      }).then(function (r) {
+        if (!r.ok) throw new Error('anthropic ' + r.status);
+        return r.json();
+      }).then(function (dd) {
+        var txt = pullText(dd);
+        if (!txt) throw new Error('empty');
+        return { text: txt, via: 'Claude + web' };
+      }), 75000, ctrl);
+    }
+    function pollinationsSearch() {
+      var ctrl = new AbortController();
+      return withTimeout(fetch('https://text.pollinations.ai/openai', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+        body: JSON.stringify({
+          model: 'searchgpt', max_tokens: 1200,
+          messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }]
+        })
+      }).then(function (r) {
+        if (!r.ok) throw new Error('pollinations ' + r.status);
+        return r.json();
+      }).then(function (dd) {
+        var txt = pullText(dd);
+        if (!txt) throw new Error('empty');
+        return { text: txt, via: 'Pollinations + web' };
+      }), 60000, ctrl);
+    }
+    if (!navigator.onLine) return Promise.reject(new Error('offline'));
+    return anthropicSearch().catch(function () { return pollinationsSearch(); });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
