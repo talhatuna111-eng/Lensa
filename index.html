@@ -1091,7 +1091,7 @@ dl.specs{margin:0}
   var S = {
     view: 'scan', ui: 'tr', lang: 'tr', mode: 'genel',
     autoSpeak: true, autoSave: true, doubleCheck: true,
-    voiceEngine: 'auto', voiceURI: '',
+    voiceEngine: 'device', voiceURI: '',
     rate: 1, facing: 'environment', torch: false,
     stream: null, track: null,
     image: null,        /* { dataUrl, b64, mime }  gönderilen (kırpılmış olabilir) */
@@ -1119,6 +1119,10 @@ dl.specs{margin:0}
     /* Supabase bağlantısı cihaz ayarından okunmaz; her kurulumda merkezi değerler kullanılır. */
     S.sbUrl = APP_CONFIG.supabaseUrl;
     S.sbKey = APP_CONFIG.supabaseKey;
+    /* Puter üçüncü taraf izin penceresini tamamen devre dışı bırak.
+       Eski cihazlarda kalmış tercihler de merkezi sunucu + cihaz sesine döner. */
+    if (S.provider === 'puter' || S.provider === 'anthropic' || S.provider === 'pollinations') S.provider = 'auto';
+    S.voiceEngine = 'device';
     S.ui = S.lang === 'tr' ? 'tr' : 'en';
     if (!S.nick) {
       var adj = ['Sessiz', 'Mavi', 'Uzak', 'Erken', 'Yalın', 'Derin', 'Açık', 'Gri'];
@@ -1790,20 +1794,17 @@ dl.specs{margin:0}
   }
 
   var PROVIDERS = {
-    server: pLensaServer, anthropic: pAnthropic, puter: pPuter,
-    pollinations: pPollinations, custom: pCustom
+    server: pLensaServer, custom: pCustom
   };
 
   function providerOrder() {
-    if (S.provider !== 'auto') {
-      var only = PROVIDERS[S.provider];
-      return only ? [only] : [pLensaServer, pPuter];
+    if (S.provider === 'custom') {
+      return (S.customBase && S.customKey) ? [pCustom] : [pLensaServer];
     }
+    /* Tüm cihazlarda tek merkez: Supabase Edge Function.
+       Puter yedeği kaldırıldı; dolayısıyla üçüncü taraf izin penceresi açılmaz. */
     var list = [pLensaServer];
     if (S.customBase && S.customKey) list.push(pCustom);
-    /* Sunucu kurulmamışsa uygulama kör şekilde 401/403 veren servisleri denemez.
-       Puter kendi oturum penceresini açan kontrollü son yedektir. */
-    list.push(pPuter);
     return list;
   }
 
@@ -1981,13 +1982,8 @@ dl.specs{margin:0}
       paintTransport();
       var self = this, my = this.token;
 
-      if (S.voiceEngine === 'natural' || S.voiceEngine === 'auto') {
-        this.natural(clean).then(function (ok) {
-          if (my !== self.token) return;
-          if (!ok) self.device(clean, my);
-        });
-        return;
-      }
+      /* Seslendirme yalnızca cihazın yerel SpeechSynthesis altyapısını kullanır.
+         Böylece iOS PWA ve Android'de Puter izin penceresi açılmaz. */
       this.device(clean, my);
     },
 
@@ -3502,7 +3498,6 @@ dl.specs{margin:0}
     }).join('');
     var provs = [
       ['auto', tr ? 'LENSA sunucusu' : 'LENSA server'],
-      ['puter', tr ? 'Puter yedeği' : 'Puter fallback'],
       ['custom', tr ? 'Özel uç' : 'Custom']
     ];
 
@@ -3520,9 +3515,9 @@ dl.specs{margin:0}
         tr ? 'Analiz biter bitmez okumaya başla' : 'Start reading as soon as analysis ends', S.autoSpeak) +
 
       '<div class="field"><label>' + (tr ? 'Ses' : 'Voice') + '</label>' +
-      '<p>' + (tr ? 'Doğal ses buluttan gelir, cihazınkinden belirgin daha akıcıdır ama internet ister. Cihaz sesi anında başlar ve çevrimdışı çalışır.' : 'The natural voice comes from the cloud and sounds noticeably smoother, but needs a connection. The device voice starts instantly and works offline.') + '</p>' +
+      '<p>' + (tr ? 'Seslendirme cihazın yerel ses motorunu kullanır. Üçüncü taraf hesap, izin penceresi veya bulut oturumu açılmaz.' : 'Narration uses the device speech engine. No third-party account, consent dialog, or cloud sign-in is opened.') + '</p>' +
       '<div class="seg" id="segVoice">' +
-      [['auto', tr ? 'Otomatik' : 'Automatic'], ['natural', tr ? 'Doğal ses' : 'Natural'], ['device', tr ? 'Cihaz sesi' : 'Device']]
+      [['device', tr ? 'Cihaz sesi' : 'Device voice']]
         .map(function (v) { return '<button data-v="' + v[0] + '" aria-pressed="' + (S.voiceEngine === v[0]) + '">' + esc(v[1]) + '</button>'; }).join('') +
       '</div>' +
       '<div id="voicePick" style="margin-top:10px"></div>' +
@@ -3538,7 +3533,7 @@ dl.specs{margin:0}
 
       '<h2 class="set-h">' + (tr ? 'Yapay zekâ' : 'AI') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Sağlayıcı' : 'Provider') + '</label>' +
-      '<p>' + (tr ? 'Varsayılan olarak Supabase üzerindeki merkezi LENSA AI fonksiyonunu kullanır. Sunucu hazır değilse Puter giriş akışını yedek olarak açar.' : 'Uses the central LENSA AI function on Supabase. If the server is unavailable, Puter sign-in is used as a fallback.') + '</p>' +
+      '<p>' + (tr ? 'Tüm cihazlar Supabase üzerindeki merkezi LENSA AI fonksiyonunu kullanır. Üçüncü taraf giriş veya izin penceresi açılmaz.' : 'All devices use the central LENSA AI function on Supabase. No third-party sign-in or consent dialog is opened.') + '</p>' +
       '<div class="seg" id="segProv">' + provs.map(function (p) {
         return '<button data-p="' + p[0] + '" aria-pressed="' + (S.provider === p[0]) + '">' + esc(p[1]) + '</button>';
       }).join('') + '</div></div>' +
@@ -3639,10 +3634,6 @@ dl.specs{margin:0}
       b.onclick = function () {
         S.provider = b.getAttribute('data-p');
         savePrefs(); renderSettings();
-        if (S.provider === 'puter') {
-          toast(tr ? 'Puter ilk kullanımda kendi sitesinde oturum açmanı isteyebilir.'
-                   : 'Puter may ask you to sign in on its own site the first time.', 4200);
-        }
       };
     });
 
@@ -3662,8 +3653,8 @@ dl.specs{margin:0}
         box.innerHTML = '';
         hint.className = 'test-out bad';
         hint.textContent = tr
-          ? langInfo(S.lang).n + ' için cihazda ses bulunamadı. Doğal sesi kullanabilirsin.'
-          : 'No ' + langInfo(S.lang).n + ' voice installed. Use the natural voice instead.';
+          ? langInfo(S.lang).n + ' için cihazda uygun ses bulunamadı. Telefon ayarlarından bu dilin sesini indirin.'
+          : 'No suitable ' + langInfo(S.lang).n + ' voice is installed. Download that language voice in device settings.';
         return;
       }
       box.innerHTML = '<select id="setVoice">' + list.map(function (v) {

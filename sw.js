@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lensa-pwa-v6-ai-server';
+const CACHE_NAME = 'lensa-pwa-v7-no-puter';
 const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
