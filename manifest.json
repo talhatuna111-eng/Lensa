@@ -1,13 +1,15 @@
 {
-  "id": "lensa-pwa",
-  "name": "LENSA — Ne bu? Nerede bulunur?",
+  "id": "./",
+  "name": "LENSA — Gör, Tanı, Öğren",
   "short_name": "LENSA",
+  "description": "Bilmediğin şeyin fotoğrafını çek. LENSA ne olduğunu sesli anlatsın ve nerede bulunacağını söylesin.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0E1113",
   "theme_color": "#0E1113",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "lang": "tr",
   "icons": [
     {
       "src": "icon-192.png",

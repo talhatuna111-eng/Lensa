@@ -1079,6 +1079,12 @@ dl.specs{margin:0}
     return S.ui === 'tr' ? m.tr : m.en;
   }
 
+  /* ── Merkezi uygulama yapılandırması ─────────────────────── */
+  var APP_CONFIG = Object.freeze({
+    supabaseUrl: 'https://wwondiajwpvvjwwkrxej.supabase.co',
+    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b25kaWFqd3B2dmp3d2tyeGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzgzNjYsImV4cCI6MjEwMTM1NDM2Nn0.-VDfg7bGJgfv1Ie4DsJPemNLHNDQiXXGj0mXt7mpXw8'
+  });
+
   /* ── 5. Durum ──────────────────────────────────────────── */
   var S = {
     view: 'scan', ui: 'tr', lang: 'tr', mode: 'genel',
@@ -1092,14 +1098,14 @@ dl.specs{margin:0}
     current: null, busy: false, abort: null,
     provider: 'auto', apiKey: '',
     customBase: '', customModel: '', customKey: '',
-    sbUrl: '', sbKey: '', nick: '',
+    sbUrl: APP_CONFIG.supabaseUrl, sbKey: APP_CONFIG.supabaseKey, nick: '',
     colFilter: '', colQuery: '', feedQuery: '',
     user: null, session: null, seenIntro: false, syncing: false,
     bc: null, bcStop: null, useLocation: true, place: null
   };
 
   var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate', 'voiceEngine', 'voiceURI',
-    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick', 'seenIntro', 'useLocation'];
+    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'nick', 'seenIntro', 'useLocation'];
 
   function loadPrefs() {
     var nav = (navigator.language || 'tr').slice(0, 2).toLowerCase();
@@ -1108,6 +1114,9 @@ dl.specs{margin:0}
     S.lang = known ? nav : 'tr';
     var p = store.json('lensa.prefs', null);
     if (p) PREF_KEYS.forEach(function (k) { if (p[k] !== undefined && p[k] !== null) S[k] = p[k]; });
+    /* Supabase bağlantısı cihaz ayarından okunmaz; her kurulumda merkezi değerler kullanılır. */
+    S.sbUrl = APP_CONFIG.supabaseUrl;
+    S.sbKey = APP_CONFIG.supabaseKey;
     S.ui = S.lang === 'tr' ? 'tr' : 'en';
     if (!S.nick) {
       var adj = ['Sessiz', 'Mavi', 'Uzak', 'Erken', 'Yalın', 'Derin', 'Açık', 'Gri'];
@@ -3488,9 +3497,9 @@ dl.specs{margin:0}
 
       '<h2 class="set-h">' + (tr ? 'Ortak akış' : 'Shared feed') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Supabase bağlantısı' : 'Supabase connection') + '</label>' +
-      '<p>' + (tr ? 'Boşsa akış yalnızca bu cihazda kalır. Doldurursan paylaştığın keşifler herkesin akışına düşer. Supabase panelinde Settings › API Keys altındaki Publishable anahtarı (veya Legacy API Keys sekmesindeki anon anahtarı) kullan. Secret / service_role anahtarını buraya yazma.' : 'Leave empty to keep the feed local. Fill it in and your shared finds go to everyone\u2019s feed. Use the Publishable key under Settings › API Keys, or the anon key on the Legacy API Keys tab. Never paste a secret / service_role key here.') + '</p>' +
-      '<input id="setSbUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" value="' + esc(S.sbUrl) + '">' +
-      '<input id="setSbKey" type="password" placeholder="anon public key" autocomplete="off" value="' + esc(S.sbKey) + '">' +
+      '<p>' + (tr ? 'Merkezi LENSA bağlantısı otomatik yüklenir ve tüm cihazlarda aynıdır. Kullanıcı tarafından değiştirilmez.' : 'The central LENSA connection loads automatically and is identical on every device. It cannot be changed by the user.') + '</p>' +
+      '<input id="setSbUrl" readonly aria-readonly="true" value="' + esc(S.sbUrl) + '">' +
+      '<input id="setSbKey" type="password" readonly aria-readonly="true" value="' + esc(S.sbKey) + '">' +
       '<div class="btn-row"><button class="ghost-btn sm" id="copySql">' + esc(t('copySql')) + '</button>' +
       '<button class="ghost-btn sm" id="testSb">' + (tr ? 'Test et' : 'Test') + '</button>' +
       '<button class="ghost-btn sm" id="diagSb">' + (tr ? 'Tanılama' : 'Diagnose') + '</button></div>' +
@@ -3626,13 +3635,10 @@ dl.specs{margin:0}
       var n = $(id);
       n.onchange = n.onblur = function () { S[key] = n.value.trim(); savePrefs(); };
     }
-    /* Supabase alanları yapıştırma kazalarına karşı temizlenir */
+    /* Supabase alanları merkezi yapılandırmadan gelir ve kullanıcı tarafından değiştirilemez. */
     ['setSbUrl', 'setSbKey'].forEach(function (id) {
-      var n = $(id), key = id === 'setSbUrl' ? 'sbUrl' : 'sbKey';
-      n.onchange = n.onblur = function () {
-        n.value = (key === 'sbUrl' ? cleanUrl(n.value) : cleanKey(n.value));
-        S[key] = n.value; savePrefs();
-      };
+      var n = $(id);
+      if (n) n.readOnly = true;
     });
 
     $('testAI').onclick = function () {
@@ -3644,9 +3650,10 @@ dl.specs{margin:0}
     };
     $('copySql').onclick = function () { copy(SETUP_SQL).then(function () { toast(t('sqlCopied'), 4200); }); };
     function readSb() {
-      S.sbUrl = cleanUrl($('setSbUrl').value); $('setSbUrl').value = S.sbUrl;
-      S.sbKey = cleanKey($('setSbKey').value); $('setSbKey').value = S.sbKey;
-      savePrefs();
+      S.sbUrl = APP_CONFIG.supabaseUrl;
+      S.sbKey = APP_CONFIG.supabaseKey;
+      if ($('setSbUrl')) $('setSbUrl').value = S.sbUrl;
+      if ($('setSbKey')) $('setSbKey').value = S.sbKey;
     }
     $('testSb').onclick = function () {
       readSb();
@@ -3890,7 +3897,7 @@ dl.specs{margin:0}
     loadPrefs();
     applyUI();
     runSplash();
-    installManifest();
+    /* Statik manifest.json kullanılıyor; ikinci bir blob manifest oluşturulmaz. */
     setupZoom();
 
     $('shutterBtn').onclick = function () {
