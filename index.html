@@ -1082,7 +1082,9 @@ dl.specs{margin:0}
   /* ── Merkezi uygulama yapılandırması ─────────────────────── */
   var APP_CONFIG = Object.freeze({
     supabaseUrl: 'https://wwondiajwpvvjwwkrxej.supabase.co',
-    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b25kaWFqd3B2dmp3d2tyeGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzgzNjYsImV4cCI6MjEwMTM1NDM2Nn0.-VDfg7bGJgfv1Ie4DsJPemNLHNDQiXXGj0mXt7mpXw8'
+    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b25kaWFqd3B2dmp3d2tyeGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzgzNjYsImV4cCI6MjEwMTM1NDM2Nn0.-VDfg7bGJgfv1Ie4DsJPemNLHNDQiXXGj0mXt7mpXw8',
+    aiFunction: 'lensa-analyze',
+    aiEndpoint: 'https://wwondiajwpvvjwwkrxej.supabase.co/functions/v1/lensa-analyze'
   });
 
   /* ── 5. Durum ──────────────────────────────────────────── */
@@ -1629,7 +1631,50 @@ dl.specs{margin:0}
     });
   }
 
-  /* A — Anthropic (Claude içinde anahtarsız, dışarıda anahtarla) */
+  /* A0 — LENSA sunucusu: tüm cihazlar aynı Supabase Edge Function'ı kullanır. */
+  function pLensaServer(system, prompt, imgs) {
+    var ctrl = new AbortController();
+    S.abort = ctrl;
+    var payload = {
+      system: system,
+      prompt: prompt,
+      images: imagesFor(imgs).slice(0, 2).map(function (im) {
+        return { mime: im.mime, b64: im.b64 };
+      }),
+      client: {
+        version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown',
+        standalone: !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true,
+        platform: navigator.platform || '',
+        language: navigator.language || ''
+      }
+    };
+    return withTimeout(fetch(APP_CONFIG.aiEndpoint, {
+      method: 'POST',
+      signal: ctrl.signal,
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': APP_CONFIG.supabaseKey,
+        'Authorization': 'Bearer ' + APP_CONFIG.supabaseKey
+      },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.text().then(function (raw) {
+        var d = null;
+        try { d = raw ? JSON.parse(raw) : {}; } catch (e) {}
+        if (!r.ok) {
+          var code = d && (d.code || d.error) ? String(d.code || d.error) : ('HTTP_' + r.status);
+          var detail = d && d.message ? String(d.message) : raw.slice(0, 220);
+          throw new Error('lensa-server ' + r.status + ' ' + code + (detail ? ' — ' + detail : ''));
+        }
+        var txt = d && (d.text || d.output || d.content);
+        if (!txt) throw new Error('lensa-server empty');
+        return { text: String(txt), via: d.via || 'LENSA AI' };
+      });
+    }), 70000, ctrl);
+  }
+
+  /* A — Anthropic (yalnızca kullanıcı açıkça yerel anahtar seçerse) */
   function pAnthropic(system, prompt, imgs, onPartial) {
     var content = [];
     imagesFor(imgs).forEach(function (im) {
@@ -1667,34 +1712,30 @@ dl.specs{margin:0}
      kullanıcı uygulamadan kopuyor. Bu yüzden ancak iki durumda çağırıyoruz:
      kullanıcı Puter'ı elle seçtiyse, ya da zaten oturum açıksa. */
   var PUTER_URL = 'https://js.puter.com/v2/';
-  function puterGate(explicit) {
+  function puterGate() {
     return loadScript(PUTER_URL).then(function () {
-      if (!window.puter || !window.puter.ai) throw new Error('puter yok');
-      if (explicit) return window.puter;
-      var signed = false;
-      try {
-        signed = !!(window.puter.auth && typeof window.puter.auth.isSignedIn === 'function' &&
-          window.puter.auth.isSignedIn());
-      } catch (e) { signed = false; }
-      if (!signed) throw new Error('puter-auth');
+      if (!window.puter || !window.puter.ai) throw new Error('puter-script');
+      /* Puter'ın User-Pays modeli ilk kullanımda kendi güvenli giriş ekranını açar.
+         Önceden yapılan isSignedIn kontrolü yeni cihazların tamamını bloke ediyordu. */
       return window.puter;
     });
   }
 
-  /* B — Puter.js (anahtarsız) */
+  /* B — Puter.js: sunucu hazır değilse kullanıcıya otomatik giriş akışı sunar. */
   function pPuter(system, prompt, imgs) {
-    return puterGate(S.provider === 'puter').then(function (puter) {
-      if (!puter.ai.chat) throw new Error('puter yok');
+    return puterGate().then(function (puter) {
+      if (!puter.ai.chat) throw new Error('puter-ai-missing');
       var first = imagesFor(imgs)[0];
       var full = system + '\n\n' + prompt;
+      var options = { model: 'gpt-5.4-nano' };
       return withTimeout(
-        first ? puter.ai.chat(full, first.dataUrl) : puter.ai.chat(full),
-        60000, null
+        first ? puter.ai.chat(full, first.dataUrl, options) : puter.ai.chat(full, options),
+        70000, null
       );
     }).then(function (r) {
       var txt = pullText(r) || (typeof r === 'string' ? r : '');
-      if (!txt) throw new Error('empty');
-      return { text: txt, via: 'Puter' };
+      if (!txt) throw new Error('puter-empty');
+      return { text: txt, via: 'Puter AI' };
     });
   }
 
@@ -1748,23 +1789,29 @@ dl.specs{margin:0}
     }), 60000, ctrl);
   }
 
-  var PROVIDERS = { anthropic: pAnthropic, puter: pPuter, pollinations: pPollinations, custom: pCustom };
+  var PROVIDERS = {
+    server: pLensaServer, anthropic: pAnthropic, puter: pPuter,
+    pollinations: pPollinations, custom: pCustom
+  };
 
   function providerOrder() {
     if (S.provider !== 'auto') {
       var only = PROVIDERS[S.provider];
-      return only ? [only] : [pAnthropic];
+      return only ? [only] : [pLensaServer, pPuter];
     }
-    var list = [];
+    var list = [pLensaServer];
     if (S.customBase && S.customKey) list.push(pCustom);
-    list.push(pAnthropic, pPollinations, pPuter);
+    /* Sunucu kurulmamışsa uygulama kör şekilde 401/403 veren servisleri denemez.
+       Puter kendi oturum penceresini açan kontrollü son yedektir. */
+    list.push(pPuter);
     return list;
   }
 
-  /* Zincir: sırayla dene, ağ hatasında bir kez tekrarla, hepsi düşerse en anlamlı hatayı döndür */
+  /* Zincir: sırayla dene, geçici ağ hatasında bir kez tekrarla ve bütün
+     sağlayıcı hatalarını sakla. Böylece "Okuyamadım" yerine gerçek neden görünür. */
   function chain(system, prompt, imgs, onPartial) {
     if (!navigator.onLine) return Promise.reject(new Error('offline'));
-    var list = providerOrder(), i = 0, lastErr = null;
+    var list = providerOrder(), i = 0, errors = [];
     function attempt(fn, retried) {
       return fn(system, prompt, imgs, onPartial).catch(function (e) {
         var msg = String(e && e.message || e);
@@ -1776,9 +1823,12 @@ dl.specs{margin:0}
       });
     }
     function next() {
-      if (i >= list.length) return Promise.reject(lastErr || new Error('all-failed'));
+      if (i >= list.length) return Promise.reject(new Error('all-failed :: ' + errors.join(' || ')));
       var fn = list[i++];
-      return attempt(fn, false).catch(function (e) { lastErr = e; return next(); });
+      return attempt(fn, false).catch(function (e) {
+        errors.push(String(e && e.message || e));
+        return next();
+      });
     }
     return next();
   }
@@ -2428,10 +2478,20 @@ dl.specs{margin:0}
   function errorText(e) {
     var m = String(e && e.message || e);
     if (!navigator.onLine || m === 'offline') return t('failOffline');
+    if (/lensa-server 404|FUNCTION_NOT_FOUND/i.test(m))
+      return S.ui === 'tr' ? 'LENSA AI sunucu fonksiyonu henüz Supabase’e yüklenmemiş.' : 'The LENSA AI server function has not been deployed to Supabase.';
+    if (/AI_NOT_CONFIGURED|lensa-server 503/i.test(m))
+      return S.ui === 'tr' ? 'Supabase bağlantısı çalışıyor ancak AI servis anahtarı sunucuya tanımlanmamış.' : 'Supabase is reachable, but no AI service key is configured on the server.';
+    if (/lensa-server 401|lensa-server 403|Invalid JWT/i.test(m))
+      return S.ui === 'tr' ? 'Supabase Edge Function yetkilendirmesi reddedildi. Fonksiyon ve JWT ayarı kontrol edilmeli.' : 'Supabase Edge Function authorization was rejected.';
+    if (/puter/i.test(m))
+      return S.ui === 'tr' ? 'LENSA sunucusu cevap vermedi ve ücretsiz Puter oturumu açılamadı. Açılan giriş ekranını tamamlayıp tekrar deneyin.' : 'The LENSA server did not respond and the Puter sign-in flow could not complete.';
+    if (/Failed to fetch|NetworkError|Load failed/i.test(m))
+      return S.ui === 'tr' ? 'AI sunucusuna ağ isteği ulaştırılamadı. HTTPS, CORS ve Edge Function dağıtımını kontrol edin.' : 'The request could not reach the AI server. Check HTTPS, CORS and the Edge Function deployment.';
     if (/timeout/i.test(m)) return t('failTimeout');
     if (/parse/i.test(m)) return t('failParse');
-    if (/all-failed/i.test(m)) return t('failAll');
-    return t('failGeneric');
+    if (/all-failed/i.test(m)) return (S.ui === 'tr' ? 'Bütün analiz yolları başarısız oldu. Teknik ayrıntı: ' : 'All analysis routes failed. Technical detail: ') + m.replace(/^all-failed\s*::\s*/i, '').slice(0, 520);
+    return (S.ui === 'tr' ? 'Analiz başarısız: ' : 'Analysis failed: ') + m.slice(0, 420);
   }
 
   function analyse(keepFocus) {
@@ -3441,8 +3501,9 @@ dl.specs{margin:0}
       return '<option value="' + l.c + '"' + (l.c === S.lang ? ' selected' : '') + '>' + esc(l.n) + '</option>';
     }).join('');
     var provs = [
-      ['auto', t('auto')], ['anthropic', 'Claude'], ['puter', 'Puter'],
-      ['pollinations', 'Pollinations'], ['custom', tr ? 'Özel uç' : 'Custom']
+      ['auto', tr ? 'LENSA sunucusu' : 'LENSA server'],
+      ['puter', tr ? 'Puter yedeği' : 'Puter fallback'],
+      ['custom', tr ? 'Özel uç' : 'Custom']
     ];
 
     body.innerHTML =
@@ -3477,23 +3538,24 @@ dl.specs{margin:0}
 
       '<h2 class="set-h">' + (tr ? 'Yapay zekâ' : 'AI') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Sağlayıcı' : 'Provider') + '</label>' +
-      '<p>' + (tr ? 'Otomatik: sırayla dener, ilk yanıt vereni kullanır. Kendi anahtarını girersen teşhis belirgin şekilde tutarlılaşır.' : 'Automatic tries each in turn. Your own key gives noticeably steadier results.') + '</p>' +
+      '<p>' + (tr ? 'Varsayılan olarak Supabase üzerindeki merkezi LENSA AI fonksiyonunu kullanır. Sunucu hazır değilse Puter giriş akışını yedek olarak açar.' : 'Uses the central LENSA AI function on Supabase. If the server is unavailable, Puter sign-in is used as a fallback.') + '</p>' +
       '<div class="seg" id="segProv">' + provs.map(function (p) {
         return '<button data-p="' + p[0] + '" aria-pressed="' + (S.provider === p[0]) + '">' + esc(p[1]) + '</button>';
       }).join('') + '</div></div>' +
 
-      '<div class="field"><label for="setKey">' + (tr ? 'Anthropic API anahtarı' : 'Anthropic API key') + '</label>' +
-      '<p>' + (tr ? 'İsteğe bağlı. Yalnızca bu cihazda saklanır, hiçbir yere gönderilmez.' : 'Optional. Stored on this device only.') + '</p>' +
-      '<input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…" value="' + esc(S.apiKey) + '">' +
-      '<div class="btn-row"><button class="ghost-btn sm" id="keyHelp">' + (tr ? 'Anahtarı nereden alırım?' : 'Where do I get a key?') + '</button></div></div>' +
+      '<div class="field"><label>' + (tr ? 'Merkezi analiz sunucusu' : 'Central analysis server') + '</label>' +
+      '<p>' + (tr ? 'API anahtarı kullanıcı cihazında tutulmaz. Supabase Edge Function içindeki secret üzerinden çalışır.' : 'The AI key is never stored on the device. It is read from a Supabase Edge Function secret.') + '</p>' +
+      '<input readonly aria-readonly="true" value="' + esc(APP_CONFIG.aiEndpoint) + '">' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="testAI">' + (tr ? 'AI sunucusunu test et' : 'Test AI server') + '</button></div>' +
+      '<span class="test-out" id="testAIOut"></span></div>' +
 
       '<div class="field"><label>' + (tr ? 'Kendi sağlayıcın (OpenAI uyumlu)' : 'Your own provider (OpenAI compatible)') + '</label>' +
       '<p>' + (tr ? 'Örnek: https://api.openai.com/v1' : 'e.g. https://api.openai.com/v1') + '</p>' +
       '<input id="setBase" placeholder="https://…/v1" autocomplete="off" value="' + esc(S.customBase) + '">' +
       '<input id="setModel" placeholder="gpt-4o-mini" autocomplete="off" value="' + esc(S.customModel) + '">' +
       '<input id="setCKey" type="password" placeholder="API key" autocomplete="off" value="' + esc(S.customKey) + '">' +
-      '<button class="ghost-btn sm" id="testAI">' + (tr ? 'Bağlantıyı test et' : 'Test connection') + '</button>' +
-      '<span class="test-out" id="testAIOut"></span></div>' +
+      '<button class="ghost-btn sm" id="testCustomAI">' + (tr ? 'Özel ucu test et' : 'Test custom endpoint') + '</button>' +
+      '<span class="test-out" id="testCustomAIOut"></span></div>' +
 
       '<h2 class="set-h">' + (tr ? 'Ortak akış' : 'Shared feed') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Supabase bağlantısı' : 'Supabase connection') + '</label>' +
@@ -3618,19 +3680,26 @@ dl.specs{margin:0}
     paintVoicePick();
     if (window.speechSynthesis) speechSynthesis.onvoiceschanged = paintVoicePick;
     $('voiceTest').onclick = function () { TTS.sample(); };
-    $('keyHelp').onclick = function () { openDoc('key'); };
-    $('setKey').onchange = $('setKey').onblur = function () {
-      var v = cleanKey(this.value);
-      this.value = v;
-      var had = !!S.apiKey;
-      S.apiKey = v;
-      /* Anahtar ilk kez girildiğinde sağlayıcıyı ona çevir, yoksa boşa girilmiş olur */
-      if (v && !had && S.provider === 'auto') S.provider = 'anthropic';
-      savePrefs();
-      if (v && !had) { toast(tr ? 'Anahtar kaydedildi, sağlayıcı Claude yapıldı.' : 'Key saved, provider set to Claude.'); renderSettings(); }
-    };
     bind('setBase', 'customBase'); bind('setModel', 'customModel');
     bind('setCKey', 'customKey'); bind('setNick', 'nick');
+    $('testCustomAI').onclick = function () {
+      var out = $('testCustomAIOut');
+      S.customBase = $('setBase').value.trim();
+      S.customModel = $('setModel').value.trim();
+      S.customKey = $('setCKey').value.trim();
+      savePrefs();
+      if (!S.customBase || !S.customModel || !S.customKey) {
+        out.className = 'test-out bad';
+        out.textContent = tr ? 'Adres, model ve anahtar zorunlu.' : 'Endpoint, model and key are required.';
+        return;
+      }
+      out.className = 'test-out'; out.textContent = t('testing');
+      pCustom('Kısa cevap ver.', 'Sadece OK yaz.', []).then(function () {
+        out.className = 'test-out ok'; out.textContent = tr ? 'Özel uç çalışıyor.' : 'Custom endpoint works.';
+      }).catch(function (e) {
+        out.className = 'test-out bad'; out.textContent = String(e.message || e);
+      });
+    };
     function bind(id, key) {
       var n = $(id);
       n.onchange = n.onblur = function () { S[key] = n.value.trim(); savePrefs(); };
@@ -3640,13 +3709,24 @@ dl.specs{margin:0}
       var n = $(id);
       if (n) n.readOnly = true;
     });
-
     $('testAI').onclick = function () {
       var out = $('testAIOut');
-      out.textContent = t('testing'); out.className = 'test-out';
-      chainText('Kisa cevapla.', 'Sadece OK yaz.', [])
-        .then(function (r) { out.textContent = t('testOk') + ' · ' + r.via; out.className = 'test-out ok'; })
-        .catch(function (e) { out.textContent = t('testFail') + ' · ' + String(e.message || e); out.className = 'test-out bad'; });
+      out.className = 'test-out'; out.textContent = t('testing');
+      fetch(APP_CONFIG.aiEndpoint, {
+        method: 'GET', cache: 'no-store',
+        headers: { apikey: APP_CONFIG.supabaseKey, Authorization: 'Bearer ' + APP_CONFIG.supabaseKey }
+      }).then(function (r) {
+        return r.text().then(function (raw) {
+          var d = {}; try { d = raw ? JSON.parse(raw) : {}; } catch (e) {}
+          if (!r.ok) throw new Error((d.code || 'HTTP_' + r.status) + (d.message ? ' — ' + d.message : ''));
+          out.className = d.configured ? 'test-out ok' : 'test-out bad';
+          out.textContent = d.configured
+            ? (tr ? 'AI sunucusu hazır · ' : 'AI server ready · ') + (d.provider || 'configured')
+            : (tr ? 'Fonksiyon çalışıyor; AI secret eksik.' : 'Function works; AI secret is missing.');
+        });
+      }).catch(function (e) {
+        out.className = 'test-out bad'; out.textContent = String(e.message || e);
+      });
     };
     $('copySql').onclick = function () { copy(SETUP_SQL).then(function () { toast(t('sqlCopied'), 4200); }); };
     function readSb() {
@@ -4195,7 +4275,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v3.0';
+  var APP_VERSION = 'v3.1-ai-server';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
