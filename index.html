@@ -11,6 +11,7 @@
 <title>LENSA — Ne bu? Nerede bulunur?</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -591,6 +592,54 @@ dl.specs{margin:0}
 .arch-wiki{display:inline-block;margin-top:14px;font-size:12px;font-weight:600;color:var(--brass);
   text-decoration:none;border-bottom:1px solid rgba(184,133,63,.4);padding-bottom:2px;position:relative;z-index:1}
 
+.keystate{padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.55;margin:2px 0 4px;border:1px solid}
+.keystate.ok{color:var(--patina);border-color:rgba(76,107,99,.45);background:rgba(76,107,99,.08)}
+.keystate.bad{color:#D07A63;border-color:rgba(180,82,60,.45);background:rgba(180,82,60,.08)}
+
+#updbar{position:fixed;left:12px;right:12px;bottom:calc(var(--tabbar) + 14px);z-index:88;
+  display:none;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;
+  background:var(--label);color:var(--ink);box-shadow:0 12px 34px rgba(0,0,0,.5);
+  max-width:496px;margin:0 auto;font-size:13.5px;font-weight:600}
+#updbar.on{display:flex}
+#updbar span{flex:1}
+#updbar button{padding:9px 15px;border-radius:16px;background:var(--ink);color:var(--label);font-size:12.5px;font-weight:700}
+
+.privnote,.brandnote,.brandok{margin-top:14px;padding:11px 13px;border-radius:12px;font-size:12.5px;line-height:1.55}
+.privnote{background:rgba(76,107,99,.1);border:1px solid rgba(76,107,99,.32);color:#33544C}
+.brandnote{background:rgba(184,133,63,.1);border:1px solid rgba(184,133,63,.35);color:#7A5623}
+.brandok{background:rgba(21,24,26,.05);border:1px solid var(--line-ink);color:var(--ink-soft);font-weight:600}
+
+.qrbox{margin-top:18px;padding:16px 16px 14px;border-radius:14px;background:rgba(59,130,246,.07);
+  border:1px solid rgba(59,130,246,.3)}
+.qr-head{display:flex;align-items:center;gap:9px;font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;font-weight:700;color:#2563EB;margin-bottom:8px}
+.qr-go{display:inline-block;margin-top:10px;padding:10px 18px;border-radius:18px;background:var(--ink);
+  color:var(--label);text-decoration:none;font-size:12.5px;font-weight:700}
+
+.repair{margin-top:12px}
+.rep-q{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:10px}
+.rep-item{padding:13px 0;border-top:1px solid var(--line-ink)}
+.rep-top{display:flex;align-items:baseline;gap:10px}
+.rep-top b{flex:1;font-size:14px}
+.odds{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:4px 9px;border-radius:11px}
+.odds.oyuksek,.odds.ohigh{background:rgba(180,82,60,.14);color:#B4523C}
+.odds.oorta{background:rgba(184,133,63,.16);color:#7A5623}
+.odds.odusuk{background:rgba(21,24,26,.07);color:var(--ink-soft)}
+.rep-item p{margin:7px 0 0;font-size:13.5px;line-height:1.6;color:#2B2E30}
+.rep-meta{margin-top:6px;font-size:11.5px;color:var(--ink-soft)}
+.rep-pro,.rep-cost{margin-top:12px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.55}
+.rep-pro{background:rgba(180,82,60,.09);border:1px solid rgba(180,82,60,.28);color:#7C3626}
+.rep-cost{background:rgba(21,24,26,.05);color:var(--ink-soft)}
+
+.admin-list{margin-top:8px}
+.admin-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-ink)}
+.admin-row.hot{background:rgba(180,82,60,.07)}
+.admin-row img,.admin-row .noimg{width:46px;height:46px;border-radius:9px;object-fit:cover;flex:0 0 auto;background:#1B2126}
+.admin-meta{flex:1;min-width:0}
+.admin-meta b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-meta span{font-size:11.5px;color:var(--ink-soft)}
+.admin-row .mini{border-color:var(--line-ink);color:var(--ink-soft)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -640,6 +689,7 @@ dl.specs{margin:0}
 </div>
 <div id="bgart" aria-hidden="true"></div>
 <div id="netbar" role="status"></div>
+<div id="updbar" role="status"></div>
 <div id="app">
 
   <header class="topbar">
@@ -936,6 +986,15 @@ dl.specs{margin:0}
       failParse: 'Yanıt okunamadı. Tekrar dene; sürerse Ayarlar\'dan kendi API anahtarını gir.',
       failAll: 'Hiçbir sağlayıcı yanıt vermedi. Ayarlar\'dan bağlantını test et.',
       retry: 'Tekrar dene', cantRead: 'Okuyamadım',
+      needKeyTitle: 'Bir anahtar gerekiyor',
+      needKey: 'Ücretsiz sağlayıcılar artık anahtar istiyor, bu yüzden analiz yapılamıyor. Ayarlar › Yapay zekâ bölümünden bir Anthropic anahtarı (önerilen) ya da Pollinations tarayıcı anahtarı gir. İkisi de birkaç dakikada alınır.',
+      openSettings: 'Ayarları aç', techDetail: 'Teknik ayrıntı',
+      nearMe: 'Yakınımda nerede var?', nearSearching: 'Çevredeki satış noktaları aranıyor…',
+      nearNone: 'Çevrede uygun bir satış noktası bulunamadı.', nearFound: 'Yakındaki satış noktaları',
+      nearNote: 'OpenStreetMap verisi. Ürünün o mağazada olduğu garanti değildir, önce ara.',
+      repair: 'Arıza ve tamir', symptomPh: 'Ne oluyor? Örn. çalışıyor ama ısıtmıyor',
+      repairThinking: 'Olası nedenler çıkarılıyor…', tools: 'Gereken', level: 'Zorluk',
+      callPro: 'Servis gerekir', repairCost: 'Tahmini maliyet',
       thinking: 'Düşünüyor…', deleteQ: 'Bu keşif silinsin mi?',
       pasteLink: 'LENSA bağlantısını yapıştır', badLink: 'Bağlantı okunamadı.',
       sureH: 'Kesin teşhis', likelyH: 'Büyük olasılıkla', maybeH: 'Muhtemelen', lowH: 'Şüpheli — doğrula',
@@ -1003,6 +1062,15 @@ dl.specs{margin:0}
       failParse: 'Could not read the reply. Try again; if it persists add your own API key in Settings.',
       failAll: 'No provider answered. Test your connection in Settings.',
       retry: 'Try again', cantRead: 'Could not read it',
+      needKeyTitle: 'A key is required',
+      needKey: 'The free providers now require a key, so analysis cannot run. Add an Anthropic key (recommended) or a Pollinations browser key under Settings › AI. Either takes a few minutes to get.',
+      openSettings: 'Open settings', techDetail: 'Technical detail',
+      nearMe: 'Where can I get it nearby?', nearSearching: 'Looking for shops around you\u2026',
+      nearNone: 'No suitable shop found nearby.', nearFound: 'Shops near you',
+      nearNote: 'OpenStreetMap data. Stock is not guaranteed \u2014 call ahead.',
+      repair: 'Faults and repair', symptomPh: 'What happens? e.g. runs but does not heat',
+      repairThinking: 'Working out likely causes\u2026', tools: 'Needs', level: 'Difficulty',
+      callPro: 'Needs a professional', repairCost: 'Estimated cost',
       thinking: 'Thinking\u2026', deleteQ: 'Delete this find?',
       pasteLink: 'Paste the LENSA link', badLink: 'Could not read that link.',
       sureH: 'Confirmed', likelyH: 'Very likely', maybeH: 'Probably', lowH: 'Uncertain \u2014 verify',
@@ -1079,35 +1147,28 @@ dl.specs{margin:0}
     return S.ui === 'tr' ? m.tr : m.en;
   }
 
-  /* ── Merkezi uygulama yapılandırması ─────────────────────── */
-  var APP_CONFIG = Object.freeze({
-    supabaseUrl: 'https://wwondiajwpvvjwwkrxej.supabase.co',
-    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b25kaWFqd3B2dmp3d2tyeGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzgzNjYsImV4cCI6MjEwMTM1NDM2Nn0.-VDfg7bGJgfv1Ie4DsJPemNLHNDQiXXGj0mXt7mpXw8',
-    aiFunction: 'lensa-analyze',
-    aiEndpoint: 'https://wwondiajwpvvjwwkrxej.supabase.co/functions/v1/lensa-analyze'
-  });
-
   /* ── 5. Durum ──────────────────────────────────────────── */
   var S = {
     view: 'scan', ui: 'tr', lang: 'tr', mode: 'genel',
     autoSpeak: true, autoSave: true, doubleCheck: true,
-    voiceEngine: 'device', voiceURI: '',
+    voiceEngine: 'auto', voiceURI: '',
     rate: 1, facing: 'environment', torch: false,
     stream: null, track: null,
     image: null,        /* { dataUrl, b64, mime }  gönderilen (kırpılmış olabilir) */
     fullImage: null,    /* orijinal tam kare */
     focusNote: '',
     current: null, busy: false, abort: null,
-    provider: 'auto', apiKey: '',
+    provider: 'auto', apiKey: '', pollKey: '', gemKey: '', plan: 'free', lastTrace: [],
     customBase: '', customModel: '', customKey: '',
-    sbUrl: APP_CONFIG.supabaseUrl, sbKey: APP_CONFIG.supabaseKey, nick: '',
+    sbUrl: '', sbKey: '', nick: '',
     colFilter: '', colQuery: '', feedQuery: '',
     user: null, session: null, seenIntro: false, syncing: false,
-    bc: null, bcStop: null, useLocation: true, place: null
+    bc: null, bcStop: null, useLocation: true, place: null,
+    blurFaces: true, stripMeta: true, autoMode: true
   };
 
   var PREF_KEYS = ['lang', 'mode', 'autoSpeak', 'autoSave', 'doubleCheck', 'rate', 'voiceEngine', 'voiceURI',
-    'provider', 'apiKey', 'customBase', 'customModel', 'customKey', 'nick', 'seenIntro', 'useLocation'];
+    'provider', 'apiKey', 'pollKey', 'gemKey', 'plan', 'customBase', 'customModel', 'customKey', 'sbUrl', 'sbKey', 'nick', 'seenIntro', 'useLocation', 'blurFaces', 'stripMeta', 'autoMode'];
 
   function loadPrefs() {
     var nav = (navigator.language || 'tr').slice(0, 2).toLowerCase();
@@ -1116,13 +1177,6 @@ dl.specs{margin:0}
     S.lang = known ? nav : 'tr';
     var p = store.json('lensa.prefs', null);
     if (p) PREF_KEYS.forEach(function (k) { if (p[k] !== undefined && p[k] !== null) S[k] = p[k]; });
-    /* Supabase bağlantısı cihaz ayarından okunmaz; her kurulumda merkezi değerler kullanılır. */
-    S.sbUrl = APP_CONFIG.supabaseUrl;
-    S.sbKey = APP_CONFIG.supabaseKey;
-    /* Puter üçüncü taraf izin penceresini tamamen devre dışı bırak.
-       Eski cihazlarda kalmış tercihler de merkezi sunucu + cihaz sesine döner. */
-    if (S.provider === 'puter' || S.provider === 'anthropic' || S.provider === 'pollinations') S.provider = 'auto';
-    S.voiceEngine = 'device';
     S.ui = S.lang === 'tr' ? 'tr' : 'en';
     if (!S.nick) {
       var adj = ['Sessiz', 'Mavi', 'Uzak', 'Erken', 'Yalın', 'Derin', 'Açık', 'Gri'];
@@ -1388,7 +1442,7 @@ dl.specs{margin:0}
     '"price":{"min":null,"max":null,"cur":"TRY","note":""},' +
     '"search":{"local":"","global":""},"where":[{"name":"","why":""}],' +
     '"alts":[{"name":"","why":""}],"fact":"","questions":["","",""],' +
-    '"retail":"genel","heritage":null}';
+    '"retail":"genel","brand":{"name":"","read":"","sure":false},"heritage":null}';
 
   function systemPrompt() {
     var L = langInfo(S.lang);
@@ -1423,7 +1477,16 @@ dl.specs{margin:0}
       'KURALLAR',
       '1. Once cerceve icindeki en belirgin veya merkezdeki nesneyi sec. Baska onemli nesneler varsa onlari others dizisine yaz.',
       '2. Teshisi somut delile dayandir: logo, uzerindeki yazi, bicim, doku, olcek, baglam. Bu delilleri evidence icinde kisa maddeler halinde yaz.',
-      '3. Emin degilsen UYDURMA. confidence puanini durust ver ve neyin belirsiz oldugunu summary icinde soyle. Marka veya model okunmuyorsa marka uydurma; jenerik ad kullan.',
+      '3. Emin degilsen UYDURMA. confidence puanini durust ver ve neyin belirsiz oldugunu summary icinde soyle.',
+      '',
+      'MARKA KURALI (en sik yapilan hata budur, dikkatle uygula)',
+      '3a. Bir marka adini SADECE su uc durumdan biri varsa yazabilirsin: (1) logoyu net goruyorsun, (2) urunun uzerindeki yaziyi okuyabiliyorsun, (3) ambalaj veya etiket metni okunuyor. Bunlarin hicbiri yoksa marka adi YAZMA.',
+      '3b. Bicim benzerligi marka kaniti DEGILDIR. Sekli tanidik geldi diye Bialetti, Apple, Bosch, Samsung, Nike gibi bir marka adi yazma. Piyasada ayni bicimde onlarca muadil vardir.',
+      '3c. Marka okunamiyorsa title alanina jenerik ad yaz. Ornek: "Moka pot" yaz, "Bialetti Moka Express" yazma. "Kablosuz kulaklik" yaz, "AirPods" yazma.',
+      '3d. brand alanini doldur: name icinde okudugun marka, read icinde bunu neye dayanarak soyledigin (ornegin "govde uzerinde BIALETTI yazisi okundu"), sure icinde true veya false. Marka okuyamadiysan name bos string, sure false olsun.',
+      '3e. Model veya seri numarasi da ayni kurala tabidir. Okunmuyorsa yazma.',
+      '3f. Marka okunamadiysa summary icinde bunu acikca soyle: kullanici hangi markayi aldigini bilmek istiyorsa etiketin fotografini cekmelidir.',
+      '3g. confidence puani marka iddiasini da kapsar. Nesneyi biliyor ama markayi bilmiyorsan puani nesneye gore ver ve markayi bos birak.',
       '4. narration alani yuksek sesle okunacak. Birine anlatir gibi yaz: ilk cumlede dogrudan ne oldugunu soyle, sonra kisa ve orta uzunlukta cumlelerle devam et. Kullaniciya dogrudan hitap et. Gunluk kelimeler sec, teknik terim kullanacaksan hemen yanina sade karsiligini koy.',
       '4b. narration icinde madde isareti, emoji, markdown, parantez, kisaltma ve sembol KULLANMA. Para birimini, olcu birimini ve yuzdeyi kelimeyle yaz: 650 lira, 12 santimetre, yuzde 40. Noktalama tam olsun. 70 ile 120 kelime.',
       '5. specs en az 4, en fazla 8 satir olsun; her satir gercekten bilgi tasisin. Bilmedigin alani hic yazma, bilinmiyor yazma.',
@@ -1539,6 +1602,23 @@ dl.specs{margin:0}
     var RETAIL = ['market','elektronik','kozmetik','ev','yapi','giyim','kitap','spor',
       'oyuncak','bahce','evcil','eczane','ikinci_el','otomotiv','genel'];
     o.retail = RETAIL.indexOf(str(d.retail)) >= 0 ? str(d.retail) : 'genel';
+
+    /* Kanıtsız marka iddiası en sık yanılma kaynağı; burada eliyoruz. */
+    var bd = d.brand || {};
+    o.brand = { name: str(bd.name), read: str(bd.read), sure: bd.sure === true || bd.sure === 'true' };
+    if (o.brand.name && (!o.brand.sure || !o.brand.read)) {
+      o.brand.guessed = o.brand.name;
+      o.brand.name = '';
+    }
+    if (!o.brand.name && o.brand.guessed) {
+      /* Başlıkta da geçiyorsa başlıktan çıkar, jenerik ada indir */
+      var g = o.brand.guessed.split(/\s+/)[0];
+      if (g.length > 2) {
+        var re = new RegExp('^\\s*' + g.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i');
+        var cut = o.title.replace(re, '').trim();
+        if (cut.length > 2) o.title = cut.charAt(0).toLocaleUpperCase(S.lang === 'tr' ? 'tr' : 'en') + cut.slice(1);
+      }
+    }
     o.warning = str(d.warning) || null;
 
     o.specs = [];
@@ -1635,50 +1715,7 @@ dl.specs{margin:0}
     });
   }
 
-  /* A0 — LENSA sunucusu: tüm cihazlar aynı Supabase Edge Function'ı kullanır. */
-  function pLensaServer(system, prompt, imgs) {
-    var ctrl = new AbortController();
-    S.abort = ctrl;
-    var payload = {
-      system: system,
-      prompt: prompt,
-      images: imagesFor(imgs).slice(0, 2).map(function (im) {
-        return { mime: im.mime, b64: im.b64 };
-      }),
-      client: {
-        version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'unknown',
-        standalone: !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true,
-        platform: navigator.platform || '',
-        language: navigator.language || ''
-      }
-    };
-    return withTimeout(fetch(APP_CONFIG.aiEndpoint, {
-      method: 'POST',
-      signal: ctrl.signal,
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': APP_CONFIG.supabaseKey,
-        'Authorization': 'Bearer ' + APP_CONFIG.supabaseKey
-      },
-      body: JSON.stringify(payload)
-    }).then(function (r) {
-      return r.text().then(function (raw) {
-        var d = null;
-        try { d = raw ? JSON.parse(raw) : {}; } catch (e) {}
-        if (!r.ok) {
-          var code = d && (d.code || d.error) ? String(d.code || d.error) : ('HTTP_' + r.status);
-          var detail = d && d.message ? String(d.message) : raw.slice(0, 220);
-          throw new Error('lensa-server ' + r.status + ' ' + code + (detail ? ' — ' + detail : ''));
-        }
-        var txt = d && (d.text || d.output || d.content);
-        if (!txt) throw new Error('lensa-server empty');
-        return { text: String(txt), via: d.via || 'LENSA AI' };
-      });
-    }), 70000, ctrl);
-  }
-
-  /* A — Anthropic (yalnızca kullanıcı açıkça yerel anahtar seçerse) */
+  /* A — Anthropic (Claude içinde anahtarsız, dışarıda anahtarla) */
   function pAnthropic(system, prompt, imgs, onPartial) {
     var content = [];
     imagesFor(imgs).forEach(function (im) {
@@ -1716,45 +1753,56 @@ dl.specs{margin:0}
      kullanıcı uygulamadan kopuyor. Bu yüzden ancak iki durumda çağırıyoruz:
      kullanıcı Puter'ı elle seçtiyse, ya da zaten oturum açıksa. */
   var PUTER_URL = 'https://js.puter.com/v2/';
-  function puterGate() {
+  function puterGate(explicit) {
     return loadScript(PUTER_URL).then(function () {
-      if (!window.puter || !window.puter.ai) throw new Error('puter-script');
-      /* Puter'ın User-Pays modeli ilk kullanımda kendi güvenli giriş ekranını açar.
-         Önceden yapılan isSignedIn kontrolü yeni cihazların tamamını bloke ediyordu. */
+      if (!window.puter || !window.puter.ai) throw new Error('puter yok');
+      if (explicit) return window.puter;
+      var signed = false;
+      try {
+        signed = !!(window.puter.auth && typeof window.puter.auth.isSignedIn === 'function' &&
+          window.puter.auth.isSignedIn());
+      } catch (e) { signed = false; }
+      if (!signed) throw new Error('puter-auth');
       return window.puter;
     });
   }
 
-  /* B — Puter.js: sunucu hazır değilse kullanıcıya otomatik giriş akışı sunar. */
+  /* B — Puter.js (anahtarsız) */
   function pPuter(system, prompt, imgs) {
-    return puterGate().then(function (puter) {
-      if (!puter.ai.chat) throw new Error('puter-ai-missing');
+    return puterGate(S.provider === 'puter').then(function (puter) {
+      if (!puter.ai.chat) throw new Error('puter yok');
       var first = imagesFor(imgs)[0];
       var full = system + '\n\n' + prompt;
-      var options = { model: 'gpt-5.4-nano' };
       return withTimeout(
-        first ? puter.ai.chat(full, first.dataUrl, options) : puter.ai.chat(full, options),
-        70000, null
+        first ? puter.ai.chat(full, first.dataUrl) : puter.ai.chat(full),
+        60000, null
       );
     }).then(function (r) {
       var txt = pullText(r) || (typeof r === 'string' ? r : '');
-      if (!txt) throw new Error('puter-empty');
-      return { text: txt, via: 'Puter AI' };
+      if (!txt) throw new Error('empty');
+      return { text: txt, via: 'Puter' };
     });
   }
 
-  /* C — Pollinations (anahtarsız yedek) */
+  /* C — Pollinations. Yeni sürüm tarayıcı için pk_ anahtarı istiyor;
+     anahtar varsa yeni uç, yoksa eski uç referrer ile denenir. */
   function pPollinations(system, prompt, imgs) {
     var content = [{ type: 'text', text: prompt }];
     imagesFor(imgs).forEach(function (im) {
       content.push({ type: 'image_url', image_url: { url: im.dataUrl } });
     });
+    var headers = { 'Content-Type': 'application/json' };
+    var url = 'https://text.pollinations.ai/openai';
+    if (S.pollKey) {
+      headers.Authorization = 'Bearer ' + S.pollKey;
+      url = 'https://gen.pollinations.ai/v1/chat/completions';
+    }
     var ctrl = new AbortController();
     S.abort = ctrl;
-    return withTimeout(fetch('https://text.pollinations.ai/openai', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+    return withTimeout(fetch(url, {
+      method: 'POST', headers: headers, signal: ctrl.signal,
       body: JSON.stringify({
-        model: 'openai', max_tokens: 1200,
+        model: 'openai', max_tokens: 1200, referrer: location.hostname,
         messages: [{ role: 'system', content: system }, { role: 'user', content: content }]
       })
     }).then(function (r) {
@@ -1793,26 +1841,34 @@ dl.specs{margin:0}
     }), 60000, ctrl);
   }
 
-  var PROVIDERS = {
-    server: pLensaServer, custom: pCustom
-  };
+  var PROVIDERS = { gemini: pGemini, anthropic: pAnthropic, puter: pPuter, pollinations: pPollinations, custom: pCustom };
 
   function providerOrder() {
-    if (S.provider === 'custom') {
-      return (S.customBase && S.customKey) ? [pCustom] : [pLensaServer];
+    if (S.provider !== 'auto') {
+      var only = PROVIDERS[S.provider];
+      return only ? [only] : [pAnthropic];
     }
-    /* Tüm cihazlarda tek merkez: Supabase Edge Function.
-       Puter yedeği kaldırıldı; dolayısıyla üçüncü taraf izin penceresi açılmaz. */
-    var list = [pLensaServer];
+    var list = [];
     if (S.customBase && S.customKey) list.push(pCustom);
+    if (gemKeys().length) list.push(pGemini);
+    list.push(pAnthropic, pPollinations, pPuter);
     return list;
   }
 
-  /* Zincir: sırayla dene, geçici ağ hatasında bir kez tekrarla ve bütün
-     sağlayıcı hatalarını sakla. Böylece "Okuyamadım" yerine gerçek neden görünür. */
+  /* Zincir: sırayla dene, ağ hatasında bir kez tekrarla, hepsi düşerse en anlamlı hatayı döndür */
+  var PROV_NAME = null;
+  function nameOf(fn) {
+    if (!PROV_NAME) {
+      PROV_NAME = [[pGemini, 'Gemini'], [pAnthropic, 'Claude'], [pPollinations, 'Pollinations'],
+        [pPuter, 'Puter'], [pCustom, 'Özel uç']];
+    }
+    for (var i = 0; i < PROV_NAME.length; i++) if (PROV_NAME[i][0] === fn) return PROV_NAME[i][1];
+    return '?';
+  }
   function chain(system, prompt, imgs, onPartial) {
     if (!navigator.onLine) return Promise.reject(new Error('offline'));
-    var list = providerOrder(), i = 0, errors = [];
+    var list = providerOrder(), i = 0, lastErr = null;
+    S.lastTrace = [];
     function attempt(fn, retried) {
       return fn(system, prompt, imgs, onPartial).catch(function (e) {
         var msg = String(e && e.message || e);
@@ -1824,10 +1880,16 @@ dl.specs{margin:0}
       });
     }
     function next() {
-      if (i >= list.length) return Promise.reject(new Error('all-failed :: ' + errors.join(' || ')));
+      if (i >= list.length) {
+        var err = new Error('all-failed');
+        err.trace = S.lastTrace;
+        err.cause = lastErr;
+        return Promise.reject(err);
+      }
       var fn = list[i++];
       return attempt(fn, false).catch(function (e) {
-        errors.push(String(e && e.message || e));
+        lastErr = e;
+        S.lastTrace.push({ p: nameOf(fn), m: String(e && e.message || e) });
         return next();
       });
     }
@@ -1982,8 +2044,13 @@ dl.specs{margin:0}
       paintTransport();
       var self = this, my = this.token;
 
-      /* Seslendirme yalnızca cihazın yerel SpeechSynthesis altyapısını kullanır.
-         Böylece iOS PWA ve Android'de Puter izin penceresi açılmaz. */
+      if (S.voiceEngine === 'natural' || S.voiceEngine === 'auto') {
+        this.natural(clean).then(function (ok) {
+          if (my !== self.token) return;
+          if (!ok) self.device(clean, my);
+        });
+        return;
+      }
       this.device(clean, my);
     },
 
@@ -2119,6 +2186,7 @@ dl.specs{margin:0}
     flag: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></svg>',
     warn: '<svg width="18" height="18" style="flex:0 0 auto;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
     bars: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="5" width="2" height="14"/><rect x="6" y="5" width="1" height="14"/><rect x="9" y="5" width="3" height="14"/><rect x="14" y="5" width="1" height="14"/><rect x="17" y="5" width="2" height="14"/><rect x="21" y="5" width="1" height="14"/></svg>',
+    pin: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>',
     search: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>',
     aperture: '<svg class="aperture-mark" width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="7.5"/><path d="M24 5v11.5M40.5 14.5 30.5 20.5M40.5 33.5 30.5 27.5M24 43V31.5M7.5 33.5 17.5 27.5M7.5 14.5 17.5 20.5"/></svg>'
   };
@@ -2213,6 +2281,30 @@ dl.specs{margin:0}
     h.push('<div class="kicker">' + esc(d.category || modeName(rec.mode)) + '</div>');
     h.push('<h1>' + esc(d.title) + '</h1>');
     h.push('<span class="hallmark ' + hm.cls + '">' + ICON.star + esc(hm.txt) + ' · ' + d.confidence + '</span>');
+    if (rec.bc && rec.bc.code && rec.bc.qr) {
+      var Q = rec.bc.qr;
+      h.push('<section class="qrbox"><div class="qr-head">' + ICON.bars + esc(Q.title) + '</div><dl class="specs">');
+      Q.rows.forEach(function (r0) {
+        if (!r0[1]) return;
+        h.push('<div class="spec"><dt>' + esc(r0[0] || '—') + '</dt><span class="lead"></span><dd>' + esc(r0[1]) + '</dd></div>');
+      });
+      h.push('</dl>');
+      if (Q.link) h.push('<a class="qr-go" target="_blank" rel="noopener" href="' + esc(Q.link) + '">' +
+        esc(S.ui === 'tr' ? 'Aç' : 'Open') + '</a>');
+      h.push('</section>');
+    }
+    if (rec.blurred) {
+      h.push('<div class="privnote">' + esc((S.ui === 'tr'
+        ? rec.blurred + ' yüz gönderilmeden önce bulanıklaştırıldı.'
+        : rec.blurred + ' face(s) blurred before sending.')) + '</div>');
+    }
+    if (d.brand && !d.brand.name && d.brand.guessed) {
+      h.push('<div class="brandnote">' + esc(S.ui === 'tr'
+        ? 'Marka okunamadı. Biçim ' + d.brand.guessed + ' ürününe benziyor ama bu kanıt değil; emin olmak için etiketin fotoğrafını çek.'
+        : 'No brand was legible. The shape resembles ' + d.brand.guessed + ' but that is not evidence; photograph the label to be sure.') + '</div>');
+    } else if (d.brand && d.brand.name && d.brand.read) {
+      h.push('<div class="brandok">' + esc(d.brand.name) + ' · ' + esc(d.brand.read) + '</div>');
+    }
     if (rec.bc && rec.bc.code) {
       h.push('<a class="bc-chip" target="_blank" rel="noopener" href="' +
         (rec.bc.product ? rec.bc.product.url : 'https://www.google.com/search?q=' + encodeURIComponent(rec.bc.code)) +
@@ -2353,6 +2445,16 @@ dl.specs{margin:0}
       h.push('</div>');
     }
 
+    if (shop) {
+      h.push('<button class="live-btn" id="nearBtn">' + ICON.pin + '<span>' + esc(t('nearMe')) + '</span></button>');
+      h.push('<div id="nearOut"></div>');
+    }
+    if (d.retail === 'elektronik' || d.retail === 'otomotiv' || d.retail === 'yapi' || d.retail === 'ev') {
+      h.push('<div class="rule"></div><h3 class="sec-title">' + esc(t('repair')) + '</h3>');
+      h.push('<div class="ask-row"><input id="symptomIn" placeholder="' + esc(t('symptomPh')) + '" enterkeyhint="send">' +
+        '<button id="symptomGo" aria-label="' + esc(t('repair')) + '">' + ICON.send + '</button></div>');
+      h.push('<div id="repairOut"></div>');
+    }
     h.push('<div class="rule"></div><h3 class="sec-title">' + esc(t('ask')) + '</h3>');
     h.push('<div class="chips" id="qChips">');
     d.questions.forEach(function (q) { h.push('<button class="chip" data-q="' + esc(q) + '">' + esc(q) + '</button>'); });
@@ -2436,6 +2538,16 @@ dl.specs{margin:0}
       TTS.toggle(d.heritage.story);
       buzz(8);
     };
+    var nb = $('nearBtn');
+    if (nb) nb.onclick = function () { runNearby(rec); };
+    var sg = $('symptomGo');
+    if (sg) {
+      sg.onclick = function () {
+        var v = $('symptomIn').value.trim();
+        if (v) runRepair(rec, v);
+      };
+      $('symptomIn').onkeydown = function (e) { if (e.key === 'Enter') sg.onclick(); };
+    }
     var lb = $('liveBtn');
     if (lb) lb.onclick = function () { runLivePrice(rec); };
     $('shareBtn').onclick = function () { shareRecord(rec); };
@@ -2473,26 +2585,72 @@ dl.specs{margin:0}
   /* ── 17. Analiz akışı ──────────────────────────────────── */
   function errorText(e) {
     var m = String(e && e.message || e);
+    var tr = S.ui === 'tr';
     if (!navigator.onLine || m === 'offline') return t('failOffline');
-    if (/lensa-server 404|FUNCTION_NOT_FOUND/i.test(m))
-      return S.ui === 'tr' ? 'LENSA AI sunucu fonksiyonu henüz Supabase’e yüklenmemiş.' : 'The LENSA AI server function has not been deployed to Supabase.';
-    if (/AI_NOT_CONFIGURED|lensa-server 503/i.test(m))
-      return S.ui === 'tr' ? 'Supabase bağlantısı çalışıyor ancak AI servis anahtarı sunucuya tanımlanmamış.' : 'Supabase is reachable, but no AI service key is configured on the server.';
-    if (/lensa-server 401|lensa-server 403|Invalid JWT/i.test(m))
-      return S.ui === 'tr' ? 'Supabase Edge Function yetkilendirmesi reddedildi. Fonksiyon ve JWT ayarı kontrol edilmeli.' : 'Supabase Edge Function authorization was rejected.';
-    if (/puter/i.test(m))
-      return S.ui === 'tr' ? 'LENSA sunucusu cevap vermedi ve ücretsiz Puter oturumu açılamadı. Açılan giriş ekranını tamamlayıp tekrar deneyin.' : 'The LENSA server did not respond and the Puter sign-in flow could not complete.';
-    if (/Failed to fetch|NetworkError|Load failed/i.test(m))
-      return S.ui === 'tr' ? 'AI sunucusuna ağ isteği ulaştırılamadı. HTTPS, CORS ve Edge Function dağıtımını kontrol edin.' : 'The request could not reach the AI server. Check HTTPS, CORS and the Edge Function deployment.';
+    if (/all-failed/i.test(m)) {
+      var tra = (e && e.trace) || [];
+      var auth = tra.some(function (x) { return /\b(401|402|403)\b|puter-auth/.test(x.m); });
+      if (auth || !hasKey()) return t('needKey');
+      return t('failAll');
+    }
+    if (/\b401\b|\b403\b/.test(m)) return t('needKey');
+    if (/\b402\b|credit|quota|insufficient/i.test(m)) return tr
+      ? 'Sağlayıcıdaki bakiyen bitmiş görünüyor. Hesabına kredi ekle.'
+      : 'Your provider balance looks empty. Add credit to your account.';
+    if (/\b429\b|rate/i.test(m)) return tr
+      ? 'Çok sık istek gitti. Bir dakika bekleyip tekrar dene.'
+      : 'Too many requests. Wait a minute and try again.';
     if (/timeout/i.test(m)) return t('failTimeout');
     if (/parse/i.test(m)) return t('failParse');
-    if (/all-failed/i.test(m)) return (S.ui === 'tr' ? 'Bütün analiz yolları başarısız oldu. Teknik ayrıntı: ' : 'All analysis routes failed. Technical detail: ') + m.replace(/^all-failed\s*::\s*/i, '').slice(0, 520);
-    return (S.ui === 'tr' ? 'Analiz başarısız: ' : 'Analysis failed: ') + m.slice(0, 420);
+    if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return tr
+      ? 'Sağlayıcıya ulaşılamadı. Ağ engeli ya da geçici bir kesinti olabilir.'
+      : 'Could not reach the provider. Network block or a temporary outage.';
+    return t('failGeneric');
+  }
+  /* Çalışabilir bir sağlayıcı var mı? Yoksa kullanıcıyı boşuna bekletme. */
+  function hasKey() {
+    return !!(S.gemKey || S.apiKey || S.pollKey || (S.customBase && S.customKey) || S.provider === 'puter');
+  }
+  function traceText(e) {
+    var tra = (e && e.trace) || S.lastTrace || [];
+    if (!tra.length) return String(e && e.message || e);
+    return tra.map(function (x) { return x.p + ': ' + x.m; }).join('\n');
   }
 
   function analyse(keepFocus) {
     if (!S.image) { toast(t('noImage')); return; }
     if (S.busy) return;
+    if (!quotaGuard()) {
+      go('result');
+      $('resultScroll').innerHTML =
+        '<div style="height:14px"></div><div class="plate"><img src="' + S.image.dataUrl + '" alt=""></div>' +
+        '<div class="card"><div class="kicker">' + (S.ui === 'tr' ? 'Kota' : 'Quota') + '</div>' +
+        '<h1>' + esc(S.ui === 'tr' ? 'Günlük sınıra ulaştın' : 'Daily limit reached') + '</h1>' +
+        '<p class="lede">' + esc(S.ui === 'tr'
+          ? 'Bugün ' + FREE_DAILY + ' analiz yaptın. Yarın sıfırlanır. Sınırsız kullanmak için Ayarlar\'dan kendi anahtarını girebilirsin.'
+          : 'You have used ' + FREE_DAILY + ' analyses today. It resets tomorrow. Add your own key in Settings for unlimited use.') + '</p>' +
+        '<button class="live-btn" id="goKey4">' + esc(t('openSettings')) + '</button>' +
+        '<div class="card-actions" style="grid-template-columns:1fr"><button class="act" id="backScan4"><span>' +
+        esc(t('newScan')) + '</span></button></div></div>';
+      $('goKey4').onclick = function () { go('settings'); };
+      $('backScan4').onclick = function () { go('scan'); resetScan(); };
+      return;
+    }
+    if (!hasKey() && !ARTIFACT_HOST.test(location.hostname)) {
+      go('result');
+      $('resultScroll').innerHTML =
+        '<div style="height:14px"></div>' +
+        '<div class="plate"><img src="' + S.image.dataUrl + '" alt=""></div>' +
+        '<div class="card"><div class="kicker">' + (S.ui === 'tr' ? 'Kurulum' : 'Setup') + '</div>' +
+        '<h1>' + esc(t('needKeyTitle')) + '</h1>' +
+        '<p class="lede">' + esc(t('needKey')) + '</p>' +
+        '<button class="live-btn" id="goKey2">' + esc(t('openSettings')) + '</button>' +
+        '<div class="card-actions" style="grid-template-columns:1fr"><button class="act" id="backScan3"><span>' +
+        esc(t('newScan')) + '</span></button></div></div>';
+      $('goKey2').onclick = function () { go('settings'); };
+      $('backScan3').onclick = function () { go('scan'); resetScan(); };
+      return;
+    }
     if (!keepFocus) S.focusNote = '';
     S.busy = true;
     TTS.unlock();
@@ -2502,7 +2660,21 @@ dl.specs{margin:0}
     var stages = [t('reading'), t('writing')], si = 0;
     var tick = setInterval(function () { if (si < stages.length) setStage(stages[si++]); }, 3400);
 
-    /* kırpım varsa tam kareyi bağlam olarak ekle */
+    /* Fotoğraf cihazdan çıkmadan önce yüzler kapatılır. */
+    var guard = Blur.faces(S.image.dataUrl).then(function (res) {
+      if (res.n > 0) {
+        S.image = asPayload(res.url);
+        S.blurred = res.n;
+        setStage((S.ui === 'tr' ? res.n + ' yüz bulanıklaştırıldı' : res.n + ' face(s) blurred'));
+      } else S.blurred = 0;
+      var arr = [S.image];
+      if (S.fullImage && S.fullImage.dataUrl !== S.image.dataUrl && !res.n) arr.push(S.fullImage);
+      return arr;
+    }).catch(function () {
+      var arr = [S.image];
+      if (S.fullImage && S.fullImage.dataUrl !== S.image.dataUrl) arr.push(S.fullImage);
+      return arr;
+    });
     var imgs = [S.image];
     if (S.fullImage && S.fullImage.dataUrl !== S.image.dataUrl) imgs.push(S.fullImage);
 
@@ -2512,6 +2684,8 @@ dl.specs{margin:0}
       bc: S.bc ? Promise.resolve(S.bc) : Barcode.sniff(S.image.dataUrl).then(function (hit) {
         if (!hit || !hit.value) return null;
         buzz(20);
+        var qr = readQR(hit.value);
+        if (qr) return { code: hit.value, format: hit.format || '', product: null, origin: '', qr: qr };
         return ProductDB.lookup(hit.value).then(function (p) {
           return { code: hit.value, format: hit.format || '', product: p, origin: Barcode.origin(hit.value) };
         });
@@ -2531,14 +2705,14 @@ dl.specs{margin:0}
       showEarly(unesc(m[1]), c ? unesc(c[1]) : '');
     }
 
-    chainJSON(systemPrompt(), userPrompt(), imgs, onPartial)
+    guard.then(function (ready) { imgs = ready; return chainJSON(systemPrompt(), userPrompt(), imgs, onPartial); })
       .then(function (r) {
         clearInterval(tick);
         var rec = {
           id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
           ts: Date.now(), mode: S.mode, lang: S.lang, via: r.via,
           thumb: S.image.dataUrl, data: r.data, qa: [], saved: false, no: null,
-          focused: !!S.focusNote, bc: null
+          focused: !!S.focusNote, bc: null, blurred: S.blurred || 0
         };
         S.current = rec;
         S.busy = false;
@@ -2559,17 +2733,23 @@ dl.specs{margin:0}
         clearInterval(tick);
         S.busy = false;
         var box = $('resultScroll');
+        var needsKey = !hasKey() || /all-failed|401|403/.test(String(e && e.message || e));
         box.innerHTML =
           '<div style="height:14px"></div>' +
           (S.image ? '<div class="plate"><img src="' + S.image.dataUrl + '" alt=""></div>' : '') +
           '<div class="card"><div class="kicker">' + (S.ui === 'tr' ? 'Sorun' : 'Problem') + '</div>' +
           '<h1>' + esc(t('cantRead')) + '</h1>' +
           '<p class="lede">' + esc(errorText(e)) + '</p>' +
+          (needsKey ? '<button class="live-btn" id="goKey">' + esc(t('openSettings')) + '</button>' : '') +
           '<div class="card-actions" style="grid-template-columns:1fr 1fr">' +
           '<button class="act filled" id="retryBtn"><span>' + esc(t('retry')) + '</span></button>' +
-          '<button class="act" id="backScan2"><span>' + esc(t('newScan')) + '</span></button></div></div>';
+          '<button class="act" id="backScan2"><span>' + esc(t('newScan')) + '</span></button></div>' +
+          '<details class="ingr" style="margin-top:16px"><summary>' + esc(t('techDetail')) +
+          '</summary><pre class="diag" style="margin-top:10px">' + esc(traceText(e)) + '</pre></details>' +
+          '</div>';
         $('retryBtn').onclick = function () { analyse(true); };
         $('backScan2').onclick = function () { go('scan'); resetScan(); };
+        if ($('goKey')) $('goKey').onclick = function () { go('settings'); };
       });
   }
 
@@ -2608,6 +2788,10 @@ dl.specs{margin:0}
         buzz(12);
       });
   }
+
+  /* Claude içindeki önizlemede anahtarsız çağrı bir vekil üzerinden çalışır;
+     kendi alan adında çalışmaz. */
+  var ARTIFACT_HOST = /claude\.ai|claudeusercontent|anthropic\.com|localhost|127\.0\.0\.1/i;
 
   function unesc(v) {
     try { return JSON.parse('"' + v + '"'); } catch (e) { return v.replace(/\\"/g, '"'); }
@@ -2661,6 +2845,60 @@ dl.specs{margin:0}
         updateRecord(rec);
       }).catch(function () {});
     }
+  }
+
+  function runNearby(rec) {
+    var btn = $('nearBtn'), out = $('nearOut');
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
+    out.innerHTML = '<div class="lp-wait">' + esc(t('nearSearching')) + '</div>';
+    nearbyShops(rec.data.retail).then(function (res) {
+      btn.disabled = false;
+      if (!res.list.length) {
+        out.innerHTML = '<div class="lp-wait">' + esc(t('nearNone')) + '</div>';
+        return;
+      }
+      var q = encodeURIComponent(rec.data.search.local || rec.data.title);
+      out.innerHTML = '<div class="lp-box"><div class="lp-head">' + esc(t('nearFound')) + '</div>' +
+        res.list.map(function (p) {
+          var far = p.dist >= 1000 ? (p.dist / 1000).toFixed(1) + ' km' : p.dist + ' m';
+          return '<a class="lp-row" target="_blank" rel="noopener" href="https://www.google.com/maps/search/' +
+            encodeURIComponent(p.name) + '/@' + p.lat + ',' + p.lon + ',17z">' +
+            '<span class="lp-seller">' + esc(p.name) +
+            (p.open ? '<small>' + esc(p.open.slice(0, 40)) + '</small>' : '') + '</span>' +
+            '<b class="lp-price">' + far + '</b></a>';
+        }).join('') +
+        '<p class="lp-note">' + esc(t('nearNote')) + '</p></div>';
+      buzz(12);
+    }).catch(function (e) {
+      btn.disabled = false;
+      out.innerHTML = '<div class="lp-wait">' + esc(String(e.message || e)) + '</div>';
+    });
+  }
+
+  function runRepair(rec, symptom) {
+    var out = $('repairOut');
+    out.innerHTML = '<div class="lp-wait">' + esc(t('repairThinking')) + '</div>';
+    $('symptomIn').value = '';
+    repairAsk(rec, symptom).then(function (r) {
+      var h = ['<div class="repair">'];
+      h.push('<div class="rep-q">' + esc(symptom) + '</div>');
+      if (r.safety) h.push('<div class="warn">' + ICON.warn + '<div>' + esc(r.safety) + '</div></div>');
+      r.causes.forEach(function (c, i) {
+        h.push('<div class="rep-item"><div class="rep-top"><b>' + (i + 1) + '. ' + esc(c.why) + '</b>' +
+          '<span class="odds o' + esc(c.odds) + '">' + esc(c.odds) + '</span></div>' +
+          '<p>' + esc(c.fix) + '</p>' +
+          '<div class="rep-meta">' + (c.tools ? esc(t('tools')) + ': ' + esc(c.tools) : '') +
+          (c.level ? ' · ' + esc(t('level')) + ': ' + esc(c.level) : '') + '</div></div>');
+      });
+      if (r.pro) h.push('<div class="rep-pro">' + esc(t('callPro')) + ': ' + esc(r.pro) + '</div>');
+      if (r.cost) h.push('<div class="rep-cost">' + esc(t('repairCost')) + ': ' + esc(r.cost) + '</div>');
+      h.push('</div>');
+      out.innerHTML = h.join('');
+      if (S.autoSpeak && r.causes[0]) TTS.speak(r.causes[0].why + '. ' + r.causes[0].fix);
+    }).catch(function (e) {
+      out.innerHTML = '<div class="lp-wait">' + esc(errorText(e)) + '</div>';
+    });
   }
 
   function askFollowUp(rec, q) {
@@ -3067,7 +3305,39 @@ dl.specs{margin:0}
     '  if auth.uid() is null then raise exception \'oturum yok\'; end if;',
     '  delete from auth.users where id = auth.uid();',
     'end; $$;',
-    'grant execute on function public.lensa_delete_me() to authenticated;'
+    'grant execute on function public.lensa_delete_me() to authenticated;',
+    '',
+    '-- ══ YÖNETİM ══',
+    '-- Yönetici listesi. Bu tabloya yalnızca SQL Editor üzerinden satır eklenir.',
+    'create table if not exists public.lensa_admins (',
+    '  user_id uuid primary key references auth.users on delete cascade,',
+    '  added_at timestamptz not null default now()',
+    ');',
+    'alter table public.lensa_admins enable row level security;',
+    'drop policy if exists "admin self" on public.lensa_admins;',
+    'create policy "admin self" on public.lensa_admins for select using (auth.uid() = user_id);',
+    'grant select on table public.lensa_admins to authenticated;',
+    '',
+    'create or replace function public.lensa_is_admin() returns boolean',
+    '  language sql stable security definer set search_path = public as $$',
+    '  select exists (select 1 from public.lensa_admins where user_id = auth.uid()); $$;',
+    'grant execute on function public.lensa_is_admin() to anon, authenticated;',
+    '',
+    '-- Bildirilen içerik normal kullanıcıdan gizlenir ama yönetici görebilmeli',
+    'drop policy if exists "lensa read" on public.lensa_finds;',
+    'create policy "lensa read" on public.lensa_finds for select',
+    '  using (flagged < 3 or public.lensa_is_admin());',
+    '',
+    '-- Silme: kendi paylaşımın ya da yöneticiysen herhangi biri',
+    'drop policy if exists "lensa own delete" on public.lensa_finds;',
+    'drop policy if exists "lensa delete" on public.lensa_finds;',
+    'create policy "lensa delete" on public.lensa_finds for delete',
+    '  using (auth.uid() = user_id or public.lensa_is_admin());',
+    '',
+    '-- ⬇ KENDİNİ YÖNETİCİ YAP: e-postayı kendi adresinle değiştir, sonra çalıştır',
+    "insert into public.lensa_admins (user_id)",
+    "select id from auth.users where email = 'BURAYA_KENDI_EPOSTAN@ornek.com'",
+    'on conflict (user_id) do nothing;'
   ].join('\n');
 
   /* Yapıştırma kazaları: baştaki "apikey:", "Bearer ", tırnaklar, satır sonları */
@@ -3213,6 +3483,14 @@ dl.specs{margin:0}
       return fetch(self.base() + '/rpc/' + fn, {
         method: 'POST', headers: self.head(), body: JSON.stringify({ find_id: id })
       }).then(function (r) { return self.check(r); });
+    },
+    isAdmin: function () {
+      if (!S.user) return Promise.resolve(false);
+      return fetch(this.base() + '/rpc/lensa_is_admin', {
+        method: 'POST', headers: this.head(), body: '{}'
+      }).then(function (r) { return r.ok ? r.json() : false; })
+        .then(function (v) { return v === true; })
+        .catch(function () { return false; });
     },
     test: function () {
       var self = this;
@@ -3497,8 +3775,8 @@ dl.specs{margin:0}
       return '<option value="' + l.c + '"' + (l.c === S.lang ? ' selected' : '') + '>' + esc(l.n) + '</option>';
     }).join('');
     var provs = [
-      ['auto', tr ? 'LENSA sunucusu' : 'LENSA server'],
-      ['custom', tr ? 'Özel uç' : 'Custom']
+      ['auto', t('auto')], ['gemini', 'Gemini'], ['anthropic', 'Claude'], ['pollinations', 'Pollinations'],
+      ['puter', 'Puter'], ['custom', tr ? 'Özel uç' : 'Custom']
     ];
 
     body.innerHTML =
@@ -3515,9 +3793,9 @@ dl.specs{margin:0}
         tr ? 'Analiz biter bitmez okumaya başla' : 'Start reading as soon as analysis ends', S.autoSpeak) +
 
       '<div class="field"><label>' + (tr ? 'Ses' : 'Voice') + '</label>' +
-      '<p>' + (tr ? 'Seslendirme cihazın yerel ses motorunu kullanır. Üçüncü taraf hesap, izin penceresi veya bulut oturumu açılmaz.' : 'Narration uses the device speech engine. No third-party account, consent dialog, or cloud sign-in is opened.') + '</p>' +
+      '<p>' + (tr ? 'Doğal ses buluttan gelir, cihazınkinden belirgin daha akıcıdır ama internet ister. Cihaz sesi anında başlar ve çevrimdışı çalışır.' : 'The natural voice comes from the cloud and sounds noticeably smoother, but needs a connection. The device voice starts instantly and works offline.') + '</p>' +
       '<div class="seg" id="segVoice">' +
-      [['device', tr ? 'Cihaz sesi' : 'Device voice']]
+      [['auto', tr ? 'Otomatik' : 'Automatic'], ['natural', tr ? 'Doğal ses' : 'Natural'], ['device', tr ? 'Cihaz sesi' : 'Device']]
         .map(function (v) { return '<button data-v="' + v[0] + '" aria-pressed="' + (S.voiceEngine === v[0]) + '">' + esc(v[1]) + '</button>'; }).join('') +
       '</div>' +
       '<div id="voicePick" style="margin-top:10px"></div>' +
@@ -3532,31 +3810,45 @@ dl.specs{margin:0}
         tr ? 'Güven düşükse arka planda bir kez daha sorgular. Kartı bekletmez, sonuç gelince günceller.' : 'Re-checks quietly in the background when confidence is low. Never delays the card.', S.doubleCheck) +
 
       '<h2 class="set-h">' + (tr ? 'Yapay zekâ' : 'AI') + '</h2>' +
+      '<div class="keystate ' + (hasKey() ? 'ok' : 'bad') + '">' +
+      (hasKey() ? (tr ? 'Analiz için bir anahtar tanımlı.' : 'A key is configured; analysis will run.')
+                : (tr ? 'Tanımlı anahtar yok. Analiz çalışmayacak — aşağıdan bir anahtar gir.'
+                      : 'No key configured. Analysis will not run — add one below.')) + '</div>' +
       '<div class="field"><label>' + (tr ? 'Sağlayıcı' : 'Provider') + '</label>' +
-      '<p>' + (tr ? 'Tüm cihazlar Supabase üzerindeki merkezi LENSA AI fonksiyonunu kullanır. Üçüncü taraf giriş veya izin penceresi açılmaz.' : 'All devices use the central LENSA AI function on Supabase. No third-party sign-in or consent dialog is opened.') + '</p>' +
+      '<p>' + (tr ? 'Otomatik: sırayla dener, ilk yanıt vereni kullanır. Kendi anahtarını girersen teşhis belirgin şekilde tutarlılaşır.' : 'Automatic tries each in turn. Your own key gives noticeably steadier results.') + '</p>' +
       '<div class="seg" id="segProv">' + provs.map(function (p) {
         return '<button data-p="' + p[0] + '" aria-pressed="' + (S.provider === p[0]) + '">' + esc(p[1]) + '</button>';
       }).join('') + '</div></div>' +
 
-      '<div class="field"><label>' + (tr ? 'Merkezi analiz sunucusu' : 'Central analysis server') + '</label>' +
-      '<p>' + (tr ? 'API anahtarı kullanıcı cihazında tutulmaz. Supabase Edge Function içindeki secret üzerinden çalışır.' : 'The AI key is never stored on the device. It is read from a Supabase Edge Function secret.') + '</p>' +
-      '<input readonly aria-readonly="true" value="' + esc(APP_CONFIG.aiEndpoint) + '">' +
-      '<div class="btn-row"><button class="ghost-btn sm" id="testAI">' + (tr ? 'AI sunucusunu test et' : 'Test AI server') + '</button></div>' +
-      '<span class="test-out" id="testAIOut"></span></div>' +
+      '<div class="field"><label for="setKey">' + (tr ? 'Anthropic API anahtarı' : 'Anthropic API key') + '</label>' +
+      '<p>' + (tr ? 'İsteğe bağlı. Yalnızca bu cihazda saklanır, hiçbir yere gönderilmez.' : 'Optional. Stored on this device only.') + '</p>' +
+      '<input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…" value="' + esc(S.apiKey) + '">' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="keyHelp">' + (tr ? 'Anahtarı nereden alırım?' : 'Where do I get a key?') + '</button></div></div>' +
+
+      '<div class="field"><label for="setGem">' + (tr ? 'Google Gemini anahtarı' : 'Google Gemini key') + '</label>' +
+      '<p>' + (tr ? 'Önerilen yol. aistudio.google.com/apikey adresinden ücretsiz alınır, kredi kartı istemez. Kota yerse birden fazla anahtarı virgülle ayırıp yazabilirsin; biri dolunca diğerine geçilir.' : 'The recommended route. Free from aistudio.google.com/apikey, no card required. You can paste several keys separated by commas; when one hits its quota the next takes over.') + '</p>' +
+      '<input id="setGem" type="password" autocomplete="off" placeholder="AIza… , AIza…" value="' + esc(S.gemKey) + '">' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="gemHelp">' + (tr ? 'Nasıl alınır?' : 'How to get one') + '</button>' +
+      '<button class="ghost-btn sm" id="gemTest">' + (tr ? 'Test et' : 'Test') + '</button></div>' +
+      '<span class="test-out" id="gemOut">' + esc(quotaLine()) + '</span></div>' +
+
+      '<div class="field"><label for="setPoll">' + (tr ? 'Pollinations tarayıcı anahtarı' : 'Pollinations browser key') + '</label>' +
+      '<p>' + (tr ? 'Anthropic\'e alternatif ücretsiz yol. enter.pollinations.ai adresinden pk_ ile başlayan anahtarı al. Tarayıcıda kullanılmak üzere tasarlanmıştır.' : 'A free alternative to Anthropic. Get a key starting with pk_ from enter.pollinations.ai; it is meant to be used in browsers.') + '</p>' +
+      '<input id="setPoll" type="password" autocomplete="off" placeholder="pk_…" value="' + esc(S.pollKey) + '"></div>' +
 
       '<div class="field"><label>' + (tr ? 'Kendi sağlayıcın (OpenAI uyumlu)' : 'Your own provider (OpenAI compatible)') + '</label>' +
       '<p>' + (tr ? 'Örnek: https://api.openai.com/v1' : 'e.g. https://api.openai.com/v1') + '</p>' +
       '<input id="setBase" placeholder="https://…/v1" autocomplete="off" value="' + esc(S.customBase) + '">' +
       '<input id="setModel" placeholder="gpt-4o-mini" autocomplete="off" value="' + esc(S.customModel) + '">' +
       '<input id="setCKey" type="password" placeholder="API key" autocomplete="off" value="' + esc(S.customKey) + '">' +
-      '<button class="ghost-btn sm" id="testCustomAI">' + (tr ? 'Özel ucu test et' : 'Test custom endpoint') + '</button>' +
-      '<span class="test-out" id="testCustomAIOut"></span></div>' +
+      '<button class="ghost-btn sm" id="testAI">' + (tr ? 'Bağlantıyı test et' : 'Test connection') + '</button>' +
+      '<span class="test-out" id="testAIOut"></span></div>' +
 
       '<h2 class="set-h">' + (tr ? 'Ortak akış' : 'Shared feed') + '</h2>' +
       '<div class="field"><label>' + (tr ? 'Supabase bağlantısı' : 'Supabase connection') + '</label>' +
-      '<p>' + (tr ? 'Merkezi LENSA bağlantısı otomatik yüklenir ve tüm cihazlarda aynıdır. Kullanıcı tarafından değiştirilmez.' : 'The central LENSA connection loads automatically and is identical on every device. It cannot be changed by the user.') + '</p>' +
-      '<input id="setSbUrl" readonly aria-readonly="true" value="' + esc(S.sbUrl) + '">' +
-      '<input id="setSbKey" type="password" readonly aria-readonly="true" value="' + esc(S.sbKey) + '">' +
+      '<p>' + (tr ? 'Boşsa akış yalnızca bu cihazda kalır. Doldurursan paylaştığın keşifler herkesin akışına düşer. Supabase panelinde Settings › API Keys altındaki Publishable anahtarı (veya Legacy API Keys sekmesindeki anon anahtarı) kullan. Secret / service_role anahtarını buraya yazma.' : 'Leave empty to keep the feed local. Fill it in and your shared finds go to everyone\u2019s feed. Use the Publishable key under Settings › API Keys, or the anon key on the Legacy API Keys tab. Never paste a secret / service_role key here.') + '</p>' +
+      '<input id="setSbUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" value="' + esc(S.sbUrl) + '">' +
+      '<input id="setSbKey" type="password" placeholder="anon public key" autocomplete="off" value="' + esc(S.sbKey) + '">' +
       '<div class="btn-row"><button class="ghost-btn sm" id="copySql">' + esc(t('copySql')) + '</button>' +
       '<button class="ghost-btn sm" id="testSb">' + (tr ? 'Test et' : 'Test') + '</button>' +
       '<button class="ghost-btn sm" id="diagSb">' + (tr ? 'Tanılama' : 'Diagnose') + '</button></div>' +
@@ -3567,6 +3859,14 @@ dl.specs{margin:0}
       '<div class="field"><label for="setNick">' + (tr ? 'Görünen adın' : 'Display name') + '</label>' +
       '<p>' + (tr ? 'Ortak akışta paylaştığın keşiflerin yanında görünür.' : 'Shown next to the finds you share.') + '</p>' +
       '<input id="setNick" maxlength="28" value="' + esc(S.nick) + '"></div>' +
+
+      '<h2 class="set-h">' + (tr ? 'Gizlilik' : 'Privacy') + '</h2>' +
+      swi('tgBlur', tr ? 'Yüzleri otomatik kapat' : 'Blur faces automatically',
+        tr ? 'Fotoğraf sağlayıcıya gitmeden önce, bu cihazda bulanıklaştırılır.' : 'Applied on this device before the photo leaves it.', S.blurFaces) +
+      swi('tgMeta', tr ? 'Konum etiketini sil' : 'Strip location tag',
+        tr ? 'Fotoğrafın içindeki GPS bilgisi gönderilmez.' : 'GPS data inside the photo is never sent.', S.stripMeta) +
+      swi('tgAuto', tr ? 'Modu kendi seçsin' : 'Pick the mode for me',
+        tr ? 'Fotoğrafa bakıp doğru lensi kendisi seçer.' : 'Looks at the photo and picks the right lens.', S.autoMode) +
 
       '<h2 class="set-h">' + (tr ? 'Veri' : 'Data') + '</h2>' +
       '<div class="field"><p>' + (tr ? 'Fotoğraflar ve keşifler bu tarayıcıda tutulur. Analiz sırasında fotoğraf yalnızca seçtiğin sağlayıcıya gider. Ortak akışa yalnızca sen paylaş dediğinde bir şey yüklenir.' : 'Photos and finds stay in this browser. During analysis the photo goes only to your chosen provider. Nothing is uploaded to the shared feed unless you share it.') + '</p>' +
@@ -3590,6 +3890,7 @@ dl.specs{margin:0}
       '<button class="ghost-btn sm" id="docPrivacy">' + esc(t('privacy')) + '</button>' +
       '<button class="ghost-btn sm" id="docTerms">' + esc(t('terms')) + '</button>' +
       '<button class="ghost-btn sm" id="showIntro">' + (tr ? 'Turu tekrar izle' : 'Replay the tour') + '</button>' +
+      (Cloud.ready() ? '<button class="ghost-btn sm" id="adminBtn">' + (tr ? 'Yönetim paneli' : 'Moderation') + '</button>' : '') +
       '</div></div>' +
 
       '<div class="provenance" style="padding:22px 0 8px">LENSA ' + APP_VERSION + ' · ' +
@@ -3626,7 +3927,34 @@ dl.specs{margin:0}
       savePrefs(); applyUI(); renderSettings();
     };
     tg('tgSpeak', 'autoSpeak'); tg('tgSave', 'autoSave'); tg('tgCheck', 'doubleCheck');
-    tg('tgPlace', 'useLocation');
+    tg('tgPlace', 'useLocation'); tg('tgBlur', 'blurFaces');
+    tg('tgMeta', 'stripMeta'); tg('tgAuto', 'autoMode');
+    $('setGem').onchange = $('setGem').onblur = function () {
+      var v = String(this.value || '').replace(/["'`]/g, '').trim();
+      this.value = v;
+      var had = !!S.gemKey;
+      S.gemKey = v;
+      GemModels.cache = null;
+      if (v && !had && S.provider === 'auto') S.provider = 'gemini';
+      savePrefs();
+      if (v && !had) { toast(tr ? 'Gemini anahtarı kaydedildi.' : 'Gemini key saved.'); renderSettings(); }
+    };
+    $('gemHelp').onclick = function () { openDoc('gem'); };
+    $('gemTest').onclick = function () {
+      var out = $('gemOut');
+      out.className = 'test-out'; out.textContent = t('testing');
+      if (!gemKeys().length) { out.className = 'test-out bad'; out.textContent = tr ? 'Önce anahtarı yapıştır.' : 'Paste a key first.'; return; }
+      GemModels.list().then(function (models) {
+        return pGemini('Kisa cevapla.', 'Sadece OK yaz.', [], null).then(function (r) {
+          out.className = 'test-out ok';
+          out.textContent = t('testOk') + ' · ' + r.via + ' · ' + models.length + (tr ? ' model' : ' models');
+        });
+      }).catch(function (e) {
+        out.className = 'test-out bad';
+        out.textContent = String(e.message || e);
+      });
+    };
+    if ($('adminBtn')) $('adminBtn').onclick = function () { openAdmin(); };
     function tg(id, key) {
       $(id).onclick = function () { S[key] = !S[key]; this.setAttribute('aria-checked', S[key]); savePrefs(); };
     }
@@ -3634,6 +3962,10 @@ dl.specs{margin:0}
       b.onclick = function () {
         S.provider = b.getAttribute('data-p');
         savePrefs(); renderSettings();
+        if (S.provider === 'puter') {
+          toast(tr ? 'Puter ilk kullanımda kendi sitesinde oturum açmanı isteyebilir.'
+                   : 'Puter may ask you to sign in on its own site the first time.', 4200);
+        }
       };
     });
 
@@ -3653,8 +3985,8 @@ dl.specs{margin:0}
         box.innerHTML = '';
         hint.className = 'test-out bad';
         hint.textContent = tr
-          ? langInfo(S.lang).n + ' için cihazda uygun ses bulunamadı. Telefon ayarlarından bu dilin sesini indirin.'
-          : 'No suitable ' + langInfo(S.lang).n + ' voice is installed. Download that language voice in device settings.';
+          ? langInfo(S.lang).n + ' için cihazda ses bulunamadı. Doğal sesi kullanabilirsin.'
+          : 'No ' + langInfo(S.lang).n + ' voice installed. Use the natural voice instead.';
         return;
       }
       box.innerHTML = '<select id="setVoice">' + list.map(function (v) {
@@ -3671,60 +4003,51 @@ dl.specs{margin:0}
     paintVoicePick();
     if (window.speechSynthesis) speechSynthesis.onvoiceschanged = paintVoicePick;
     $('voiceTest').onclick = function () { TTS.sample(); };
+    $('keyHelp').onclick = function () { openDoc('key'); };
+    $('setKey').onchange = $('setKey').onblur = function () {
+      var v = cleanKey(this.value);
+      this.value = v;
+      var had = !!S.apiKey;
+      S.apiKey = v;
+      /* Anahtar ilk kez girildiğinde sağlayıcıyı ona çevir, yoksa boşa girilmiş olur */
+      if (v && !had && S.provider === 'auto') S.provider = 'anthropic';
+      savePrefs();
+      if (v && !had) { toast(tr ? 'Anahtar kaydedildi, sağlayıcı Claude yapıldı.' : 'Key saved, provider set to Claude.'); renderSettings(); }
+    };
+    $('setPoll').onchange = $('setPoll').onblur = function () {
+      var v = cleanKey(this.value); this.value = v;
+      var had = !!S.pollKey; S.pollKey = v;
+      if (v && !had && S.provider === 'auto') S.provider = 'pollinations';
+      savePrefs();
+      if (v && !had) { toast(tr ? 'Pollinations anahtarı kaydedildi.' : 'Pollinations key saved.'); renderSettings(); }
+    };
     bind('setBase', 'customBase'); bind('setModel', 'customModel');
     bind('setCKey', 'customKey'); bind('setNick', 'nick');
-    $('testCustomAI').onclick = function () {
-      var out = $('testCustomAIOut');
-      S.customBase = $('setBase').value.trim();
-      S.customModel = $('setModel').value.trim();
-      S.customKey = $('setCKey').value.trim();
-      savePrefs();
-      if (!S.customBase || !S.customModel || !S.customKey) {
-        out.className = 'test-out bad';
-        out.textContent = tr ? 'Adres, model ve anahtar zorunlu.' : 'Endpoint, model and key are required.';
-        return;
-      }
-      out.className = 'test-out'; out.textContent = t('testing');
-      pCustom('Kısa cevap ver.', 'Sadece OK yaz.', []).then(function () {
-        out.className = 'test-out ok'; out.textContent = tr ? 'Özel uç çalışıyor.' : 'Custom endpoint works.';
-      }).catch(function (e) {
-        out.className = 'test-out bad'; out.textContent = String(e.message || e);
-      });
-    };
     function bind(id, key) {
       var n = $(id);
       n.onchange = n.onblur = function () { S[key] = n.value.trim(); savePrefs(); };
     }
-    /* Supabase alanları merkezi yapılandırmadan gelir ve kullanıcı tarafından değiştirilemez. */
+    /* Supabase alanları yapıştırma kazalarına karşı temizlenir */
     ['setSbUrl', 'setSbKey'].forEach(function (id) {
-      var n = $(id);
-      if (n) n.readOnly = true;
+      var n = $(id), key = id === 'setSbUrl' ? 'sbUrl' : 'sbKey';
+      n.onchange = n.onblur = function () {
+        n.value = (key === 'sbUrl' ? cleanUrl(n.value) : cleanKey(n.value));
+        S[key] = n.value; savePrefs();
+      };
     });
+
     $('testAI').onclick = function () {
       var out = $('testAIOut');
-      out.className = 'test-out'; out.textContent = t('testing');
-      fetch(APP_CONFIG.aiEndpoint, {
-        method: 'GET', cache: 'no-store',
-        headers: { apikey: APP_CONFIG.supabaseKey, Authorization: 'Bearer ' + APP_CONFIG.supabaseKey }
-      }).then(function (r) {
-        return r.text().then(function (raw) {
-          var d = {}; try { d = raw ? JSON.parse(raw) : {}; } catch (e) {}
-          if (!r.ok) throw new Error((d.code || 'HTTP_' + r.status) + (d.message ? ' — ' + d.message : ''));
-          out.className = d.configured ? 'test-out ok' : 'test-out bad';
-          out.textContent = d.configured
-            ? (tr ? 'AI sunucusu hazır · ' : 'AI server ready · ') + (d.provider || 'configured')
-            : (tr ? 'Fonksiyon çalışıyor; AI secret eksik.' : 'Function works; AI secret is missing.');
-        });
-      }).catch(function (e) {
-        out.className = 'test-out bad'; out.textContent = String(e.message || e);
-      });
+      out.textContent = t('testing'); out.className = 'test-out';
+      chainText('Kisa cevapla.', 'Sadece OK yaz.', [])
+        .then(function (r) { out.textContent = t('testOk') + ' · ' + r.via; out.className = 'test-out ok'; })
+        .catch(function (e) { out.textContent = t('testFail') + ' · ' + String(e.message || e); out.className = 'test-out bad'; });
     };
     $('copySql').onclick = function () { copy(SETUP_SQL).then(function () { toast(t('sqlCopied'), 4200); }); };
     function readSb() {
-      S.sbUrl = APP_CONFIG.supabaseUrl;
-      S.sbKey = APP_CONFIG.supabaseKey;
-      if ($('setSbUrl')) $('setSbUrl').value = S.sbUrl;
-      if ($('setSbKey')) $('setSbKey').value = S.sbKey;
+      S.sbUrl = cleanUrl($('setSbUrl').value); $('setSbUrl').value = S.sbUrl;
+      S.sbKey = cleanKey($('setSbKey').value); $('setSbKey').value = S.sbKey;
+      savePrefs();
     }
     $('testSb').onclick = function () {
       readSb();
@@ -3870,54 +4193,10 @@ dl.specs{margin:0}
   }
 
   /* ── 24. Başlangıç ─────────────────────────────────────── */
-  function installManifest() {
-    try {
-      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 200" width="220" height="200">' +
-        '<defs><radialGradient id="i" cx="36%" cy="30%" r="76%">' +
-        '<stop offset="0%" stop-color="#D8B4FE"/><stop offset="34%" stop-color="#8B5CF6"/>' +
-        '<stop offset="72%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#22D3EE"/></radialGradient>' +
-        '<linearGradient id="c" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs>' +
-        '<rect width="220" height="200" fill="#0E1113"/>' +
-        '<g stroke="#EDE7DA" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M34.3 72.4 A68 68 0 0 1 165.7 72.4"/>' +
-        '<path d="M165.7 107.6 A68 68 0 0 1 82.4 155.7"/>' +
-        '<path d="M82.4 155.7 L44 185 L57.2 142.8 A68 68 0 0 1 34.3 72.4"/></g>' +
-        '<g stroke="url(#c)" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M176 45 L195 45 Q201 45 201 51 L201 69"/>' +
-        '<path d="M201 121 L201 139 Q201 145 195 145 L176 145"/></g>' +
-        '<circle cx="100" cy="90" r="50" fill="#0B0E10"/>' +
-        '<circle cx="100" cy="90" r="43" fill="#1B2126"/>' +
-        '<circle cx="100" cy="90" r="36" fill="url(#i)"/>' +
-        '<circle cx="100" cy="90" r="18" fill="#080A0C"/>' +
-        '<circle cx="100" cy="90" r="9" fill="#030405"/>' +
-        '<circle cx="96" cy="152" r="4.6" fill="#EDE7DA"/>' +
-        '<circle cx="109" cy="152" r="4.6" fill="#3B82F6"/>' +
-        '<circle cx="122" cy="152" r="4.6" fill="#8B5CF6"/></svg>';
-      var icon = 'data:image/svg+xml;base64,' + btoa(svg);
-      /* Manifest bir blob adresinden okunuyor; içindeki göreli yollar blob'a
-         göre çözülür ve Android'de ana ekran kısayolu yanlış adrese gider.
-         Bu yüzden hepsi mutlak yazılıyor. */
-      var here = location.href.split('#')[0].split('?')[0];
-      var scope = here.replace(/[^/]*$/, '');
-      var man = {
-        id: here, name: 'LENSA', short_name: 'LENSA',
-        start_url: here, scope: scope, display: 'standalone',
-        background_color: '#0E1113', theme_color: '#0E1113', orientation: 'portrait',
-        icons: [
-          { src: icon, sizes: '192x192', type: 'image/svg+xml', purpose: 'any' },
-          { src: icon, sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' }
-        ]
-      };
-      var l1 = document.createElement('link');
-      l1.rel = 'manifest';
-      l1.href = URL.createObjectURL(new Blob([JSON.stringify(man)], { type: 'application/json' }));
-      document.head.appendChild(l1);
-      var l2 = document.createElement('link');
-      l2.rel = 'apple-touch-icon'; l2.href = icon;
-      document.head.appendChild(l2);
-    } catch (e) {}
-  }
+  /* Manifest ve ikonlar artık harici dosyalar (manifest.json, icon-*.png).
+     Blob'dan üretilen manifest Android'de kısayolu bozuyordu. */
+  function installManifest() {}
+
 
   function openSharedLink() {
     if (location.hash.indexOf('#k=') !== 0) return false;
@@ -3953,22 +4232,12 @@ dl.specs{margin:0}
   }
 
   function init() {
-    // Service Worker Kaydı
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').then(function(reg) {
-          console.log('ServiceWorker kayıt başarılı:', reg.scope);
-        }).catch(function(err) {
-          console.log('ServiceWorker kayıt hatası:', err);
-        });
-      });
-    }
-
     video = $('video'); finder = $('finder');
     loadPrefs();
     applyUI();
     runSplash();
-    /* Statik manifest.json kullanılıyor; ikinci bir blob manifest oluşturulmaz. */
+    watchUpdates();
+    installManifest();
     setupZoom();
 
     $('shutterBtn').onclick = function () {
@@ -4266,7 +4535,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v3.1-ai-server';
+  var APP_VERSION = 'v4.0';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
@@ -4404,11 +4673,31 @@ dl.specs{margin:0}
     ];
   }
 
+  function gemGuide() {
+    var tr = S.ui === 'tr';
+    return tr ? [
+      ['1 · Google hesabıyla gir', 'aistudio.google.com/apikey adresini aç ve Google hesabınla giriş yap. Kredi kartı istenmez.'],
+      ['2 · Anahtar oluştur', 'Create API key düğmesine bas. AIza ile başlayan uzun bir metin verir; kopyala.'],
+      ['3 · Buraya yapıştır', 'Ayarlar › Yapay zekâ › Gemini anahtarı alanına yapıştır, sonra Test et düğmesine bas.'],
+      ['Kota yerse ne yapmalı', 'Ücretsiz kademede dakikalık ve günlük sınır var. LENSA sınıra takılan anahtarı bir dakika kenara koyup diğerine geçer. İkinci bir Google hesabından ikinci bir anahtar alıp virgülle ayırarak yan yana yazarsan sınırı pratikte ikiye katlarsın.'],
+      ['Neden bu model', 'LENSA her istekte en hafif modelden başlar; kota en yavaş onunla tükenir. Yalnızca hafif model reddederse daha güçlüsüne geçer.'],
+      ['Güvenlik', 'Anahtar yalnızca bu tarayıcıda saklanır, siteye gömülü değildir, GitHub deposuna çıkmaz. Sızarsa Google AI Studio\'dan iptal edip yenisini üret.']
+    ] : [
+      ['1 · Sign in with Google', 'Open aistudio.google.com/apikey and sign in. No card required.'],
+      ['2 · Create a key', 'Press Create API key. You get a long string starting with AIza; copy it.'],
+      ['3 · Paste it here', 'Settings › AI › Gemini key, then press Test.'],
+      ['If you hit the quota', 'The free tier has per-minute and per-day limits. LENSA parks a rate-limited key for a minute and moves to the next. Add a second key from another Google account, comma separated, to roughly double your headroom.'],
+      ['Why this model', 'LENSA starts with the lightest model on every request, so the quota drains slowest. It only escalates if the light model refuses.'],
+      ['Safety', 'The key lives only in this browser, is not baked into the site and never reaches your repo. Revoke it in AI Studio if it leaks.']
+    ];
+  }
+
   function openDoc(kind) {
     var lay = $('sheet');
     $('sheetTitle').textContent = kind === 'privacy' ? t('privacy')
-      : kind === 'key' ? (S.ui === 'tr' ? 'Anahtar nasıl alınır' : 'How to get a key') : t('terms');
-    var rows = kind === 'key' ? keyGuide() : docText(kind);
+      : kind === 'key' ? (S.ui === 'tr' ? 'Anthropic anahtarı' : 'Anthropic key')
+      : kind === 'gem' ? (S.ui === 'tr' ? 'Gemini anahtarı' : 'Gemini key') : t('terms');
+    var rows = kind === 'key' ? keyGuide() : kind === 'gem' ? gemGuide() : docText(kind);
     $('sheetBody').innerHTML = rows.map(function (p) {
       return '<h4>' + esc(p[0]) + '</h4><p>' + esc(p[1]) + '</p>';
     }).join('') + '<p class="doc-foot">LENSA ' + APP_VERSION + '</p>';
@@ -4523,7 +4812,19 @@ dl.specs{margin:0}
       return self.prepare().then(function (eng) {
         if (!eng) return null;
         if (eng === 'native') {
-          return self.native.detect(src).then(function (list) {
+          /* detect() metin adres kabul etmez; önce görsele dönüştür */
+          var ready = typeof src === 'string'
+            ? new Promise(function (res) {
+                var im = new Image();
+                im.onload = function () { res(im); };
+                im.onerror = function () { res(null); };
+                im.src = src;
+              })
+            : Promise.resolve(src);
+          return ready.then(function (el) {
+            if (!el) return null;
+            return self.native.detect(el);
+          }).then(function (list) {
             if (!list || !list.length) return null;
             return { value: self.clean(list[0].rawValue), format: list[0].format };
           }).catch(function () { return null; });
@@ -4942,6 +5243,544 @@ dl.specs{margin:0}
     return extra.map(function (x) {
       return { n: x[0], g: x[0].slice(0, 2).toUpperCase(), u: x[1] + q };
     });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     38. GEMINI — kota dostu sağlayıcı
+     Ücretsiz kotası cömert, tarayıcıdan doğrudan çağrılabilir,
+     JSON kipi sayesinde ayrıştırma hatası bırakmaz.
+     ══════════════════════════════════════════════════════ */
+  var GEM_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+
+  /* Birden çok anahtar: biri kotayı doldurunca diğerine geçilir */
+  function gemKeys() {
+    return String(S.gemKey || '').split(/[\s,;]+/).map(function (k) { return k.trim(); })
+      .filter(function (k) { return k.length > 20; });
+  }
+
+  /* Model adları sürüm sürüm değişiyor; sabit yazmak yerine hesaptan sor.
+     Görsel okuyabilen, ucuzdan pahalıya sıralı bir liste kurar. */
+  var GemModels = {
+    cache: null,
+    order: ['flash-lite', 'flash', 'pro'],
+    list: function () {
+      var self = this;
+      if (self.cache) return Promise.resolve(self.cache);
+      var mem = Cache.get('gem:models');
+      if (mem && mem.length) { self.cache = mem; return Promise.resolve(mem); }
+      var key = gemKeys()[0];
+      if (!key) return Promise.resolve([]);
+      return withTimeout(fetch(GEM_BASE + '/models?key=' + encodeURIComponent(key))
+        .then(function (r) { return r.ok ? r.json() : null; }), 12000, null)
+        .then(function (d) {
+          var names = ((d && d.models) || [])
+            .filter(function (m) {
+              var ok = (m.supportedGenerationMethods || []).indexOf('generateContent') >= 0;
+              return ok && /gemini/i.test(m.name) && !/embedding|aqa|tts|image-generation|veo|imagen/i.test(m.name);
+            })
+            .map(function (m) { return String(m.name).replace(/^models\//, ''); })
+            .filter(function (n) { return !/-\d{3,}$/.test(n); });
+          /* ucuz ve hızlı olan başa: kota en az onunla tükenir */
+          var rank = function (n) {
+            if (/flash-lite/.test(n)) return 0;
+            if (/flash/.test(n)) return 1;
+            if (/pro/.test(n)) return 2;
+            return 3;
+          };
+          names.sort(function (a, b) {
+            var d0 = rank(a) - rank(b);
+            if (d0) return d0;
+            return b.localeCompare(a);   /* aynı sınıfta yeni sürüm önce */
+          });
+          var out = names.slice(0, 4);
+          if (!out.length) out = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+          self.cache = out;
+          Cache.set('gem:models', out);
+          return out;
+        }).catch(function () {
+          return ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+        });
+    }
+  };
+
+  /* ── Kota defteri ──────────────────────────────────────
+     Ücretsiz kademede dakikalık ve günlük sınır var. Sayacı
+     tutup sınıra yaklaşınca uyarmak, 429 yemekten iyidir. */
+  var Quota = {
+    read: function () {
+      var q = store.json('lensa.quota', null);
+      var today = new Date().toISOString().slice(0, 10);
+      if (!q || q.day !== today) q = { day: today, used: 0, min: [], blocked: {} };
+      if (!q.blocked) q.blocked = {};
+      return q;
+    },
+    write: function (q) { try { store.set('lensa.quota', JSON.stringify(q)); } catch (e) {} },
+    note: function () {
+      var q = this.read(), now = Date.now();
+      q.used++;
+      q.min = (q.min || []).filter(function (t) { return now - t < 60000; });
+      q.min.push(now);
+      this.write(q);
+    },
+    /* Anahtarı geçici olarak kenara koy (429 sonrası) */
+    cool: function (key, ms) {
+      var q = this.read();
+      q.blocked[key.slice(-8)] = Date.now() + (ms || 65000);
+      this.write(q);
+    },
+    hot: function (key) {
+      var q = this.read(), until = q.blocked[key.slice(-8)];
+      return !until || Date.now() > until;
+    },
+    stats: function () {
+      var q = this.read(), now = Date.now();
+      var perMin = (q.min || []).filter(function (t) { return now - t < 60000; }).length;
+      return { day: q.used, minute: perMin, limit: S.plan === 'pro' ? 0 : FREE_DAILY };
+    },
+    left: function () {
+      if (S.plan === 'pro') return Infinity;
+      return Math.max(0, FREE_DAILY - this.read().used);
+    }
+  };
+  var FREE_DAILY = 120;
+
+  /* ── Gemini çağrısı ───────────────────────────────────
+     Anahtar × model matrisini gezer: 429 gelirse önce başka
+     anahtarı, o da yoksa daha hafif modeli dener. */
+  function pGemini(system, prompt, imgs, onPartial) {
+    var keys = gemKeys().filter(function (k) { return Quota.hot(k); });
+    if (!keys.length) {
+      var all = gemKeys();
+      if (!all.length) throw new Error('gemini anahtarı yok');
+      keys = all;               /* hepsi soğumadaysa yine de dene */
+    }
+    return GemModels.list().then(function (models) {
+      if (!models.length) throw new Error('model yok');
+      var combos = [];
+      models.slice(0, 3).forEach(function (m) {
+        keys.forEach(function (k) { combos.push({ m: m, k: k }); });
+      });
+      var i = 0, lastErr = null;
+
+      function tryOne() {
+        if (i >= combos.length) throw (lastErr || new Error('gemini all-failed'));
+        var c = combos[i++];
+        return callGemini(c.k, c.m, system, prompt, imgs, onPartial)
+          .catch(function (e) {
+            lastErr = e;
+            var msg = String(e && e.message || e);
+            if (/\b429\b|RESOURCE_EXHAUSTED|quota/i.test(msg)) Quota.cool(c.k, 65000);
+            return tryOne();
+          });
+      }
+      return tryOne();
+    });
+  }
+
+  function callGemini(key, model, system, prompt, imgs, onPartial) {
+    var parts = [];
+    (imgs || []).filter(Boolean).forEach(function (im) {
+      parts.push({ inline_data: { mime_type: im.mime || 'image/jpeg', data: im.b64 } });
+    });
+    parts.push({ text: prompt });
+
+    var wantJSON = /CIKTI: Sadece gecerli JSON/.test(system);
+    var body = {
+      system_instruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: parts }],
+      generationConfig: {
+        maxOutputTokens: 1500,
+        temperature: 0.15,          /* marka uydurmasını kısar */
+        topP: 0.9
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
+      ]
+    };
+    if (wantJSON) body.generationConfig.responseMimeType = 'application/json';
+
+    var ctrl = new AbortController();
+    S.abort = ctrl;
+    var stream = !!(onPartial && window.ReadableStream);
+    var url = GEM_BASE + '/models/' + model + ':' +
+      (stream ? 'streamGenerateContent?alt=sse&key=' : 'generateContent?key=') + encodeURIComponent(key);
+
+    Quota.note();
+
+    return withTimeout(fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      signal: ctrl.signal, body: JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (tx) {
+          var m = '';
+          try { var j = JSON.parse(tx); m = (j.error && (j.error.message || j.error.status)) || ''; } catch (e) {}
+          throw new Error('gemini ' + r.status + (m ? ' · ' + m.slice(0, 120) : ''));
+        });
+      }
+      if (!stream || !r.body || !r.body.getReader) {
+        return r.json().then(function (d) { return gemText(d); });
+      }
+      return pumpGem(r.body.getReader(), new TextDecoder(), { buf: '', text: '' }, onPartial);
+    }).then(function (txt) {
+      if (!txt) throw new Error('empty');
+      return { text: txt, via: 'Gemini · ' + model.replace('gemini-', '') };
+    }), 60000, ctrl);
+  }
+
+  function gemText(d) {
+    if (!d) return '';
+    var c = d.candidates && d.candidates[0];
+    if (!c) return '';
+    if (c.finishReason === 'SAFETY') throw new Error('güvenlik süzgeci');
+    var parts = (c.content && c.content.parts) || [];
+    return parts.map(function (p) { return p.text || ''; }).join('');
+  }
+
+  function pumpGem(reader, dec, state, onPartial) {
+    return reader.read().then(function (res) {
+      if (res.done) return state.text;
+      state.buf += dec.decode(res.value, { stream: true });
+      var lines = state.buf.split('\n');
+      state.buf = lines.pop();
+      for (var i = 0; i < lines.length; i++) {
+        var ln = lines[i];
+        if (ln.indexOf('data:') !== 0) continue;
+        try {
+          var chunk = gemText(JSON.parse(ln.slice(5).trim()));
+          if (chunk) { state.text += chunk; if (onPartial) onPartial(state.text); }
+        } catch (e) {}
+      }
+      return pumpGem(reader, dec, state, onPartial);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     39. GİZLİLİK — yüz, plaka ve belge bulanıklaştırma
+     Fotoğraf sağlayıcıya gitmeden önce, cihazda.
+     ══════════════════════════════════════════════════════ */
+  var Blur = {
+    detector: null, tried: false,
+    prepare: function () {
+      var self = this;
+      if (self.tried) return Promise.resolve(self.detector);
+      self.tried = true;
+      if (typeof window.FaceDetector === 'function') {
+        try { self.detector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 12 }); }
+        catch (e) { self.detector = null; }
+      }
+      return Promise.resolve(self.detector);
+    },
+
+    /* Yüzleri bulup üzerine mozaik basar. Bulunamazsa görsel değişmez. */
+    faces: function (dataUrl) {
+      var self = this;
+      if (!S.blurFaces) return Promise.resolve({ url: dataUrl, n: 0 });
+      return self.prepare().then(function (det) {
+        if (!det) return { url: dataUrl, n: 0 };
+        return loadImage(dataUrl).then(function (img) {
+          if (!img) return { url: dataUrl, n: 0 };
+          return det.detect(img).then(function (list) {
+            if (!list || !list.length) return { url: dataUrl, n: 0 };
+            var boxes = list.map(function (f) {
+              var b = f.boundingBox;
+              return { x: b.x, y: b.y, w: b.width, h: b.height };
+            });
+            return { url: mosaic(img, boxes, 1.25), n: boxes.length };
+          }).catch(function () { return { url: dataUrl, n: 0 }; });
+        });
+      });
+    },
+
+    /* Kullanıcının elle çizdiği alanı kapat */
+    manual: function (dataUrl, box) {
+      return loadImage(dataUrl).then(function (img) {
+        if (!img) return dataUrl;
+        return mosaic(img, [{
+          x: box.x * img.width, y: box.y * img.height,
+          w: box.w * img.width, h: box.h * img.height
+        }], 1);
+      });
+    }
+  };
+
+  function loadImage(url) {
+    return new Promise(function (res) {
+      var im = new Image();
+      im.onload = function () { res(im); };
+      im.onerror = function () { res(null); };
+      im.src = url;
+    });
+  }
+
+  function mosaic(img, boxes, grow) {
+    var c = document.createElement('canvas'), ctx = c.getContext('2d');
+    if (!ctx) return img.src;
+    c.width = img.width; c.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    boxes.forEach(function (b) {
+      var pad = ((grow || 1) - 1) / 2;
+      var x = Math.max(0, b.x - b.w * pad), y = Math.max(0, b.y - b.h * pad);
+      var w = Math.min(c.width - x, b.w * (grow || 1)), h = Math.min(c.height - y, b.h * (grow || 1));
+      if (w < 4 || h < 4) return;
+      var cells = 9;
+      var sw = Math.max(1, Math.round(w / cells)), sh = Math.max(1, Math.round(h / cells));
+      var tmp = document.createElement('canvas');
+      tmp.width = sw; tmp.height = sh;
+      var tc = tmp.getContext('2d');
+      tc.drawImage(c, x, y, w, h, 0, 0, sw, sh);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(tmp, 0, 0, sw, sh, x, y, w, h);
+      ctx.imageSmoothingEnabled = true;
+    });
+    return c.toDataURL('image/jpeg', 0.85);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     40. ARIZA VE TAMİR ASİSTANI
+     Nesneyi tanımak yetmiyor; bozulduğunda ne yapılacağı da lazım.
+     ══════════════════════════════════════════════════════ */
+  function repairAsk(rec, symptom) {
+    var L = langInfo(S.lang), d = rec.data;
+    var sys = 'Sen deneyimli bir tamir teknisyenisin. Kullanicinin cihazi: ' + d.title +
+      (d.brand && d.brand.name ? ' (' + d.brand.name + ')' : '') + '. ' +
+      'Belirtiye gore olasi nedenleri en olasidan en az olasiya siralayip evde denenebilecek adimlari ver.\n' +
+      'KURALLAR: Elektrik, gaz, basincli kap, akü veya yüksek gerilim varsa ONCE guvenlik uyarisi yaz ve fisi cekmeyi soyle. ' +
+      'Garantiyi bozacak bir islem oneriyorsan bunu belirt. Yetkili servis gerektiren durumu durustce soyle, evde yapilmaz deme cekinme. ' +
+      'Tibbi cihaz, gaz tesisati ve elektrik panosu gibi konularda kesinlikle uzmana yonlendir.\n' +
+      'SADECE gecerli JSON dondur. Tum metinler ' + L.n + ' dilinde. Sema: ' +
+      '{"safety":"","causes":[{"why":"","odds":"yuksek|orta|dusuk","fix":"","tools":"","level":"kolay|orta|zor"}],' +
+      '"pro":"","cost":"","questions":["",""]}';
+    var prompt = 'Belirti: ' + symptom + '\nOlasi nedenleri ve cozumleri JSON olarak ver.';
+    return chain(sys, prompt, rec.thumb ? [asPayload(rec.thumb)] : [], null).then(function (r) {
+      var j = parseJSON(r.text);
+      if (!j) throw new Error('parse');
+      return {
+        safety: String(j.safety || ''),
+        pro: String(j.pro || ''), cost: String(j.cost || ''),
+        causes: (Array.isArray(j.causes) ? j.causes : []).map(function (c) {
+          if (!c) return null;
+          return { why: String(c.why || ''), odds: String(c.odds || 'orta'),
+            fix: String(c.fix || ''), tools: String(c.tools || ''), level: String(c.level || 'orta') };
+        }).filter(function (c) { return c && c.why; }).slice(0, 5),
+        questions: (Array.isArray(j.questions) ? j.questions : []).map(String).slice(0, 3),
+        via: r.via
+      };
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     41. YAKINIMDA NEREDE BULUNUR
+     OpenStreetMap Overpass: anahtarsız, açık, CORS serbest.
+     ══════════════════════════════════════════════════════ */
+  var SHOP_TAG = {
+    market: '["shop"~"supermarket|convenience|greengrocer"]',
+    elektronik: '["shop"~"electronics|mobile_phone|computer"]',
+    kozmetik: '["shop"~"cosmetics|chemist|perfumery"]',
+    ev: '["shop"~"furniture|houseware|department_store"]',
+    yapi: '["shop"~"doityourself|hardware|paint|trade"]',
+    giyim: '["shop"~"clothes|shoes|boutique"]',
+    kitap: '["shop"~"books|stationery"]',
+    spor: '["shop"~"sports|bicycle|outdoor"]',
+    oyuncak: '["shop"~"toys|baby_goods"]',
+    bahce: '["shop"~"garden_centre|florist"]',
+    evcil: '["shop"~"pet|pet_grooming"]',
+    eczane: '["amenity"="pharmacy"]',
+    otomotiv: '["shop"~"car_parts|car_repair|tyres"]',
+    ikinci_el: '["shop"~"second_hand|charity|antiques"]',
+    genel: '["shop"]'
+  };
+
+  function nearbyShops(retail) {
+    return Place.fix(true).then(function (fix) {
+      if (!fix) throw new Error('konum yok');
+      var key = 'shops:' + retail + ':' + fix.lat.toFixed(3) + ',' + fix.lon.toFixed(3);
+      var hit = Cache.get(key);
+      if (hit) return { fix: fix, list: hit };
+      var tag = SHOP_TAG[retail] || SHOP_TAG.genel;
+      var q = '[out:json][timeout:20];(node' + tag + '(around:2500,' + fix.lat + ',' + fix.lon + ');' +
+        'way' + tag + '(around:2500,' + fix.lat + ',' + fix.lon + '););out center 40;';
+      return withTimeout(fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: q
+      }).then(function (r) { if (!r.ok) throw new Error('overpass ' + r.status); return r.json(); }), 22000, null)
+        .then(function (d) {
+          var list = ((d && d.elements) || []).map(function (e) {
+            var lat = e.lat != null ? e.lat : (e.center && e.center.lat);
+            var lon = e.lon != null ? e.lon : (e.center && e.center.lon);
+            var tg = e.tags || {};
+            if (!lat || !tg.name) return null;
+            return {
+              name: tg.name, kind: tg.shop || tg.amenity || '',
+              dist: Math.round(haversine(fix.lat, fix.lon, lat, lon)),
+              lat: lat, lon: lon,
+              open: tg.opening_hours || '', phone: tg.phone || tg['contact:phone'] || ''
+            };
+          }).filter(Boolean);
+          list.sort(function (a, b) { return a.dist - b.dist; });
+          list = list.slice(0, 12);
+          Cache.set(key, list);
+          return { fix: fix, list: list };
+        });
+    });
+  }
+
+  function haversine(la1, lo1, la2, lo2) {
+    var R = 6371000, p = Math.PI / 180;
+    var dLa = (la2 - la1) * p, dLo = (lo2 - lo1) * p;
+    var a = Math.sin(dLa / 2) * Math.sin(dLa / 2) +
+      Math.cos(la1 * p) * Math.cos(la2 * p) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  /* ══════════════════════════════════════════════════════
+     42. QR içeriğini çöz — bağlantı, wifi, kartvizit, konum
+     ══════════════════════════════════════════════════════ */
+  function readQR(v) {
+    var s = String(v || '').trim();
+    if (/^WIFI:/i.test(s)) {
+      var g = function (k) { var m = s.match(new RegExp(k + ':([^;]*)')); return m ? m[1] : ''; };
+      return { kind: 'wifi', title: S.ui === 'tr' ? 'Wi-Fi ağı' : 'Wi-Fi network',
+        rows: [['SSID', g('S')], [S.ui === 'tr' ? 'Şifre' : 'Password', g('P')], [S.ui === 'tr' ? 'Güvenlik' : 'Security', g('T')]] };
+    }
+    if (/^BEGIN:VCARD/i.test(s)) {
+      var pick = function (k) { var m = s.match(new RegExp('^' + k + '[^:]*:(.*)$', 'mi')); return m ? m[1].replace(/;/g, ' ').trim() : ''; };
+      return { kind: 'vcard', title: S.ui === 'tr' ? 'Kartvizit' : 'Contact card',
+        rows: [[S.ui === 'tr' ? 'Ad' : 'Name', pick('FN') || pick('N')], ['Tel', pick('TEL')],
+          [S.ui === 'tr' ? 'E-posta' : 'Email', pick('EMAIL')], [S.ui === 'tr' ? 'Kurum' : 'Org', pick('ORG')]] };
+    }
+    if (/^geo:/i.test(s)) {
+      var c = s.slice(4).split(',');
+      return { kind: 'geo', title: S.ui === 'tr' ? 'Konum' : 'Location',
+        rows: [['Enlem', c[0] || ''], ['Boylam', c[1] || '']],
+        link: 'https://www.google.com/maps/search/' + encodeURIComponent((c[0] || '') + ',' + (c[1] || '')) };
+    }
+    if (/^(mailto|tel|sms):/i.test(s)) {
+      return { kind: 'contact', title: s.split(':')[0].toUpperCase(), rows: [['', s.split(':')[1] || '']], link: s };
+    }
+    if (/^https?:\/\//i.test(s)) {
+      var host = '';
+      try { host = new URL(s).hostname; } catch (e) {}
+      return { kind: 'url', title: S.ui === 'tr' ? 'Bağlantı' : 'Link',
+        rows: [[S.ui === 'tr' ? 'Adres' : 'Address', host || s.slice(0, 60)]], link: s, raw: s };
+    }
+    if (/^\d{8,14}$/.test(s)) return null;   /* barkod, QR değil */
+    return { kind: 'text', title: S.ui === 'tr' ? 'Metin' : 'Text', rows: [['', s.slice(0, 200)]] };
+  }
+
+  /* ══════════════════════════════════════════════════════
+     43. Kota ve plan
+     Ücretli bir kapı koymuyoruz; sınır ücretsiz sağlayıcının
+     sınırı. Kendi anahtarını giren sınırsız kullanır.
+     ══════════════════════════════════════════════════════ */
+  function quotaGuard() {
+    if (S.plan === 'pro' || S.apiKey || (S.customBase && S.customKey)) return true;
+    if (!gemKeys().length) return true;      /* kota yalnızca paylaşılan yolda anlamlı */
+    return Quota.left() > 0;
+  }
+  function quotaLine() {
+    var q = Quota.stats(), tr = S.ui === 'tr';
+    if (S.plan === 'pro' || S.apiKey) return tr ? 'Kendi anahtarın · sınırsız' : 'Your own key · unlimited';
+    return (tr ? 'Bugün ' : 'Today ') + q.day + ' / ' + FREE_DAILY +
+      (q.minute > 8 ? (tr ? ' · dakika sınırına yakın' : ' · near the per-minute limit') : '');
+  }
+
+  /* ══════════════════════════════════════════════════════
+     44. Güncelleme — yeni sürüm hazır olduğunda haber ver
+     ══════════════════════════════════════════════════════ */
+  function watchUpdates() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      function offer(worker) {
+        if (!worker) return;
+        worker.addEventListener('statechange', function () {
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdateBar();
+        });
+      }
+      if (reg.waiting) showUpdateBar();
+      offer(reg.installing);
+      reg.addEventListener('updatefound', function () { offer(reg.installing); });
+      setInterval(function () { reg.update().catch(function () {}); }, 30 * 60 * 1000);
+    }).catch(function () {});
+    var reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+  }
+  function showUpdateBar() {
+    var b = $('updbar');
+    if (!b || b.classList.contains('on')) return;
+    b.innerHTML = '<span>' + esc(S.ui === 'tr' ? 'Yeni sürüm hazır' : 'A new version is ready') + '</span>' +
+      '<button id="updGo">' + esc(S.ui === 'tr' ? 'Güncelle' : 'Update') + '</button>';
+    b.classList.add('on');
+    $('updGo').onclick = function () {
+      if (!navigator.serviceWorker) return location.reload();
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        else location.reload();
+      });
+    };
+  }
+
+  /* ══════════════════════════════════════════════════════
+     45. Yönetim paneli — bildirilen paylaşımları temizle
+     Yalnızca ortak akışın sahibi için anlamlı.
+     ══════════════════════════════════════════════════════ */
+  function openAdmin() {
+    var lay = $('sheet'), tr = S.ui === 'tr';
+    $('sheetTitle').textContent = tr ? 'Yönetim' : 'Moderation';
+    $('sheetBody').innerHTML = '<p>' + esc(t('loading')) + '</p>';
+    lay.classList.remove('hide');
+    lay.setAttribute('aria-hidden', 'false');
+    $('sheetClose').onclick = function () { lay.classList.add('hide'); lay.setAttribute('aria-hidden', 'true'); };
+
+    var cols = 'id,created_at,title,category,author,likes,flagged,thumb,user_id';
+    var admin = false;
+    Cloud.isAdmin().then(function (a) {
+      admin = a;
+      return fetch(Cloud.base() + '/lensa_finds?select=' + cols + '&order=flagged.desc,created_at.desc&limit=60',
+        { headers: Cloud.head() });
+    })
+      .then(function (r) { return Cloud.check(r); }).then(function (r) { return r.json(); })
+      .then(function (rows) {
+        if (!rows.length) { $('sheetBody').innerHTML = '<p>' + esc(tr ? 'Akış boş.' : 'The feed is empty.') + '</p>'; return; }
+        var flagged = rows.filter(function (r) { return (r.flagged || 0) > 0; });
+        $('sheetBody').innerHTML =
+          '<h4>' + esc(tr ? 'Yetki' : 'Access') + '</h4>' +
+          '<p>' + esc(admin
+            ? (tr ? 'Yöneticisin. Bildirilen içerikleri görüyor ve her paylaşımı silebiliyorsun.'
+                  : 'You are an admin. You can see reported posts and delete any of them.')
+            : (tr ? 'Yönetici değilsin. Yalnızca kendi paylaşımlarını silebilirsin. Yetki almak için kurulum SQL\'inin sonundaki yönetici satırını çalıştır.'
+                  : 'Not an admin. You can only delete your own posts. Run the admin block at the end of the setup SQL to grant yourself access.')) + '</p>' +
+          '<h4>' + esc(tr ? 'Özet' : 'Summary') + '</h4>' +
+          '<p>' + rows.length + (tr ? ' paylaşım · ' : ' posts · ') + flagged.length + (tr ? ' bildirilmiş' : ' reported') + '</p>' +
+          '<h4>' + esc(tr ? 'Paylaşımlar' : 'Posts') + '</h4>' +
+          '<div class="admin-list">' + rows.map(function (r) {
+            return '<div class="admin-row' + ((r.flagged || 0) > 0 ? ' hot' : '') + '">' +
+              (r.thumb ? '<img src="' + r.thumb + '" alt="">' : '<div class="noimg"></div>') +
+              '<div class="admin-meta"><b>' + esc(r.title || '—') + '</b>' +
+              '<span>' + esc(r.author || '?') + ' · ♥ ' + (r.likes || 0) +
+              ((r.flagged || 0) > 0 ? ' · ⚑ ' + r.flagged : '') + '</span></div>' +
+              ((admin || (S.user && r.user_id === S.user.id))
+                ? '<button class="mini" data-rm="' + esc(r.id) + '">×</button>'
+                : '') + '</div>';
+          }).join('') + '</div>';
+        Array.prototype.forEach.call($('sheetBody').querySelectorAll('[data-rm]'), function (b) {
+          b.onclick = function () {
+            if (!confirm(t('deleteQ'))) return;
+            Cloud.remove(b.getAttribute('data-rm'))
+              .then(function () { b.closest('.admin-row').remove(); toast(t('removed')); })
+              .catch(function (e) { toast(String(e.message || e)); });
+          };
+        });
+      })
+      .catch(function (e) {
+        $('sheetBody').innerHTML = '<p>' + esc(String(e.message || e)) + '</p>';
+      });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
