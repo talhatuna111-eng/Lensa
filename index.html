@@ -730,6 +730,10 @@ dl.specs{margin:0}
 .keysave:active{transform:scale(.98)}
 .keyalt{display:block;width:100%;margin-top:8px;padding:11px;color:var(--ink-soft);font-size:12.5px;font-weight:500}
 
+.qrwrap{display:grid;place-items:center;padding:20px;margin-top:12px;border-radius:18px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.qrwrap canvas{border-radius:10px;display:block;max-width:100%;height:auto}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -4077,6 +4081,14 @@ dl.specs{margin:0}
       '<div class="btn-row"><button class="ghost-btn sm" id="fbSend">' + esc(t('send')) + '</button></div>' +
       '<span class="test-out" id="fbOut"></span></div>' +
 
+      '<h2 class="set-h">' + (tr ? 'Cihazlar arası' : 'Across devices') + '</h2>' +
+      '<div class="field"><p>' + (tr
+        ? 'Anahtarlar yalnızca girildikleri cihazda saklanır, hiçbir sunucuya gitmez. Başka bir cihaza taşımak için karekod kullan.'
+        : 'Keys are stored only on the device where you entered them and never leave it. Use a QR code to carry them to another device.') + '</p>' +
+      '<div class="btn-row"><button class="ghost-btn sm" id="trSend"' + (hasKey() ? '' : ' disabled') + '>' +
+      (tr ? 'Karekod göster' : 'Show QR code') + '</button>' +
+      '<button class="ghost-btn sm" id="trGet">' + (tr ? 'Kodu yapıştır' : 'Paste a code') + '</button></div></div>' +
+
       '<h2 class="set-h">' + (tr ? 'Cihaz' : 'Device') + '</h2>' +
       '<div class="field"><p>' + (tr ? 'Bu cihazda hangi yeteneklerin çalıştığı. Bir sorun yaşarsan bu listeyi paylaş.' : 'What works on this device. Share this list if something goes wrong.') + '</p>' +
       '<pre class="diag" id="capOut"></pre>' +
@@ -4113,6 +4125,8 @@ dl.specs{margin:0}
         .then(function () { $('fbText').value = ''; out.className = 'test-out ok'; out.textContent = t('feedbackThanks'); })
         .catch(function (e) { out.className = 'test-out bad'; out.textContent = String(e.message || e); });
     };
+    if ($('trSend')) $('trSend').onclick = function () { openTransfer(); };
+    if ($('trGet')) $('trGet').onclick = function () { pasteTransfer(); };
     paintCapabilities();
     $('capCopy').onclick = function () { copy($('capOut').textContent).then(function () { toast(t('copied')); }); };
     $('docPrivacy').onclick = function () { openDoc('privacy'); };
@@ -4732,7 +4746,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v5.1';
+  var APP_VERSION = 'v5.2';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
@@ -5839,6 +5853,14 @@ dl.specs{margin:0}
      ══════════════════════════════════════════════════════ */
   function readQR(v) {
     var s = String(v || '').trim();
+    if (s.indexOf('LENSA1:') === 0) {
+      var n = applyTransfer(s);
+      return { kind: 'transfer', applied: n,
+        title: S.ui === 'tr' ? 'Ayarlar aktarıldı' : 'Settings received',
+        rows: [['', (S.ui === 'tr'
+          ? (n ? n + ' ayar bu cihaza geçti. Artık analiz yapabilirsin.' : 'Kod geçersiz.')
+          : (n ? n + ' settings applied. You can analyse now.' : 'Invalid code.'))]] };
+    }
     if (/^WIFI:/i.test(s)) {
       var g = function (k) { var m = s.match(new RegExp(k + ':([^;]*)')); return m ? m[1] : ''; };
       return { kind: 'wifi', title: S.ui === 'tr' ? 'Wi-Fi ağı' : 'Wi-Fi network',
@@ -5980,6 +6002,92 @@ dl.specs{margin:0}
       .catch(function (e) {
         $('sheetBody').innerHTML = '<p>' + esc(String(e.message || e)) + '</p>';
       });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     46. Cihazdan cihaza aktarma
+     Anahtar hiçbir sunucuya gitmediği için cihazlar arası
+     kendiliğinden geçmiyor. Ekrandan kameraya aktarıyoruz:
+     veri yine ağa çıkmıyor.
+     ══════════════════════════════════════════════════════ */
+  var QR_LIB = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js';
+
+  function transferPayload() {
+    var p = { v: 1, gem: S.gemKey || '', ant: S.apiKey || '', poll: S.pollKey || '' };
+    if (S.customBase && S.customKey) { p.cb = S.customBase; p.ck = S.customKey; p.cm = S.customModel || ''; }
+    if (S.sbUrl && S.sbKey) { p.su = S.sbUrl; p.sk = S.sbKey; }
+    if (S.lang) p.lang = S.lang;
+    return 'LENSA1:' + b64url(JSON.stringify(p));
+  }
+
+  function applyTransfer(text) {
+    var raw = String(text || '');
+    if (raw.indexOf('LENSA1:') !== 0) return false;
+    var p;
+    try { p = JSON.parse(unb64url(raw.slice(7))); } catch (e) { return false; }
+    if (!p || p.v !== 1) return false;
+    var n = 0;
+    if (p.gem) { S.gemKey = p.gem; n++; }
+    if (p.ant) { S.apiKey = p.ant; n++; }
+    if (p.poll) { S.pollKey = p.poll; n++; }
+    if (p.cb && p.ck) { S.customBase = p.cb; S.customKey = p.ck; S.customModel = p.cm || ''; n++; }
+    if (p.su && p.sk) { S.sbUrl = p.su; S.sbKey = p.sk; n++; }
+    if (p.lang) { S.lang = p.lang; S.ui = p.lang === 'tr' ? 'tr' : 'en'; }
+    if (p.gem) S.provider = 'gemini';
+    else if (p.ant) S.provider = 'anthropic';
+    GemModels.cache = null;
+    savePrefs();
+    return n;
+  }
+
+  function openTransfer() {
+    var lay = $('sheet'), tr = S.ui === 'tr';
+    $('sheetTitle').textContent = tr ? 'Diğer cihaza aktar' : 'Send to another device';
+    $('sheetBody').innerHTML =
+      '<h4>' + esc(tr ? 'Nasıl' : 'How') + '</h4>' +
+      '<p>' + esc(tr
+        ? 'Diğer cihazda LENSA\'yı aç, Tara ekranındaki barkod düğmesine bas ve kamerayı bu koda tut. Anahtarların ve bağlantı ayarların oraya geçer.'
+        : 'On the other device open LENSA, tap the barcode button on the Scan screen and point the camera at this code. Your keys and connection settings will move across.') + '</p>' +
+      '<div class="qrwrap"><canvas id="trQR"></canvas></div>' +
+      '<div class="warn" style="margin-top:14px">' + ICON.warn + '<div>' + esc(tr
+        ? 'Bu kod API anahtarlarını taşır. Kimseye gösterme, ekran görüntüsünü paylaşma.'
+        : 'This code carries your API keys. Do not show it to anyone or share a screenshot.') + '</div></div>' +
+      '<div class="btn-row" style="margin-top:14px"><button class="ghost-btn sm" id="trCopy">' +
+      esc(tr ? 'Bunun yerine metni kopyala' : 'Copy the text instead') + '</button></div>' +
+      '<span class="test-out" id="trOut"></span>';
+    lay.classList.remove('hide');
+    lay.setAttribute('aria-hidden', 'false');
+    $('sheetClose').onclick = function () { lay.classList.add('hide'); lay.setAttribute('aria-hidden', 'true'); };
+
+    var payload = transferPayload();
+    $('trCopy').onclick = function () {
+      copy(payload).then(function () {
+        $('trOut').className = 'test-out ok';
+        $('trOut').textContent = tr ? 'Kopyalandı. Diğer cihazda Ayarlar › Aktarma kodunu yapıştır.' : 'Copied. Paste it under Settings on the other device.';
+      });
+    };
+
+    loadScript(QR_LIB).then(function () {
+      if (!window.QRCode) throw new Error('qr yok');
+      return window.QRCode.toCanvas($('trQR'), payload, {
+        width: 260, margin: 1, errorCorrectionLevel: 'M',
+        color: { dark: '#0E1113', light: '#EDE7DA' }
+      });
+    }).catch(function () {
+      var w = $('trQR');
+      if (w) w.outerHTML = '<pre class="diag" style="white-space:pre-wrap;word-break:break-all">' +
+        esc(payload) + '</pre>';
+    });
+  }
+
+  /* Yapıştırma yoluyla alma — kamerası olmayan cihaz için */
+  function pasteTransfer() {
+    var v = prompt(S.ui === 'tr' ? 'Aktarma kodunu yapıştır (LENSA1: ile başlar)' : 'Paste the transfer code');
+    if (!v) return;
+    var n = applyTransfer(v.trim());
+    if (n === false || n === 0) { toast(S.ui === 'tr' ? 'Kod okunamadı.' : 'Could not read that code.'); return; }
+    toast(S.ui === 'tr' ? n + ' ayar aktarıldı.' : n + ' settings applied.');
+    renderSettings();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
