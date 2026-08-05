@@ -715,6 +715,21 @@ dl.specs{margin:0}
 .qa-q{font-size:13px;font-weight:600;color:var(--brass-hi);margin-bottom:7px}
 .qa-a{font-size:14px;line-height:1.68;color:rgba(243,241,237,.86)}
 
+.keybox{margin-top:18px}
+.keyget{display:flex;align-items:center;gap:11px;padding:15px 17px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(224,174,99,.18),rgba(224,174,99,.07));
+  border:1px solid rgba(224,174,99,.42);text-decoration:none;color:var(--label)}
+.keyget:active{transform:scale(.98)}
+.keyget svg{color:var(--brass-hi);flex:0 0 auto}
+.keyget span{flex:1;font-size:14.5px;font-weight:600}
+.keyget i{font-style:normal;font-size:11px;color:var(--ink-soft);letter-spacing:.02em}
+.keysteps{margin:12px 2px 12px;font-size:12.5px;line-height:1.6;color:var(--ink-soft)}
+.keybox .ask-row input{font-family:ui-monospace,Menlo,monospace;font-size:13px;letter-spacing:.01em}
+.keysave{width:100%;margin-top:10px;padding:14px;border-radius:15px;background:var(--brass);
+  color:#14100A;font-size:14px;font-weight:700}
+.keysave:active{transform:scale(.98)}
+.keyalt{display:block;width:100%;margin-top:8px;padding:11px;color:var(--ink-soft);font-size:12.5px;font-weight:500}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -1062,8 +1077,12 @@ dl.specs{margin:0}
       failAll: 'Hiçbir sağlayıcı yanıt vermedi. Ayarlar\'dan bağlantını test et.',
       retry: 'Tekrar dene', cantRead: 'Okuyamadım',
       needKeyTitle: 'Bir anahtar gerekiyor',
-      needKey: 'Ücretsiz sağlayıcılar artık anahtar istiyor, bu yüzden analiz yapılamıyor. Ayarlar › Yapay zekâ bölümünden bir Anthropic anahtarı (önerilen) ya da Pollinations tarayıcı anahtarı gir. İkisi de birkaç dakikada alınır.',
+      needKey: 'Ücretsiz sağlayıcılar artık anahtar istiyor. En kolayı Google Gemini: ücretsiz, kredi kartı sormuyor, iki dakika sürüyor. Anahtarı alıp aşağıya yapıştırman yeterli.',
       openSettings: 'Ayarları aç', techDetail: 'Teknik ayrıntı',
+      getKey: 'Ücretsiz anahtar al', keyPaste: 'Anahtarı buraya yapıştır',
+      keySave: 'Kaydet ve devam et', keySaved: 'Anahtar kaydedildi, analiz başlıyor…',
+      keyBad: 'Bu bir Gemini anahtarına benzemiyor. AIza ile başlamalı.',
+      keySteps: 'Açılan sayfada Create API key düğmesine bas, çıkan uzun metni kopyala, buraya yapıştır.',
       buyTitle: 'Nereden alınır', priceUnknown: 'Fiyat bilinmiyor',
       priceTapLive: 'Piyasayı taratmak için sağdaki düğmeye bas',
       priceMedian: 'Piyasa ortası', priceSources: 'satıcı', details: 'Ayrıntılar',
@@ -1145,8 +1164,12 @@ dl.specs{margin:0}
       failAll: 'No provider answered. Test your connection in Settings.',
       retry: 'Try again', cantRead: 'Could not read it',
       needKeyTitle: 'A key is required',
-      needKey: 'The free providers now require a key, so analysis cannot run. Add an Anthropic key (recommended) or a Pollinations browser key under Settings › AI. Either takes a few minutes to get.',
+      needKey: 'The free providers now require a key. Google Gemini is the easiest: free, no card, about two minutes. Get a key and paste it below.',
       openSettings: 'Open settings', techDetail: 'Technical detail',
+      getKey: 'Get a free key', keyPaste: 'Paste the key here',
+      keySave: 'Save and continue', keySaved: 'Key saved, starting analysis\u2026',
+      keyBad: 'That does not look like a Gemini key. It should start with AIza.',
+      keySteps: 'On the page that opens press Create API key, copy the long string, paste it here.',
       buyTitle: 'Where to buy', priceUnknown: 'Price unknown',
       priceTapLive: 'Tap the button to scan the market',
       priceMedian: 'Market middle', priceSources: 'sellers', details: 'Details',
@@ -2756,12 +2779,8 @@ dl.specs{margin:0}
         '<div class="plate"><img src="' + S.image.dataUrl + '" alt=""></div>' +
         '<div class="card"><div class="kicker">' + (S.ui === 'tr' ? 'Kurulum' : 'Setup') + '</div>' +
         '<h1>' + esc(t('needKeyTitle')) + '</h1>' +
-        '<p class="lede">' + esc(t('needKey')) + '</p>' +
-        '<button class="live-btn" id="goKey2">' + esc(t('openSettings')) + '</button>' +
-        '<div class="card-actions" style="grid-template-columns:1fr"><button class="act" id="backScan3"><span>' +
-        esc(t('newScan')) + '</span></button></div></div>';
-      $('goKey2').onclick = function () { go('settings'); };
-      $('backScan3').onclick = function () { go('scan'); resetScan(); };
+        '<p class="lede">' + esc(t('needKey')) + '</p>' + keyInline() + '</div>';
+      wireKeyInline(function () { analyse(true); });
       return;
     }
     if (!keepFocus) S.focusNote = '';
@@ -2853,7 +2872,7 @@ dl.specs{margin:0}
           '<div class="card"><div class="kicker">' + (S.ui === 'tr' ? 'Sorun' : 'Problem') + '</div>' +
           '<h1>' + esc(t('cantRead')) + '</h1>' +
           '<p class="lede">' + esc(errorText(e)) + '</p>' +
-          (needsKey ? '<button class="live-btn" id="goKey">' + esc(t('openSettings')) + '</button>' : '') +
+          (needsKey ? keyInline() : '') +
           '<div class="card-actions" style="grid-template-columns:1fr 1fr">' +
           '<button class="act filled" id="retryBtn"><span>' + esc(t('retry')) + '</span></button>' +
           '<button class="act" id="backScan2"><span>' + esc(t('newScan')) + '</span></button></div>' +
@@ -2862,7 +2881,7 @@ dl.specs{margin:0}
           '</div>';
         $('retryBtn').onclick = function () { analyse(true); };
         $('backScan2').onclick = function () { go('scan'); resetScan(); };
-        if ($('goKey')) $('goKey').onclick = function () { go('settings'); };
+        if (needsKey) wireKeyInline(function () { analyse(true); });
       });
   }
 
@@ -2912,6 +2931,47 @@ dl.specs{margin:0}
         out.innerHTML = html;
         buzz(12);
       });
+  }
+
+  /* Anahtar isteyen her ekranda, kullanıcıyı Ayarlar'a yollamadan
+     yapıştırıp devam edebileceği bir alan gösteriyoruz. */
+  function keyInline() {
+    return '<div class="keybox">' +
+      '<a class="keyget" target="_blank" rel="noopener" href="https://aistudio.google.com/apikey">' +
+      ICON.spark + '<span>' + esc(t('getKey')) + '</span><i>aistudio.google.com</i></a>' +
+      '<p class="keysteps">' + esc(t('keySteps')) + '</p>' +
+      '<div class="ask-row"><input id="keyIn" type="text" autocomplete="off" autocapitalize="none" ' +
+      'spellcheck="false" placeholder="AIza…" enterkeyhint="done">' +
+      '<button id="keyGo" aria-label="' + esc(t('keySave')) + '">' + ICON.send + '</button></div>' +
+      '<button class="keysave" id="keySave">' + esc(t('keySave')) + '</button>' +
+      '<span class="test-out" id="keyOut"></span>' +
+      '<button class="keyalt" id="keyAlt">' + esc(t('openSettings')) + '</button>' +
+      '</div>';
+  }
+  function wireKeyInline(after) {
+    var inp = $('keyIn'), out = $('keyOut');
+    if (!inp) return;
+    function save() {
+      var v = String(inp.value || '').replace(/["'`\s]/g, '').trim();
+      if (!v) return;
+      if (!/^AIza[\w-]{20,}$/.test(v)) {
+        out.className = 'test-out bad';
+        out.textContent = t('keyBad');
+        return;
+      }
+      S.gemKey = v;
+      S.provider = 'gemini';
+      GemModels.cache = null;
+      savePrefs();
+      out.className = 'test-out ok';
+      out.textContent = t('keySaved');
+      buzz(14);
+      setTimeout(function () { if (after) after(); }, 500);
+    }
+    $('keyGo').onclick = save;
+    $('keySave').onclick = save;
+    inp.onkeydown = function (e) { if (e.key === 'Enter') save(); };
+    $('keyAlt').onclick = function () { go('settings'); };
   }
 
   /* Claude içindeki önizlemede anahtarsız çağrı bir vekil üzerinden çalışır;
@@ -4672,7 +4732,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v5.0';
+  var APP_VERSION = 'v5.1';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
