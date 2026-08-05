@@ -1665,19 +1665,73 @@ dl.specs{margin:0}
   function parseJSON(raw) {
     if (!raw) return null;
     var s = String(raw).replace(/```json/gi, '').replace(/```/g, '').trim();
-    var a = s.indexOf('{'), b = s.lastIndexOf('}');
-    if (a < 0 || b <= a) return null;
-    var body = s.slice(a, b + 1);
+    var a = s.indexOf('{');
+    if (a < 0) return null;
+    var b = s.lastIndexOf('}');
+    var body = b > a ? s.slice(a, b + 1) : s.slice(a);
     var tries = [
       body,
       body.replace(/,\s*([}\]])/g, '$1'),
       body.replace(/,\s*([}\]])/g, '$1').replace(/([{,]\s*)'([^']+)'\s*:/g, '$1"$2":'),
-      body.replace(/[\u0000-\u001F]+/g, ' ').replace(/,\s*([}\]])/g, '$1')
+      body.replace(/[\u0000-\u001F]+/g, ' ').replace(/,\s*([}\]])/g, '$1'),
+      mendJSON(s.slice(a))            /* yarıda kesilmiş yanıtı onarmayı dene */
     ];
     for (var i = 0; i < tries.length; i++) {
+      if (!tries[i]) continue;
       try { return JSON.parse(tries[i]); } catch (e) {}
     }
     return null;
+  }
+
+  /* Yanıt token sınırına takılıp yarıda kesildiğinde JSON kapanmamış olur.
+     Yarım kalan alanı atıp açık kalan parantezleri kapatarak elde olanı
+     kurtarıyoruz; eksik alanları normalize zaten tamamlıyor. */
+  function mendJSON(txt) {
+    var out = '', inStr = false, esc = false, stack = [];
+    var lastSafe = -1;                 /* tam biten bir alandan sonraki konum */
+    for (var i = 0; i < txt.length; i++) {
+      var c = txt.charAt(i);
+      out += c;
+      if (inStr) {
+        if (esc) esc = false;
+        else if (c === '\\') esc = true;
+        else if (c === '"') inStr = false;
+        continue;
+      }
+      if (c === '"') { inStr = true; continue; }
+      if (c === '{' || c === '[') stack.push(c === '{' ? '}' : ']');
+      else if (c === '}' || c === ']') {
+        stack.pop();
+        if (stack.length === 1) lastSafe = out.length;   /* üst düzey bir alan bitti */
+      } else if (c === ',' && stack.length === 1) lastSafe = out.length - 1;
+    }
+    if (!stack.length) return null;    /* zaten kapalıysa bu yola gerek yok */
+    var body = lastSafe > 0 ? out.slice(0, lastSafe) : out;
+    /* kesik kalan son parçayı at */
+    body = body.replace(/,\s*"[^"]*"?\s*:?\s*[^,]*$/, '');
+    body = body.replace(/,\s*$/, '');
+    /* açık kalan parantezleri kapat */
+    var depth = 0, inS = false, es = false;
+    for (var j = 0; j < body.length; j++) {
+      var ch = body.charAt(j);
+      if (inS) { if (es) es = false; else if (ch === '\\') es = true; else if (ch === '"') inS = false; continue; }
+      if (ch === '"') inS = true;
+      else if (ch === '{' || ch === '[') depth++;
+      else if (ch === '}' || ch === ']') depth--;
+    }
+    if (inS) body += '"';
+    var close = [];
+    var d2 = 0, inS2 = false, es2 = false, order = [];
+    for (var k = 0; k < body.length; k++) {
+      var c2 = body.charAt(k);
+      if (inS2) { if (es2) es2 = false; else if (c2 === '\\') es2 = true; else if (c2 === '"') inS2 = false; continue; }
+      if (c2 === '"') inS2 = true;
+      else if (c2 === '{') order.push('}');
+      else if (c2 === '[') order.push(']');
+      else if (c2 === '}' || c2 === ']') order.pop();
+    }
+    while (order.length) close.push(order.pop());
+    return body + close.join('');
   }
 
   /* "1.200 TL", "1,200", "1.234,56", "1,234.56" hepsi doğru okunmalı.
@@ -1854,7 +1908,7 @@ dl.specs{margin:0}
     return withTimeout(fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST', headers: headers, signal: ctrl.signal,
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1000, system: system,
+        model: 'claude-sonnet-4-6', max_tokens: 2048, system: system,
         stream: canStream, messages: [{ role: 'user', content: content }]
       })
     }).then(function (r) {
@@ -1922,7 +1976,7 @@ dl.specs{margin:0}
     return withTimeout(fetch(url, {
       method: 'POST', headers: headers, signal: ctrl.signal,
       body: JSON.stringify({
-        model: 'openai', max_tokens: 1200, referrer: location.hostname,
+        model: 'openai', max_tokens: 2048, referrer: location.hostname,
         messages: [{ role: 'system', content: system }, { role: 'user', content: content }]
       })
     }).then(function (r) {
@@ -4788,7 +4842,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v5.4';
+  var APP_VERSION = 'v5.5';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
@@ -5644,7 +5698,7 @@ dl.specs{margin:0}
       system_instruction: { parts: [{ text: system }] },
       contents: [{ role: 'user', parts: parts }],
       generationConfig: {
-        maxOutputTokens: 1100,
+        maxOutputTokens: 2048,
         temperature: 0.15,          /* marka uydurmasını kısar */
         topP: 0.9
       },
@@ -5691,6 +5745,7 @@ dl.specs{margin:0}
     var c = d.candidates && d.candidates[0];
     if (!c) return '';
     if (c.finishReason === 'SAFETY') throw new Error('güvenlik süzgeci');
+    if (c.finishReason === 'RECITATION') throw new Error('içerik süzgeci');
     var parts = (c.content && c.content.parts) || [];
     return parts.map(function (p) { return p.text || ''; }).join('');
   }
