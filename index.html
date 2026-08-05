@@ -18,17 +18,17 @@
 <style>
 /* ─────────────────────────────────────────────
    LENSA — tasarım belirteçleri
-   Kamera karanlıkta çalışır, cevap ışıkta durur.
-   Vizör soğuk mürekkep siyahı; cevap müze etiketi
-   gibi kemik rengi bir plaket. Metal her yerde pirinç.
+   Kamera karanlıkta çalışır, cevap da karanlıkta durur.
+   Her yüzey buzlu cam: arkasındaki fotoğrafın rengini
+   geçirir ama okunurluğu bozmaz. Metal her yerde pirinç.
    ───────────────────────────────────────────── */
 :root{
   --void:#0E1113; --void-2:#161A1D; --void-3:#1E2327;
-  --label:#EDE7DA; --ink:#F3F1ED; --ink-soft:#5A5A52;
+  --label:#EDE7DA; --ink:#F3F1ED; --solid:#15181A; --solid-2:#20262A; --ink-soft:rgba(243,241,237,.72);
   --brass:#B8853F; --brass-hi:#E0AE63;
-  --patina:#4C6B63; --alarm:#B4523C;
-  --chrome:#9AA0A2; --chrome-2:#5F686C;
-  --line:rgba(255,255,255,.10); --line-ink:rgba(21,24,26,.14);
+  --patina:#7FC0AC; --alarm:#E5806A;
+  --chrome:#9AA0A2; --chrome-2:#8A9296;
+  --line:rgba(255,255,255,.10); --line-ink:rgba(255,255,255,.11);
   --r-s:10px; --r-m:16px; --r-l:24px; --pad:18px;
   --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
   --tabbar:calc(67px + var(--safe-b));
@@ -164,7 +164,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0;padding-bottom:var(-
 .glass{margin-top:14px;padding:18px 18px 20px}
 .card::before,.glass::before{
   content:"";position:absolute;left:20px;right:20px;top:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent)}
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent)}
 @keyframes rise{from{transform:translateY(26px);opacity:0}to{transform:none;opacity:1}}
 .card::before{content:"";position:absolute;left:20px;right:20px;top:11px;height:2px;
   background:linear-gradient(90deg,transparent,var(--brass) 12%,var(--brass) 88%,transparent);opacity:.55}
@@ -189,7 +189,7 @@ dl.specs{margin:0}
 .transport{display:flex;align-items:center;gap:12px;margin-top:18px;padding:11px 12px;
   border:1px solid var(--line-ink);border-radius:14px;background:rgba(255,255,255,.03)}
 .play{width:44px;height:44px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
-  background:var(--ink);color:var(--label);transition:transform .15s var(--ease)}
+  background:var(--solid);color:var(--label);transition:transform .15s var(--ease)}
 .play:active{transform:scale(.93)}
 .bars{flex:1;display:flex;align-items:center;gap:2.5px;height:26px;overflow:hidden}
 .bars i{flex:1;background:rgba(21,24,26,.2);border-radius:2px;height:22%;transition:height .18s var(--ease),background .18s}
@@ -208,7 +208,7 @@ dl.specs{margin:0}
   text-decoration:none;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.07);transition:.16s var(--ease)}
 .link:active{transform:scale(.975);background:rgba(184,133,63,.14)}
 .link .glyph{width:26px;height:26px;flex:0 0 auto;border-radius:8px;display:grid;place-items:center;
-  background:var(--ink);color:var(--label);font-size:11px;font-weight:700}
+  background:var(--solid);color:var(--label);font-size:11px;font-weight:700}
 .link.wide{grid-column:1/-1}
 .link small{display:block;font-weight:400;font-size:11px;color:var(--ink-soft)}
 
@@ -232,13 +232,13 @@ dl.specs{margin:0}
 .ask-row input{flex:1;padding:13px 15px;border-radius:13px;border:1px solid var(--line-ink);
   background:rgba(255,255,255,.55);font-size:15px}
 .ask-row input::placeholder{color:#9A968E}
-.ask-row button{width:48px;border-radius:13px;background:var(--ink);color:var(--label);display:grid;place-items:center}
+.ask-row button{width:48px;border-radius:13px;background:var(--solid);color:var(--label);display:grid;place-items:center}
 
 .card-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px}
 .act{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:13px 6px;border-radius:13px;border:1px solid var(--line-ink);font-size:12px;font-weight:600;
   display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(255,255,255,.07);transition:.16s var(--ease)}
 .act:active{transform:scale(.96)}
-.act.filled{background:var(--ink);color:var(--label);border-color:var(--ink)}
+.act.filled{background:var(--solid);color:var(--label);border-color:var(--solid)}
 .act.done{background:var(--patina);border-color:var(--patina);color:#fff}
 
 .fact{margin-top:20px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.05);font-size:14px;line-height:1.6}
@@ -340,7 +340,7 @@ dl.specs{margin:0}
 .tab svg{width:21px;height:21px}
 
 #toast{position:fixed;left:50%;bottom:calc(var(--tabbar) + 18px);transform:translate(-50%,14px);z-index:90;
-  padding:12px 18px;border-radius:24px;background:var(--label);color:var(--ink);font-size:13.5px;font-weight:600;
+  padding:12px 18px;border-radius:24px;background:var(--label);color:var(--solid);font-size:13.5px;font-weight:600;
   opacity:0;pointer-events:none;transition:.28s var(--ease);max-width:88vw;text-align:center;box-shadow:0 10px 34px rgba(0,0,0,.45)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
@@ -605,7 +605,7 @@ dl.specs{margin:0}
 
 #updbar{position:fixed;left:12px;right:12px;bottom:calc(var(--tabbar) + 14px);z-index:88;
   display:none;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;
-  background:var(--label);color:var(--ink);box-shadow:0 12px 34px rgba(0,0,0,.5);
+  background:var(--label);color:var(--solid);box-shadow:0 12px 34px rgba(0,0,0,.5);
   max-width:496px;margin:0 auto;font-size:13.5px;font-weight:600}
 #updbar.on{display:flex}
 #updbar span{flex:1}
@@ -4746,7 +4746,7 @@ dl.specs{margin:0}
   };
 
   /* ── 27. Sürüm ─────────────────────────────────────────── */
-  var APP_VERSION = 'v5.2';
+  var APP_VERSION = 'v5.3';
 
   /* ── 27b. Açılış ekranı ────────────────────────────────
      Animasyon kendi süresinde biter; dokunan beklemez. */
